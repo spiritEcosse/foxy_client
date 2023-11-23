@@ -94,15 +94,14 @@ const Gallery = ({seoData}) => {
     }
     if (!seoData) {
         return <div>An unexpected error occurred. Please try again later.</div>;
-    } else {
-        if ('error' in seoData) {
-            if (seoData.code === 404) {
-                return <NotFound/>;
-            } else if (seoData.code === 500) {
-                return <InternalServerError/>
-            } else {
-                return <div>An unexpected error occurred. Please try again later.</div>;
-            }
+    }
+    if ('error' in seoData) {
+        if (seoData.code === 404) {
+            return <NotFound/>;
+        } else if (seoData.code === 500) {
+            return <InternalServerError/>
+        } else {
+            return <div>An unexpected error occurred. Please try again later.</div>;
         }
     }
     return (

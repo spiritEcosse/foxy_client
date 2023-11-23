@@ -32,11 +32,13 @@ const ApiGetMetaData = ({slug, onSeoDataFetched}) => {
         fetchPage(slug);
     }, [slug]);
 
-    return (
-        <div>
-            <MetaData data={page}/>
-        </div>
-    );
+    if (page) {
+        return (
+            <div>
+                <MetaData data={page}/>
+            </div>
+        );
+    }
 }
 
 export default ApiGetMetaData;
