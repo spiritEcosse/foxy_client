@@ -25,6 +25,11 @@ const Item = () => {
             try {
                 const apiUrl = `${serverUrl}/item/${id}/`;
                 const result = await axios.get(apiUrl);
+                const isJson = result.headers.get('content-type')?.includes('application/json');
+                if (!isJson) {
+                    throw new Error("Response is not JSON.");
+                }
+
                 for (let i = 0; i < result.data.images.length; i++) {
                     let image = result.data.images[i].original
                     result.data.images[i] = {

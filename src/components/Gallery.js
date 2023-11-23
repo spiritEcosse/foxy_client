@@ -55,6 +55,11 @@ const Gallery = ({seoData}) => {
             try {
                 const apiUrl = `${severUrl}/item/?page=${pageFromUrl}`;
                 const result = await axios.get(apiUrl);
+                const isJson = result.headers.get('content-type')?.includes('application/json');
+                if (!isJson) {
+                    throw new Error("Response is not JSON.");
+                }
+
                 setData(result.data.items);
                 setCountPages(Math.ceil(result.data.count / limit));
                 setPage(result.data.page);
