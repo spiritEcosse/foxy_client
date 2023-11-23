@@ -12,6 +12,7 @@ const ApiGetMetaData = ({slug, onSeoDataFetched}) => {
             try {
                 const apiUrl = `${severUrl}/page/${slug}/`;
                 const result = await axios.get(apiUrl);
+                console.log(result);
                 setPage(result.data);
                 onSeoDataFetched(result.data);
             } catch (error) {
@@ -32,13 +33,11 @@ const ApiGetMetaData = ({slug, onSeoDataFetched}) => {
         fetchPage(slug);
     }, [slug]);
 
-    if (page) {
-        return (
-            <div>
-                <MetaData data={page}/>
-            </div>
-        );
-    }
+    return (
+        <div>
+            <MetaData data={page}/>
+        </div>
+    )
 }
 
 export default ApiGetMetaData;
