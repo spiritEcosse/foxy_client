@@ -84,9 +84,21 @@ const Gallery = ({seoData}) => {
     }
 
     if (error) {
-        if (error.code === 404) {
+        if (error.status === 404) {
             return <NotFound/>;
-        } else if (error.code === 500) {
+        } else if (error.status === 500) {
+            return <InternalServerError/>
+        } else {
+            return <div>An unexpected error occurred. Please try again later.</div>;
+        }
+    }
+    if (!seoData) {
+        return <div>An unexpected error occurred. Please try again later.</div>;
+    }
+    if ('error' in seoData) {
+        if (seoData.code === 404) {
+            return <NotFound/>;
+        } else if (seoData.code === 500) {
             return <InternalServerError/>
         } else {
             return <div>An unexpected error occurred. Please try again later.</div>;
