@@ -11,10 +11,13 @@ const ApiGetMetaData = ({slug, onSeoDataFetched}) => {
         const fetchPage = async (slug) => {
             try {
                 const apiUrl = `${severUrl}/page/${slug}/`;
-                const result = await axios.get(apiUrl);
-                console.log(result);
-                setPage(result.data);
-                onSeoDataFetched(result.data);
+                const response = await axios.get(apiUrl);
+                console.log(response);
+                if ((response?.data)?.text()) {
+                    throw new Error("Response is not JSON.");
+                }
+                setPage(response.data);
+                onSeoDataFetched(response.data);
             } catch (error) {
                 console.error(error);
                 if (!error?.response) {
