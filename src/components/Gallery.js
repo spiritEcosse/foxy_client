@@ -35,6 +35,7 @@ const theme = createTheme({
     },
 })
 
+
 const severUrl = process.env.REACT_APP_SERVER_URL;
 
 const Gallery = ({seoData}) => {
