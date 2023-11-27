@@ -11,3 +11,12 @@ code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.divHover {
+    cursor: pointer;
+}
+.react-responsive-modal-modal .carousel .thumb.selected, .react-responsive-modal-modal .carousel .thumb:hover {
+    border: 3px solid #fff;
+}
+.react-responsive-modal-modal .carousel .thumb {
+    border: 3px solid #333;
+}

@@ -8,6 +8,9 @@ import axios, {AxiosError} from "axios";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import {Carousel} from 'react-responsive-carousel';
 import Loading from "./Loading";
+import 'react-responsive-modal/styles.css';
+import "../index.css";
+import {Modal} from 'react-responsive-modal';
 
 const serverUrl = process.env.REACT_APP_SERVER_URL;
 
@@ -17,6 +20,10 @@ const Item = () => {
     const [data, setData] = useState({});
     const [error, setError] = useState(null);
     const {id} = useParams();
+    const [open, setOpen] = useState(false);
+
+    const onOpenModal = () => setOpen(true);
+    const onCloseModal = () => setOpen(false);
 
     useEffect(() => {
         const fetchItem = async (id) => {
@@ -34,7 +41,7 @@ const Item = () => {
                     let image = result.data.images[i].original
                     result.data.images[i] = {
                         original: image,
-                        thumbnail: `${image}`,
+                        thumbnail: `${image}?width=1000&height=1000&fit=crop&auto=format`,
                     }
                 }
                 setData(result.data);
@@ -62,6 +69,13 @@ const Item = () => {
         return <Loading/>;
     }
 
+    const modalStyles = {
+        modal: {
+            'background': "none",
+            "boxShadow": "none",
+        }
+    };
+
     if (error) {
         if (error.status === 404) {
             return <NotFound/>;
@@ -74,6 +88,16 @@ const Item = () => {
     return (
         <div style={{padding: '20px', maxWidth: '100%'}}>
             <MetaData data={data.item}/>
+            <Modal open={open} center styles={modalStyles} showCloseIcon={false} onClose={onCloseModal}>
+                <Carousel showArrows={true} emulateTouch={true} infiniteLoop={true} clas>
+                    {data.images.map((image, index) => (
+                        <div key={index}>
+                            <img src={image.original}/>
+                            <p className="legend">Legend 1</p>
+                        </div>
+                    ))}
+                </Carousel>
+            </Modal>
             <Typography variant="h4" gutterBottom>
                 {data.item.title}
             </Typography>
@@ -81,10 +105,11 @@ const Item = () => {
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
                         <Card>
-                            <Carousel showArrows={true}>
+                            <Carousel showArrows={true} emulateTouch={true} onClickItem={onOpenModal}
+                                      infiniteLoop={true}>
                                 {data.images.map((image, index) => (
-                                    <div key={index}>
-                                        <img src={image.thumbnail}/>
+                                    <div key={index} className="divHover">
+                                        <img src={image.original}/>
                                         <p className="legend">Legend 1</p>
                                     </div>
                                 ))}
