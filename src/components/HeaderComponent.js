@@ -13,14 +13,16 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
-interface Props {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  window?: () => Window;
+interface
+Props
+{
+    /**
+     * Injected by the documentation to work in an iframe.
+     * You won't need it on your project.
+     */
+    window ? : () => Window;
 }
 
 const drawerWidth = 240;
@@ -46,8 +48,8 @@ export default function HeaderComponent(props: Props) {
             <List>
                 {navItems.map((item) => (
                     <ListItem key={item.id} disablePadding>
-                        <ListItemButton sx={{textAlign: 'center'}} component="a" to={item.link}>
-                            <ListItemText primary={item.title} />
+                        <ListItemButton sx={{textAlign: 'center'}} component={Link} to={item.link}>
+                            <ListItemText primary={item.title}/>
                         </ListItemButton>
                     </ListItem>
                 ))}
@@ -58,7 +60,7 @@ export default function HeaderComponent(props: Props) {
     const container = window !== undefined ? () => window().document.body : undefined;
 
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{display: 'flex'}}>
             <CssBaseline/>
             <AppBar component="nav" position="static">
                 <Toolbar>
@@ -82,7 +84,7 @@ export default function HeaderComponent(props: Props) {
                     </Link>
                     <Box sx={{display: {xs: 'none', sm: 'block', marginLeft: 'auto'}}}>
                         {navItems.map(item => (
-                            <Button component="a"  key={item.id} sx={{color: '#fff'}} href={item.link}>
+                            <Button component={Link} key={item.id} sx={{color: '#fff'}} to={item.link}>
                                 {item.title}
                             </Button>
                         ))}

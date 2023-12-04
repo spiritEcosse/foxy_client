@@ -100,7 +100,7 @@ const Item = () => {
                     };
                     delete item.src;
                 } else {
-                    item.src = `${baseURL}${item.src}`;
+                    item.src = `${baseURL}${item.src}?twic=v1/cover=900x600`;
                 }
             }
 
@@ -145,7 +145,7 @@ const Item = () => {
     return (
         <div style={{padding: '20px', maxWidth: '100%'}}>
             <MetaData data={data.item}/>
-            <Typography variant="h4" gutterBottom>
+            <Typography variant="h1" gutterBottom>
                 {data.item.title}
             </Typography>
             <Paper elevation={3} style={{padding: '20px'}}>
