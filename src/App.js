@@ -9,8 +9,18 @@ import HomeComponent from "./components/HomeComponent";
 import PageComponent from "./components/PageComponent";
 import {ThemeProvider} from "@mui/material/styles";
 import theme from "./components/CustomTheme";
+import {installTwicPics} from "@twicpics/components/react";
+import {setupCache} from "axios-cache-interceptor";
+import Axios from "axios";
 
 const helmetContext = {};
+const domain = `https://${process.env.REACT_APP_CLOUD_NAME}.twic.pics`;
+
+installTwicPics({
+    // domain is mandatory
+    domain: domain
+})
+setupCache(Axios);
 
 
 function App() {

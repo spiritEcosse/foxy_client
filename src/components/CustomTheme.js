@@ -12,4 +12,14 @@ const CustomTheme = createTheme({
         },
     },
 });
+CustomTheme.typography.h1 = {
+  fontSize: '1rem',
+  '@media (min-width:600px)': {
+    fontSize: '1.5rem',
+  },
+  [CustomTheme.breakpoints.up('md')]: {
+    fontSize: '2.4rem',
+  },
+};
+
 export default CustomTheme;

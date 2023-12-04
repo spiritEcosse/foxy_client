@@ -12,7 +12,6 @@ const ApiGetMetaData = ({slug, onSeoDataFetched}) => {
             try {
                 const apiUrl = `${severUrl}/page/${slug}/`;
                 const response = await axios.get(apiUrl);
-                console.log(response);
                 const isJson = response.headers.get('content-type')?.includes('application/json');
                 if (!isJson) {
                     throw new Error("Response is not JSON.");

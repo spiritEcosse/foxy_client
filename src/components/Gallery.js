@@ -1,39 +1,17 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
-import Box from "@mui/material/Box";
-import ImageListItem, {imageListItemClasses} from "@mui/material/ImageListItem";
-import ImageListItemBar from "@mui/material/ImageListItemBar";
-import IconButton from "@mui/material/IconButton";
-import InfoIcon from "@mui/icons-material/Info";
 import {Link, useLocation} from "react-router-dom";
 import {PaginationItem, Paper, Typography} from "@mui/material";
 import Pagination from "@mui/material/Pagination";
-import {createTheme, ThemeProvider} from "@mui/material/styles";
 import axios, {AxiosError} from "axios";
 import NotFound from "./NotFound";
 import InternalServerError from "./InternalServerError";
 import Loading from "./Loading";
+// import TwicPics components css
+import '@twicpics/components/style.css'
+import '../gallery.scss';
 
-const theme = createTheme({
-    breakpoints: {
-        values: {
-            mobile: 0,
-            bigMobile: 350,
-            tablet: 650,
-            desktop: 900
-        }
-    },
-    palette: {
-        primary: {
-            main: "#78C59B",
-            contrastText: "#fff"
-        },
-        secondary: {
-            main: "#003F5F",
-            contrastText: "#fff"
-        },
-    },
-})
+const domain = `https://${process.env.REACT_APP_CLOUD_NAME}.twic.pics`;
 
 const severUrl = process.env.REACT_APP_SERVER_URL;
 
@@ -44,7 +22,7 @@ const Gallery = ({seoData}) => {
     const pageFromUrl = parseInt(query.get('page') || '1', 10);
     const [page, setPage] = useState(1);
     const [countPages, setCountPages] = useState(1);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     let limit = 25;
     const [error, setError] = useState(null);
 
@@ -98,7 +76,7 @@ const Gallery = ({seoData}) => {
         }
     }
     if (!seoData) {
-        return <div>An unexpected error occurred. Please try again later.</div>;
+        return <Loading/>;
     }
     if ('error' in seoData) {
         if (seoData.code === 404) {
@@ -109,85 +87,56 @@ const Gallery = ({seoData}) => {
             return <div>An unexpected error occurred. Please try again later.</div>;
         }
     }
+
     return (
         <div style={{padding: '20px', maxWidth: '100%'}}>
             <Typography variant="h1" gutterBottom>
                 {seoData.title}
             </Typography>
             <Paper elevation={3} style={{padding: '20px'}}>
-                <ThemeProvider theme={theme}>
-                    <div style={{display: 'flex', justifyContent: 'center', marginBottom: '20px'}}>
-                        <Pagination
-                            page={page}
-                            color="primary"
-                            variant="outlined"
-                            count={countPages}
-                            renderItem={(item) => (
-                                <PaginationItem
-                                    component={Link}
-                                    to={`/${item.page === 1 ? '' : `?page=${item.page}`}`}
-                                    {...item}
-                                />
-                            )}
-                        />
-                    </div>
-                    <Box
-                        sx={{
-                            height: "100%",
-                            display: "grid",
-                            gridTemplateColumns: {
-                                mobile: "repeat(1, 1fr)",
-                                bigMobile: "repeat(2, 1fr)",
-                                tablet: "repeat(3, 1fr)",
-                                desktop: "repeat(4, 1fr)"
-                            },
-                            [`& .${imageListItemClasses.root}`]: {
-                                display: "flex",
-                                flexDirection: "column",
-                                margin: "5px",
-                            }
-                        }}
-                    >
-                        {data.map((item) => (
-                            <ImageListItem key={item.id} component={Link} to={`/item/${item.id}`}>
-                                <img
-                                    src={`${item.original}?w=200&h200&fit=crop&auto=format`}
-                                    srcSet={`${item.original}?w=200&h=200&fit=crop&auto=format&dpr=2 2x`}
-                                    alt={item.name}
-                                    loading="lazy"
-                                />
-                                <ImageListItemBar
-                                    title={item.name}
-                                    subtitle={item.title}
-                                    // position="below"
-                                    actionIcon={
-                                        <IconButton
-                                            sx={{color: "rgba(255, 255, 255, 0.54)"}}
-                                            aria-label={`info about ${item.name}`}
-                                        >
-                                            <InfoIcon/>
-                                        </IconButton>
-                                    }
-                                />
-                            </ImageListItem>
-                        ))}
-                    </Box>
-                    <div style={{display: 'flex', justifyContent: 'center', marginTop: '20px'}}>
-                        <Pagination
-                            page={page}
-                            color="primary"
-                            variant="outlined"
-                            count={countPages}
-                            renderItem={(item) => (
-                                <PaginationItem
-                                    component={Link}
-                                    to={`/${item.page === 1 ? '' : `?page=${item.page}`}`}
-                                    {...item}
-                                />
-                            )}
-                        />
-                    </div>
-                </ThemeProvider>
+                <div style={{display: 'flex', justifyContent: 'center', marginBottom: '20px'}}>
+                    <Pagination
+                        page={page}
+                        color="primary"
+                        variant="outlined"
+                        count={countPages}
+                        renderItem={(item) => (
+                            <PaginationItem
+                                component={Link}
+                                to={`/${item.page === 1 ? '' : `?page=${item.page}`}`}
+                                {...item}
+                            />
+                        )}
+                    />
+                </div>
+                <div className="galleryContainer">
+                    {
+                        data.map((item) => (
+                            <div className="galleryItem" key={item.item_id}
+                                 style={{backgroundImage: `url(${domain}/${item.src}?twic=v1/output=preview)`}}>
+                                <Link to={`/item/${item.item_id}`}>
+                                    <img data-twic-src={`image:${item.src}`} alt={item.title}/>
+                                    <figcaption className="galleryCapt">{item.title}</figcaption>
+                                </Link>
+                            </div>
+                        ))
+                    }
+                </div>
+                <div style={{display: 'flex', justifyContent: 'center', marginTop: '20px'}}>
+                    <Pagination
+                        page={page}
+                        color="primary"
+                        variant="outlined"
+                        count={countPages}
+                        renderItem={(item) => (
+                            <PaginationItem
+                                component={Link}
+                                to={`/${item.page === 1 ? '' : `?page=${item.page}`}`}
+                                {...item}
+                            />
+                        )}
+                    />
+                </div>
             </Paper>
         </div>
     );
