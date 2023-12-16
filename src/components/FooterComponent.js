@@ -7,6 +7,7 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import {Box, Container, Divider, Typography} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Grid";
+import '../config';
 
 export default function FooterComponent() {
     const socialMediaLinks = [
@@ -31,11 +32,6 @@ export default function FooterComponent() {
                 <Container maxWidth="lg">
                     <Grid container direction="column" alignItems="center">
                         <Grid item xs={12}>
-                            <Typography component="div" variant="h5">
-                                Follow me
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
                             <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
                                 {socialMediaLinks.map((link) => (
                                     <React.Fragment key={link.id}>
@@ -50,7 +46,7 @@ export default function FooterComponent() {
                             </Box>
                             <Box sx={{display: 'flex', justifyContent: 'center', gap: 2}}>
                                 <Typography variant="subtitle1">
-                                    {`${new Date().getFullYear()} © FOXY. All rights reserved.`}
+                                    {`${new Date().getFullYear()} © ${global.config.projectName}. All rights reserved.`}
                                 </Typography>
                             </Box>
                         </Grid>

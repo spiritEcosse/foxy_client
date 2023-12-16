@@ -69,8 +69,8 @@ const Item = () => {
                 throw new Error("Response is not JSON.");
             }
 
-            const baseURL = "https://foxydev.twic.pics/";
-            const videoBaseURL = "https://foxydev.s3.eu-west-1.amazonaws.com/";
+            const baseURL = `https://${process.env.REACT_APP_CLOUD_NAME}.twic.pics/`;
+            const videoBaseURL = `https://${process.env.REACT_APP_CLOUD_NAME}.s3.eu-west-1.amazonaws.com/`;
 
             for (const item of result.data.media) {
                 if (item.src?.startsWith("https://")) {

@@ -13,7 +13,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import {Link, useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
+import '../config';
 
 interface
 Props
@@ -42,7 +43,7 @@ export default function HeaderComponent(props: Props) {
     const drawer = (
         <Box onClick={handleDrawerToggle} sx={{textAlign: 'center'}}>
             <Typography variant="h6" sx={{my: 2}}>
-                FOXY
+                {global.config.projectName}
             </Typography>
             <Divider/>
             <List>
@@ -79,7 +80,7 @@ export default function HeaderComponent(props: Props) {
                             component="div"
                             sx={{flexGrow: 1, display: {sm: 'block'}}}
                         >
-                            FOXY
+                            {global.config.projectName}
                         </Typography>
                     </Link>
                     <Box sx={{display: {xs: 'none', sm: 'block', marginLeft: 'auto'}}}>
