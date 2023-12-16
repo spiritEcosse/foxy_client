@@ -2,10 +2,11 @@ import {Paper, Typography} from "@mui/material";
 import * as React from "react";
 import NotFound from "./NotFound";
 import InternalServerError from "./InternalServerError";
+import Loading from "./Loading";
 
 const PageDetails = ({seoData}) => {
     if (!seoData) {
-        return <div>An unexpected error occurred. Please try again later.</div>;
+        return <Loading/>;
     }
 
     if ('error' in seoData) {
