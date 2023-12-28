@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Typography, Paper, Grid} from '@mui/material';
+import {Grid, Paper, Typography} from '@mui/material';
 import {useParams} from 'react-router-dom';
 import NotFound from './NotFound';
 import InternalServerError from "./InternalServerError";
@@ -39,12 +39,12 @@ const Item = () => {
     }, []);
 
     const getLgComponent = () => {
-        if (container !== null) {
+        if (container !== null && data.media) {
             return (
                 <LightGallery
                     plugins={[lgThumbnail, lgVideo]}
                     dynamic
-                    dynamicEl={data ? data.media : []}
+                    dynamicEl={data.media}
                     closable={false}
                     showMaximizeIcon
                     thumbnail={true}
@@ -72,39 +72,41 @@ const Item = () => {
             const baseURL = `https://${process.env.REACT_APP_CLOUD_NAME}.twic.pics/`;
             const videoBaseURL = `https://${process.env.REACT_APP_CLOUD_NAME}.s3.eu-west-1.amazonaws.com/`;
 
-            for (const item of result.data.media) {
-                if (item.src?.startsWith("https://")) {
-                    break;
-                }
-                item.id = item.media_id;
-                delete item.media_id;
-                if (item.thumb === null) {
-                    item.thumb = `${baseURL}${item.src}?twic=v1/cover=96x76`;
-                } else {
-                    item.thumb = `${baseURL}${item.thumb}?twic=v1/cover=96x76`;
-                }
+            result.data.item.image = result.data.media ? result.data.media[0].src : null;
+            if (result.data.media) {
+                for (const item of result.data.media) {
+                    if (item.src?.startsWith("https://")) {
+                        break;
+                    }
+                    item.id = item.media_id;
+                    delete item.media_id;
+                    if (item.thumb === null) {
+                        item.thumb = `${baseURL}${item.src}?twic=v1/cover=96x76`;
+                    } else {
+                        item.thumb = `${baseURL}${item.thumb}?twic=v1/cover=96x76`;
+                    }
 
-                if (item.src?.includes(".mp4")) {
-                    item.video = {
-                        source: [{
-                            src: `${videoBaseURL}${item.src}`,
-                            type: "video/mp4",
-                        }],
-                        attributes: {
-                            preload: false,
-                            controls: false,
-                            muted: true,
-                            loop: true,
-                            autoplay: true,
-                        },
-                    };
-                    delete item.src;
-                } else {
-                    item.src = `${baseURL}${item.src}?twic=v1/cover=900x600`;
+                    if (item.src?.includes(".mp4")) {
+                        item.video = {
+                            source: [{
+                                src: `${videoBaseURL}${item.src}`,
+                                type: "video/mp4",
+                            }],
+                            attributes: {
+                                preload: false,
+                                controls: false,
+                                muted: true,
+                                loop: true,
+                                autoplay: true,
+                            },
+                        };
+                        delete item.src;
+                    } else {
+                        item.src = `${baseURL}${item.src}?twic=v1/cover=900x600`;
+                    }
                 }
             }
 
-            console.log(result.data);
             setData(result.data);
         } catch (error) {
             console.error(error);
