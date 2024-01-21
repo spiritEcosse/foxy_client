@@ -12,7 +12,6 @@ import '@twicpics/components/style.css'
 import '../gallery.scss';
 
 const domain = `https://${process.env.REACT_APP_CLOUD_NAME}.twic.pics`;
-
 const severUrl = process.env.REACT_APP_SERVER_URL;
 
 const Gallery = ({seoData}) => {
@@ -31,7 +30,7 @@ const Gallery = ({seoData}) => {
             setLoading(true);
 
             try {
-                const apiUrl = `${severUrl}/item/?page=${pageFromUrl}`;
+                const apiUrl = `${severUrl}/api/v1/item/?page=${pageFromUrl}`;
                 const result = await axios.get(apiUrl);
                 const isJson = result.headers.get('content-type')?.includes('application/json');
                 if (!isJson) {

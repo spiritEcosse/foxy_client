@@ -62,7 +62,7 @@ const Item = () => {
         setLoading(true);
 
         try {
-            const apiUrl = `${serverUrl}/item/${id}/`;
+            const apiUrl = `${serverUrl}/api/v1/item/${id}/`;
             const result = await axios.get(apiUrl);
             const isJson = result.headers.get('content-type')?.includes('application/json');
             if (!isJson) {
