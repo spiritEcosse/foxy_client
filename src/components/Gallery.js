@@ -79,7 +79,7 @@ const Gallery = ({seoData}) => {
     return (
         <div style={{padding: '20px', maxWidth: '100%'}}>
             <Typography variant="h1" gutterBottom>
-                {seoData && seoData.title ? seoData.title : "Gallery"}
+                {seoData?.title ?? "Gallery"}
             </Typography>
             <Paper elevation={3} style={{padding: '20px'}}>
                 <div style={{display: 'flex', justifyContent: 'center', marginBottom: '20px'}}>
