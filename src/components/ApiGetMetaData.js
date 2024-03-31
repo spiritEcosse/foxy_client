@@ -10,7 +10,7 @@ const ApiGetMetaData = ({slug, onSeoDataFetched}) => {
     useEffect(() => {
         const fetchPage = async (slug) => {
             try {
-                const apiUrl = `${severUrl}/api/v1/page/${slug}/`;
+                const apiUrl = `${severUrl}/api/v1/page/${slug}`;
                 const response = await axios.get(apiUrl);
                 const isJson = response.headers.get('content-type')?.includes('application/json');
                 if (!isJson) {
@@ -34,7 +34,7 @@ const ApiGetMetaData = ({slug, onSeoDataFetched}) => {
             }
         }
         fetchPage(slug);
-    }, [slug, onSeoDataFetched]);
+    }, [slug]);
 
     return (
         <div>

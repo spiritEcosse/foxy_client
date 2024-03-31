@@ -62,29 +62,22 @@ const Item = () => {
         setLoading(true);
 
         try {
-            const apiUrl = `${serverUrl}/api/v1/item/${id}/`;
+            const apiUrl = `${serverUrl}/api/v1/item/${id}`;
             const result = await axios.get(apiUrl);
             const isJson = result.headers.get('content-type')?.includes('application/json');
             if (!isJson) {
                 throw new Error("Response is not JSON.");
             }
 
-            const baseURL = `https://${process.env.REACT_APP_CLOUD_NAME}.twic.pics/`;
             const videoBaseURL = `https://${process.env.REACT_APP_CLOUD_NAME}.s3.eu-west-1.amazonaws.com/`;
 
-            result.data.item.image = result.data.media ? result.data.media[0].src : null;
+            result.data.image = result.data.media ? result.data.media[0].src : null;
             if (result.data.media) {
-                for (const item of result.data.media) {
-                    if (item.src?.startsWith("https://")) {
+                for (let item of result.data.media) {
+                    if (item.thumb) {
                         break;
                     }
-                    item.id = item.media_id;
-                    delete item.media_id;
-                    if (item.thumb === null) {
-                        item.thumb = `${baseURL}${item.src}?twic=v1/cover=96x76`;
-                    } else {
-                        item.thumb = `${baseURL}${item.thumb}?twic=v1/cover=96x76`;
-                    }
+                    item.thumb = `${item.src}?twic=v1/cover=96x76`;
 
                     if (item.src?.includes(".mp4")) {
                         item.video = {
@@ -102,11 +95,10 @@ const Item = () => {
                         };
                         delete item.src;
                     } else {
-                        item.src = `${baseURL}${item.src}?twic=v1/cover=900x600`;
+                        item.src = `${item.src}?twic=v1/cover=900x600`;
                     }
                 }
             }
-
             setData(result.data);
         } catch (error) {
             console.error(error);
@@ -146,9 +138,9 @@ const Item = () => {
 
     return (
         <div style={{padding: '20px', maxWidth: '100%'}}>
-            <MetaData data={data.item}/>
+            <MetaData data={data}/>
             <Typography variant="h1" gutterBottom>
-                {data.item.title}
+                {data.title}
             </Typography>
             <Paper elevation={3} style={{padding: '20px'}}>
                 <Grid container spacing={2}>
@@ -163,7 +155,7 @@ const Item = () => {
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <Typography variant="body1" paragraph>
-                            {data.item.description}
+                            {data.description}
                         </Typography>
                     </Grid>
                 </Grid>

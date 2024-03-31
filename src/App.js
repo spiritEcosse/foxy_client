@@ -14,7 +14,7 @@ import {setupCache} from "axios-cache-interceptor";
 import Axios from "axios";
 
 const helmetContext = {};
-const domain = `https://${process.env.REACT_APP_CLOUD_NAME}.twic.pics`;
+const domain = `https://${process.env.REACT_APP_TWIC_PICS_NAME}.twic.pics`;
 
 installTwicPics({
     // domain is mandatory
