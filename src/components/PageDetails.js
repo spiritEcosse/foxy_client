@@ -9,14 +9,12 @@ const PageDetails = ({seoData}) => {
         return <Loading/>;
     }
 
-    if ('error' in seoData) {
-        if (seoData.code === 404) {
-            return <NotFound/>;
-        } else if (seoData.code === 500) {
-            return <InternalServerError/>
-        } else {
-            return <div>An unexpected error occurred. Please try again later.</div>;
-        }
+    if (seoData.status === 404) {
+        return <NotFound/>;
+    } else if (seoData.status === 500) {
+        return <InternalServerError/>
+    } else if (seoData.status !== 200) {
+        return <div>{seoData.error}</div>;
     }
 
     return (

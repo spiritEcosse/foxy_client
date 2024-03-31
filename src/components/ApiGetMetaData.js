@@ -21,15 +21,15 @@ const ApiGetMetaData = ({slug, onSeoDataFetched}) => {
             } catch (error) {
                 console.error(error);
                 if (!error?.response) {
-                    onSeoDataFetched({'error': {'message': "No Server Response"}});
+                    onSeoDataFetched({'error': "No Server Response", 'status': 424});
                 } else if (error?.code === AxiosError.ERR_NETWORK) {
-                    onSeoDataFetched({'error': {'message': "Network Error"}});
+                    onSeoDataFetched({'error': "Network Error", 'status': 424});
                 } else if (error.response?.status !== 200) {
-                    onSeoDataFetched({'error': true, "status": error.response?.status});
+                    onSeoDataFetched({'error': "Unknown Error", "status": error.response?.status});
                 } else if (error?.code) {
-                    onSeoDataFetched({'error': true, 'code': error.code});
+                    onSeoDataFetched({'error': "Unknown Error", 'status': error.code});
                 } else {
-                    onSeoDataFetched({'error': {'message': "Unknown Error"}});
+                    onSeoDataFetched({'error': "Unknown Error", "status": 424});
                 }
             }
         }
