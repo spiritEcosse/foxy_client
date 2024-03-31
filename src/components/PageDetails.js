@@ -3,6 +3,8 @@ import * as React from "react";
 import NotFound from "./NotFound";
 import InternalServerError from "./InternalServerError";
 import Loading from "./Loading";
+import PropTypes from "prop-types";
+import Gallery from "./Gallery";
 
 const PageDetails = ({seoData}) => {
     if (!seoData) {
@@ -28,5 +30,12 @@ const PageDetails = ({seoData}) => {
         </div>
     )
 }
+
+PageDetails.propTypes = {
+    seoData: PropTypes.shape({
+        status: PropTypes.number,
+        error: PropTypes.string,
+    }),
+};
 
 export default PageDetails;
