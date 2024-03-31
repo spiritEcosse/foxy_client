@@ -28,7 +28,6 @@ const ApiGetMetaData = ({slug, onSeoDataFetched}) => {
                 } else if (error?.code === AxiosError.ERR_NETWORK) {
                     errorMessage = "Network Error";
                 } else if (error.response?.status !== 200) {
-                    errorMessage = "Unknown Error";
                     status = error.response?.status;
                 } else if (error?.code) {
                     status = error.code;
