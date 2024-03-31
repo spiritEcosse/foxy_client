@@ -17,7 +17,7 @@ const ApiGetMetaData = ({slug, onSeoDataFetched}) => {
                     throw new Error("Response is not JSON.");
                 }
                 setPage(response.data);
-                onSeoDataFetched(response.data);
+                onSeoDataFetched({ ...response.data, status: response.status });
             } catch (error) {
                 console.error(error);
                 if (!error?.response) {

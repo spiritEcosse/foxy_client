@@ -31,11 +31,5 @@ const PageDetails = ({seoData}) => {
     )
 }
 
-PageDetails.propTypes = {
-    seoData: PropTypes.shape({
-        status: PropTypes.number,
-        error: PropTypes.string,
-    }),
-};
 
 export default PageDetails;
