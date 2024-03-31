@@ -3,20 +3,19 @@ import * as React from "react";
 import NotFound from "./NotFound";
 import InternalServerError from "./InternalServerError";
 import Loading from "./Loading";
+import PropTypes from "prop-types";
 
 const PageDetails = ({seoData}) => {
     if (!seoData) {
         return <Loading/>;
     }
 
-    if ('error' in seoData) {
-        if (seoData.code === 404) {
-            return <NotFound/>;
-        } else if (seoData.code === 500) {
-            return <InternalServerError/>
-        } else {
-            return <div>An unexpected error occurred. Please try again later.</div>;
-        }
+    if (seoData.status === 404) {
+        return <NotFound/>;
+    } else if (seoData.status === 500) {
+        return <InternalServerError/>
+    } else if (seoData.status !== 200) {
+        return <div>{seoData.error}</div>;
     }
 
     return (
@@ -30,5 +29,12 @@ const PageDetails = ({seoData}) => {
         </div>
     )
 }
+
+PageDetails.propTypes = {
+    seoData: PropTypes.shape({
+        status: PropTypes.number,
+        error: PropTypes.string,
+    }),
+};
 
 export default PageDetails;
