@@ -7,6 +7,8 @@ import axios, {AxiosError} from "axios";
 import NotFound from "./NotFound";
 import InternalServerError from "./InternalServerError";
 import Loading from "./Loading";
+import PropTypes from 'prop-types';
+
 // import TwicPics components css
 import '@twicpics/components/style.css'
 import '../gallery.scss';
@@ -127,5 +129,11 @@ const Gallery = ({seoData}) => {
         </div>
     );
 }
+
+Gallery.propTypes = {
+    seoData: PropTypes.shape({
+        title: PropTypes.string,
+    }),
+};
 
 export default Gallery;
