@@ -11,7 +11,6 @@ import Loading from "./Loading";
 import '@twicpics/components/style.css'
 import '../gallery.scss';
 
-const domain = `https://${process.env.REACT_APP_CLOUD_NAME}.twic.pics`;
 const severUrl = process.env.REACT_APP_SERVER_URL;
 
 const Gallery = ({seoData}) => {
@@ -30,16 +29,16 @@ const Gallery = ({seoData}) => {
             setLoading(true);
 
             try {
-                const apiUrl = `${severUrl}/api/v1/item/?page=${pageFromUrl}`;
+                const apiUrl = `${severUrl}/api/v1/item?page=${pageFromUrl}`;
                 const result = await axios.get(apiUrl);
                 const isJson = result.headers.get('content-type')?.includes('application/json');
                 if (!isJson) {
                     throw new Error("Response is not JSON.");
                 }
 
-                setData(result.data.items);
-                setCountPages(Math.ceil(result.data.count / limit));
-                setPage(result.data.page);
+                setData(result.data.data || []);
+                setCountPages(result.data ? Math.ceil(result.data.total / limit) : 1);
+                setPage(result.data ? result.data.page : 1);
             } catch (error) {
                 console.error(error);
                 if (!error?.response) {
@@ -74,23 +73,11 @@ const Gallery = ({seoData}) => {
             return <div>An unexpected error occurred. Please try again later.</div>;
         }
     }
-    if (!seoData) {
-        return <Loading/>;
-    }
-    if ('error' in seoData) {
-        if (seoData.code === 404) {
-            return <NotFound/>;
-        } else if (seoData.code === 500) {
-            return <InternalServerError/>
-        } else {
-            return <div>An unexpected error occurred. Please try again later.</div>;
-        }
-    }
 
     return (
         <div style={{padding: '20px', maxWidth: '100%'}}>
             <Typography variant="h1" gutterBottom>
-                {seoData.title}
+                {seoData && seoData.title ? seoData.title : "Gallery"}
             </Typography>
             <Paper elevation={3} style={{padding: '20px'}}>
                 <div style={{display: 'flex', justifyContent: 'center', marginBottom: '20px'}}>
@@ -111,10 +98,10 @@ const Gallery = ({seoData}) => {
                 <div className="galleryContainer">
                     {
                         data.map((item) => (
-                            <div className="galleryItem" key={item.item_id}
-                                 style={{backgroundImage: `url(${domain}/${item.src}?twic=v1/output=preview)`}}>
-                                <Link to={`/item/${item.item_id}`}>
-                                    <img data-twic-src={`image:${item.src}`} alt={item.title}/>
+                            <div className="galleryItem" key={item.id}
+                                 style={{backgroundImage: `url(${item.src}?twic=v1/output=preview`}}>
+                                <Link to={`/item/${item.slug}`}>
+                                    <img data-twic-src={`image:${new URL(item.src).pathname}`} alt={item.title}/>
                                     <figcaption className="galleryCapt">{item.title}</figcaption>
                                 </Link>
                             </div>
