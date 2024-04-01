@@ -23,7 +23,7 @@ const Gallery = ({seoData}) => {
     const [page, setPage] = useState(1);
     const [countPages, setCountPages] = useState(1);
     const [loading, setLoading] = useState(false);
-    let limit = 25;
+    let limit = 27;
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -31,7 +31,7 @@ const Gallery = ({seoData}) => {
             setLoading(true);
 
             try {
-                const apiUrl = `${severUrl}/api/v1/item?page=${pageFromUrl}`;
+                const apiUrl = `${severUrl}/api/v1/item?page=${pageFromUrl}&limit=${limit}`;
                 const result = await axios.get(apiUrl);
                 const isJson = result.headers.get('content-type')?.includes('application/json');
                 if (!isJson) {
