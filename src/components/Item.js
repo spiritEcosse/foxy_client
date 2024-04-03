@@ -16,6 +16,7 @@ import 'lightgallery/css/lg-thumbnail.css';
 import 'lightgallery/css/lg-video.css';
 import 'lightgallery/css/lightgallery.css';
 
+
 const serverUrl = process.env.REACT_APP_SERVER_URL;
 
 
