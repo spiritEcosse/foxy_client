@@ -78,7 +78,7 @@ const Gallery = ({seoData}) => {
 
     return (
         <div style={{padding: '20px', maxWidth: '100%'}}>
-            <button onClick={() => methodDoesNotExist()}>Break the world</button>
+            <button onClick={() => { throw new Error("An error occurred"); }}>Break the world</button>
             <Typography variant="h1" gutterBottom>
                 {seoData?.title ?? "Gallery"}
             </Typography>
