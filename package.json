@@ -7,6 +7,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.18",
     "@mui/material": "^5.14.18",
+    "@sentry/cli": "^2.31.0",
     "@sentry/react": "^7.109.0",
     "@twicpics/components": "^0.26.0",
     "axios": "^1.6.2",
@@ -31,9 +32,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && npm run sentry:sourcemaps",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org spiritecosse --project faithfishart-client build && sentry-cli sourcemaps upload --org spiritecosse --project faithfishart-client build"
   },
   "eslintConfig": {
     "extends": [
