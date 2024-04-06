@@ -12,10 +12,7 @@ import theme from "./components/CustomTheme";
 import {installTwicPics} from "@twicpics/components/react";
 import {setupCache} from "axios-cache-interceptor";
 import Axios from "axios";
-import { useLocation } from 'react-router-dom';
-import { useNavigationType } from 'react-router-dom';
-import { createRoutesFromChildren } from 'react-router-dom';
-import { matchRoutes } from 'react-router-dom';
+import { useLocation, useNavigationType, createRoutesFromChildren, matchRoutes } from 'react-router-dom';
 import * as Sentry from "@sentry/react";
 
 const helmetContext = {};
