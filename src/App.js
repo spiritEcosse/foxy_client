@@ -1,6 +1,14 @@
 import './App.css';
 import * as React from 'react';
-import {BrowserRouter as Router, Route, Routes, useLocation, useNavigationType, createRoutesFromChildren, matchRoutes} from "react-router-dom";
+import {
+    BrowserRouter as Router,
+    Route,
+    Routes,
+    useLocation,
+    useNavigationType,
+    createRoutesFromChildren,
+    matchRoutes
+} from "react-router-dom";
 import HeaderComponent from "./components/HeaderComponent";
 import Item from "./components/Item";
 import FooterComponent from "./components/FooterComponent";
