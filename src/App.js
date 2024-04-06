@@ -27,9 +27,9 @@ installTwicPics({
 })
 setupCache(Axios);
 
-if (import.meta.env.REACT_APP_SENTRY !== "null") {
+if (process.env.REACT_APP_SENTRY !== "null") {
     Sentry.init({
-        dsn: import.meta.env.REACT_APP_SENTRY,
+        dsn: process.env.REACT_APP_SENTRY,
         integrations: [
             // See docs for support of different versions of variation of react router
             // https://docs.sentry.io/platforms/javascript/guides/react/configuration/integrations/react-router/
