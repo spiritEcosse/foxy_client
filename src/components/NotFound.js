@@ -1,17 +1,17 @@
-import React from 'react';
-import {Box, Container, Typography} from '@mui/material';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
+import React from 'react'
+import { Box, Container, Typography } from '@mui/material'
+import Grid from '@mui/material/Grid'
+import Button from '@mui/material/Button'
 
-export default function NotFound() {
-    return (
-        <div style={{display: 'flex', justifyContent: 'center'}}>
+export default function NotFound () {
+  return (
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
             <Box
                 sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: '470px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '470px'
                 }}
             >
                 <Container maxWidth="md">
@@ -36,5 +36,5 @@ export default function NotFound() {
                 </Container>
             </Box>
         </div>
-    );
+  )
 }

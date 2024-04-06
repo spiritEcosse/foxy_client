@@ -1,14 +1,15 @@
-import React from 'react';
-import {Helmet} from 'react-helmet-async';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { Helmet } from 'react-helmet-async'
 
-const MetaData = ({data}) => {
-    const image = data.image ? data.image : `${document.location.origin}/logo.png`;
-    return (
+const MetaData = ({ data }) => {
+  const image = data.image ? data.image : `${document.location.origin}/logo.png`
+  return (
         <Helmet>
             <title>{data.title}</title>
             <meta name="description" content={data.meta_description}/>
-            {/*<meta name="keywords" content="react, meta tags, seo"/>*/}
-            {/*<meta name="author" content="Your Name"/>*/}
+            {/* <meta name="keywords" content="react, meta tags, seo"/> */}
+            {/* <meta name="author" content="Your Name"/> */}
             <meta property="og:title" content={data.title}/>
             <meta property="og:description" content={data.meta_description}/>
             <meta property="og:image" content={image}/>
@@ -19,7 +20,15 @@ const MetaData = ({data}) => {
             <meta name="twitter:card" content="summary_large_image"/>
             <meta name="twitter:creator" content="@faithfishart"/>
         </Helmet>
-    );
+  )
 }
 
-export default MetaData;
+MetaData.propTypes = {
+  data: PropTypes.shape({
+    title: PropTypes.string,
+    meta_description: PropTypes.string,
+    image: PropTypes.string
+  }).isRequired
+}
+
+export default MetaData
