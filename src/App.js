@@ -12,6 +12,11 @@ import theme from "./components/CustomTheme";
 import {installTwicPics} from "@twicpics/components/react";
 import {setupCache} from "axios-cache-interceptor";
 import Axios from "axios";
+import { useLocation } from 'react-router-dom';
+import { useNavigationType } from 'react-router-dom';
+import { createRoutesFromChildren } from 'react-router-dom';
+import { matchRoutes } from 'react-router-dom';
+import * as Sentry from "@sentry/react";
 
 const helmetContext = {};
 const domain = `https://${process.env.REACT_APP_TWIC_PICS_NAME}.twic.pics`;
@@ -22,6 +27,35 @@ installTwicPics({
 })
 setupCache(Axios);
 
+if (import.meta.env.REACT_APP_SENTRY !== "null") {
+    Sentry.init({
+        dsn: import.meta.env.REACT_APP_SENTRY,
+        integrations: [
+            // See docs for support of different versions of variation of react router
+            // https://docs.sentry.io/platforms/javascript/guides/react/configuration/integrations/react-router/
+            Sentry.reactRouterV6BrowserTracingIntegration({
+                useEffect: React.useEffect,
+                useLocation,
+                useNavigationType,
+                createRoutesFromChildren,
+                matchRoutes
+            }),
+            Sentry.replayIntegration()
+        ],
+
+        // Set tracesSampleRate to 1.0 to capture 100%
+        // of transactions for performance monitoring.
+        tracesSampleRate: 1.0,
+
+        // Set `tracePropagationTargets` to control for which URLs distributed tracing should be enabled
+        tracePropagationTargets: ["localhost", /^https:\/\/api\.dev\.faithfishart\.comi/],
+
+        // Capture Replay for 100% of all sessions,
+        // plus for 100% of sessions with an error
+        replaysSessionSampleRate: 1.0,
+        replaysOnErrorSampleRate: 1.0,
+    });
+}
 
 function App() {
     return (
