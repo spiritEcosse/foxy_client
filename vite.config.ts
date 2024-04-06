@@ -7,6 +7,9 @@ export default defineConfig({
   plugins: [react(), sentryVitePlugin({
     org: "spiritecosse",
     project: "faithfishart-client"
+  }), sentryVitePlugin({
+    org: "spiritecosse",
+    project: "faithfishart-client"
   })],
 
   define: {
