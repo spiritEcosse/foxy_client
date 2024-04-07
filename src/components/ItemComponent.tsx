@@ -15,9 +15,6 @@ import {ItemType, MediaType, ResponseType} from '../types';
 import MetaDataComponent from './MetaDataComponent';
 import {fetchData} from '../utils';
 
-type Detail = {
-    instance: LightGallery;
-}
 
 const ItemComponent = () => {
     const [item, setItem] = useState<ItemType>({} as ItemType);
@@ -25,7 +22,7 @@ const ItemComponent = () => {
     const {slug} = useParams();
     const lightGallery = useRef(null);
     const [container, setContainer] = useState<HTMLElement | null>(null);
-    const onInit = useCallback((detail: Detail) => {
+    const onInit = useCallback((detail) => {
         if (detail) {
             lightGallery.current = detail.instance;
             lightGallery.current.openGallery();
