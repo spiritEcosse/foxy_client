@@ -1,4 +1,4 @@
-import ApiGetMetaData from './ApiGetMetaData.js';
+import ApiGetMetaData from './ApiGetMetaData';
 import React, {useState, useCallback} from 'react';
 import {useParams} from 'react-router-dom';
 import {PageType, ResponseType} from '../types';
