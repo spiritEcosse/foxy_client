@@ -1,28 +1,27 @@
-import { sentryVitePlugin } from "@sentry/vite-plugin";
-import { defineConfig } from 'vite';
+import {sentryVitePlugin} from '@sentry/vite-plugin';
+import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), sentryVitePlugin({
-    org: "spiritecosse",
-    project: "faithfishart-client"
-  }), sentryVitePlugin({
-    org: "spiritecosse",
-    project: "faithfishart-client"
-  })],
+    plugins: [react(), sentryVitePlugin({
+        org: 'spiritecosse',
+        project: 'faithfishart-client',
+        telemetry: false, // disable telemetry
+    })],
 
-  define: {
-    'process.env': process.env,
-  },
+    define: {
+        'process.env': process.env,
+        'import.meta.env.PROJECT_NAME': JSON.stringify('Faithfishart'),
+    },
 
-  server: {
-    host: true,
-  },
+    server: {
+        host: true,
+    },
 
-  base: './',
+    base: './',
 
-  build: {
-    sourcemap: true
-  }
+    build: {
+        sourcemap: true
+    }
 });
