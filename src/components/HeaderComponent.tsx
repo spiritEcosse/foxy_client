@@ -19,7 +19,7 @@ interface HeaderComponentProps {
         window?: () => Window;
 }
 
-export default function HeaderComponent(props: HeaderComponentProps) {
+export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
     const {window} = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const navItems = [

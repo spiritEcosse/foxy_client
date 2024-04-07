@@ -9,8 +9,7 @@ export interface MediaType  {
         item_id: number;
         src: string;
         sort: number;
-        created_at: string;
-        updated_at: string;
+        thumb?: string;
 }
 
 export interface ItemType {

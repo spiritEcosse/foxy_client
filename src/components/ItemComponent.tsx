@@ -12,7 +12,7 @@ import '../assets/lightgallery.css';
 import 'lightgallery/css/lg-thumbnail.css';
 import 'lightgallery/css/lg-video.css';
 import 'lightgallery/css/lightgallery.css';
-import {ResponseType, ItemType} from '../types';
+import {ResponseType, ItemType, MediaType} from '../types';
 import MetaDataComponent from './MetaDataComponent';
 
 type Detail = {
@@ -57,44 +57,31 @@ const ItemComponent = () => {
         return null;
     };
 
+    const processMedia = (media: MediaType) => {
+        if (media.thumb) {
+            return; // If thumb already exists, no further processing is needed
+        }
+        media.thumb = `${media.src}?twic=v1/cover=96x76`;
+
+        if (!media.src?.includes('.mp4')) {
+            media.src = `${media.src}?twic=v1/cover=900x600`;
+        }
+    };
+
     useEffect(() => {
         const fetchItem = async (slug: string) => {
             try {
                 const apiUrl = `${import.meta.env.VITE_APP_SERVER_URL}/api/v1/item/${slug}`;
                 const responseAxios = await axios.get(apiUrl);
-                const isJson = responseAxios.headers['content-type']?.includes('application/json') || false;
+                const isJson = responseAxios.headers['content-type']?.includes('application/json') ?? false;
                 if (!isJson) {
                     throw new Error('Response is not JSON.');
                 }
 
-                const videoBaseURL = `https://${process.env.REACT_APP_CLOUD_NAME}.s3.eu-west-1.amazonaws.com/`;
-
                 responseAxios.data.image = responseAxios.data.media ? responseAxios.data.media[0].src : null;
                 if (responseAxios.data.media) {
-                    for (const item of responseAxios.data.media) {
-                        if (item.thumb) {
-                            break;
-                        }
-                        item.thumb = `${item.src}?twic=v1/cover=96x76`;
-
-                        if (item.src?.includes('.mp4')) {
-                            item.video = {
-                                source: [{
-                                    src: `${videoBaseURL}${item.src}`,
-                                    type: 'video/mp4'
-                                }],
-                                attributes: {
-                                    preload: false,
-                                    controls: false,
-                                    muted: true,
-                                    loop: true,
-                                    autoplay: true
-                                }
-                            };
-                            delete item.src;
-                        } else {
-                            item.src = `${item.src}?twic=v1/cover=900x600`;
-                        }
+                    for (const media of responseAxios.data.media) {
+                        processMedia(media);
                     }
                 }
                 setItem(responseAxios.data);
@@ -110,9 +97,9 @@ const ItemComponent = () => {
                     message = 'Network Error';
                 } else if (axiosError.response?.status !== 200) {
                     message = 'An error occurred';
-                    code = axiosError.response?.status;
+                    code = axiosError.response?.status ?? 424; // Use nullish coalescing here
                 } else if (axiosError?.code) {
-                    code = parseInt(axiosError.code, 10);
+                    code = parseInt(axiosError.code, 10) ?? 424; // Use nullish coalescing here
                 }
                 setResponse({code: code, message: message, loading: false});
             }

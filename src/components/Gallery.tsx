@@ -14,7 +14,7 @@ import '../assets/gallery.scss';
 const Gallery = ({page}: { page: PageType }) => {
     const location = useLocation();
     const query = new URLSearchParams(location.search);
-    const pageFromUrl = parseInt(query.get('page') || '1', 10);
+    const pageFromUrl = parseInt(query.get('page') ?? '1', 10);
     const [pageNumber, setPageNumber] = useState(1);
     const [countPages, setCountPages] = useState(1);
     const limit = 27;
@@ -54,19 +54,18 @@ const Gallery = ({page}: { page: PageType }) => {
             }
         };
 
-        fetchData().then(() => {});
+        fetchData().then(() => {
+        });
     }, [pageFromUrl, limit]);
 
     if (response.loading) {
         return <Loading/>;
-    } else {
-        if (response.code === 404) {
-            return <NotFound/>;
-        } else if (response.code === 500) {
-            return <InternalServerError/>;
-        } else if (response.code !== 200) {
-            return <div>{response.message}</div>;
-        }
+    } else if (response.code === 404) {
+        return <NotFound/>;
+    } else if (response.code === 500) {
+        return <InternalServerError/>;
+    } else if (response.code !== 200) {
+        return <div>{response.message}</div>;
     }
 
     return (
@@ -88,7 +87,7 @@ const Gallery = ({page}: { page: PageType }) => {
                         renderItem={(item) => (
                             <PaginationItem
                                 component={Link}
-                                to={`/${item.page === 1 ? '' : `?page=${item.page}`}`}
+                                to={'/' + (item.page === 1 ? '' : '?page=' + item.page)}
                                 {...item}
                             />
                         )}
@@ -97,7 +96,8 @@ const Gallery = ({page}: { page: PageType }) => {
                 <div className="galleryContainer">
                     {
                         data.map((item) => (
-                            <div className="galleryItem" key={item.id} style={{backgroundImage: `url(${item.src}?twic=v1/output=preview`}}>
+                            <div className="galleryItem" key={item.id}
+                                style={{backgroundImage: `url(${item.src}?twic=v1/output=preview`}}>
                                 <Link to={`/item/${item.slug}`}>
                                     <img
                                         data-twic-src={`image:${new URL(item.src).pathname}`}
@@ -118,7 +118,7 @@ const Gallery = ({page}: { page: PageType }) => {
                         renderItem={(item) => (
                             <PaginationItem
                                 component={Link}
-                                to={`/${item.page === 1 ? '' : `?page=${item.page}`}`}
+                                to={'/' + (item.page === 1 ? '' : '?page=' + item.page)}
                                 {...item}
                             />
                         )}
