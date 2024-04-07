@@ -1,5 +1,5 @@
-import Gallery from './Gallery.js';
-import ApiGetMetaData from './ApiGetMetaData.js';
+import Gallery from './Gallery';
+import ApiGetMetaData from './ApiGetMetaData';
 import {useCallback, useState} from 'react';
 import {PageType, ResponseType} from '../types';
 import * as React from 'react';

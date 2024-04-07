@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Grid, Paper, Typography} from '@mui/material';
 import {useParams} from 'react-router-dom';
 import NotFound from './NotFound';
-import InternalServerError from './InternalServerError.js';
+import InternalServerError from './InternalServerError';
 import Loading from './Loading';
 import lgThumbnail from 'lightgallery/plugins/thumbnail';
 import LightGallery from 'lightgallery/react';
@@ -22,7 +22,7 @@ const ItemComponent = () => {
     const {slug} = useParams();
     const lightGallery = useRef(null);
     const [container, setContainer] = useState<HTMLElement | null>(null);
-    const onInit = useCallback((detail) => {
+    const onInit = useCallback((detail: unknown) => {
         if (detail) {
             lightGallery.current = detail.instance;
             lightGallery.current.openGallery();
