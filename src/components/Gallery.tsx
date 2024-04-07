@@ -2,13 +2,13 @@ import {useEffect, useState} from 'react';
 import {Link, useLocation} from 'react-router-dom';
 import {PaginationItem, Paper, Typography} from '@mui/material';
 import Pagination from '@mui/material/Pagination';
-import axios, {AxiosError} from 'axios';
 import NotFound from './NotFound';
 import InternalServerError from './InternalServerError';
 import Loading from './Loading';
 import {ItemType, PageType, ResponseType} from '../types';
 import '@twicpics/components/style.css';
 import '../assets/gallery.scss';
+import { fetchData } from '../utils';
 
 
 const Gallery = ({page}: { page: PageType }) => {
@@ -22,40 +22,17 @@ const Gallery = ({page}: { page: PageType }) => {
     const [data, setData] = useState<ItemType[]>([]);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const apiUrl = `${import.meta.env.VITE_APP_SERVER_URL}/api/v1/item?page=${pageFromUrl}&limit=${limit}`;
-                const responseAxios = await axios.get(apiUrl);
-                const isJson = responseAxios.headers['content-type']?.includes('application/json') || false;
-                if (!isJson) {
-                    throw new Error('Response is not JSON.');
-                }
-
-                setData(responseAxios.data.data);
-                setCountPages(responseAxios.data ? Math.ceil(responseAxios.data.total / limit) : 1);
-                setPageNumber(responseAxios.data ? responseAxios.data.page : 1);
-                setResponse({code: responseAxios.status, message: 'OK', loading: false});
-            } catch (error) {
-                let message = 'Unknown Error';
-                let code = 424;
-
-                const axiosError = error as AxiosError;
-                if (!axiosError?.response) {
-                    message = 'No Server Response';
-                } else if (axiosError?.code === AxiosError.ERR_NETWORK) {
-                    message = 'Network Error';
-                } else if (axiosError.response?.status !== 200) {
-                    message = 'An error occurred';
-                    code = axiosError.response?.status;
-                } else if (axiosError?.code) {
-                    code = parseInt(axiosError.code, 10);
-                }
-                setResponse({code: code, message: message, loading: false});
-            }
-        };
-
-        fetchData().then(() => {
-        });
+        const path = `item?page=${pageFromUrl}&limit=${limit}`;
+        fetchData(path)
+            .then(data => {
+                setData(data.data);
+                setCountPages(data ? Math.ceil(data.total / limit) : 1);
+                setPageNumber(data ? data.page : 1);
+                setResponse({code: 200, message: 'OK', loading: false});
+            })
+            .catch(({ code, message }) => {
+                setResponse({code, message, loading: false});
+            });
     }, [pageFromUrl, limit]);
 
     if (response.loading) {

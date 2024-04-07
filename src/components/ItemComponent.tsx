@@ -3,7 +3,6 @@ import {Grid, Paper, Typography} from '@mui/material';
 import {useParams} from 'react-router-dom';
 import NotFound from './NotFound';
 import InternalServerError from './InternalServerError.js';
-import axios, {AxiosError} from 'axios';
 import Loading from './Loading';
 import lgThumbnail from 'lightgallery/plugins/thumbnail';
 import LightGallery from 'lightgallery/react';
@@ -12,8 +11,9 @@ import '../assets/lightgallery.css';
 import 'lightgallery/css/lg-thumbnail.css';
 import 'lightgallery/css/lg-video.css';
 import 'lightgallery/css/lightgallery.css';
-import {ResponseType, ItemType, MediaType} from '../types';
+import {ItemType, MediaType, ResponseType} from '../types';
 import MetaDataComponent from './MetaDataComponent';
+import {fetchData} from '../utils';
 
 type Detail = {
     instance: LightGallery;
@@ -69,44 +69,21 @@ const ItemComponent = () => {
     };
 
     useEffect(() => {
-        const fetchItem = async (slug: string) => {
-            try {
-                const apiUrl = `${import.meta.env.VITE_APP_SERVER_URL}/api/v1/item/${slug}`;
-                const responseAxios = await axios.get(apiUrl);
-                const isJson = responseAxios.headers['content-type']?.includes('application/json') ?? false;
-                if (!isJson) {
-                    throw new Error('Response is not JSON.');
-                }
-
-                responseAxios.data.image = responseAxios.data.media ? responseAxios.data.media[0].src : null;
-                if (responseAxios.data.media) {
-                    for (const media of responseAxios.data.media) {
-                        processMedia(media);
-                    }
-                }
-                setItem(responseAxios.data);
-                setResponse({code: responseAxios.status, message: 'OK', loading: false});
-            } catch (error) {
-                let message = 'Unknown Error';
-                let code = 424;
-
-                const axiosError = error as AxiosError;
-                if (!axiosError?.response) {
-                    message = 'No Server Response';
-                } else if (axiosError?.code === AxiosError.ERR_NETWORK) {
-                    message = 'Network Error';
-                } else if (axiosError.response?.status !== 200) {
-                    message = 'An error occurred';
-                    code = axiosError.response?.status ?? 424; // Use nullish coalescing here
-                } else if (axiosError?.code) {
-                    code = parseInt(axiosError.code, 10) ?? 424; // Use nullish coalescing here
-                }
-                setResponse({code: code, message: message, loading: false});
-            }
-        };
-
         if (slug !== undefined) {
-            fetchItem(slug).then(() => {});
+            fetchData(`item/${slug}`)
+                .then(data => {
+                    data.image = data.media ? data.media[0].src : null;
+                    if (data.media) {
+                        for (const media of data.media) {
+                            processMedia(media);
+                        }
+                    }
+                    setItem(data);
+                    setResponse({code: 200, message: 'OK', loading: false});
+                })
+                .catch(({code, message}) => {
+                    setResponse({code, message, loading: false});
+                });
         }
     }, [slug]);
 
