@@ -31,7 +31,7 @@ installTwicPics({
 });
 setupCache(Axios);
 
-if (process.env.REACT_APP_SENTRY !== 'null') {
+if (process.env.VITE_APP_SENTRY_DSN !== 'null') {
     Sentry.init({
         dsn: process.env.REACT_APP_SENTRY,
         integrations: [
