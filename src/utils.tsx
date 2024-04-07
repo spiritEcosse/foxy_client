@@ -1,5 +1,15 @@
 import axios from 'axios';
 
+class CustomError extends Error {
+    code: number;
+
+    constructor(code: number, message: string) {
+        super(message);
+        this.code = code;
+        this.name = 'CustomError';
+    }
+}
+
 export const fetchData = (path: string) => {
     return axios.get(`${import.meta.env.VITE_APP_SERVER_URL}/api/v1/${path}`)
         .then(response => {
@@ -26,7 +36,6 @@ export const fetchData = (path: string) => {
                     code = parseInt(axiosError.code, 10) ?? 424;
                 }
             }
-            // Rethrow with standardized error structure
-            throw { code, message };
+            throw new CustomError( code, message );
         });
 };
