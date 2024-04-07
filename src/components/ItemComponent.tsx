@@ -20,9 +20,9 @@ const ItemComponent = () => {
     const [item, setItem] = useState<ItemType>({} as ItemType);
     const [response, setResponse] = useState({loading: true} as ResponseType);
     const {slug} = useParams();
-    const lightGallery = useRef(null);
+    const lightGallery = useRef<any>(null);
     const [container, setContainer] = useState<HTMLElement | null>(null);
-    const onInit = useCallback((detail: unknown) => {
+    const onInit = useCallback((detail: any) => {
         if (detail) {
             lightGallery.current = detail.instance;
             lightGallery.current.openGallery();
