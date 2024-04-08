@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
     root: true,
     env: {browser: true, es2020: true},
@@ -19,5 +21,9 @@ module.exports = {
         "no-unused-vars": ["warn"],
         "semi": ["error", "always"],
         "prefer-arrow-callback": ["error"]
+    },
+    output: {
+        path: path.resolve(__dirname, 'build'),
+        filename: 'bundle.js',
     },
 }
