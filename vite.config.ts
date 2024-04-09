@@ -19,7 +19,7 @@ export default defineConfig({
         host: true,
     },
 
-    base: './',
+    base: '/',
 
     build: {
         sourcemap: true
