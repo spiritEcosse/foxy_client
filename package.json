@@ -21,6 +21,7 @@
         "@twicpics/components": "^0.28.1",
         "axios": "^1.6.8",
         "axios-cache-interceptor": "^1.5.1",
+        "dompurify": "^3.1.0",
         "lightgallery": "^2.7.2",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
