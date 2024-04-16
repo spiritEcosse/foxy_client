@@ -14,7 +14,7 @@ import 'lightgallery/css/lightgallery.css';
 import {ItemType, MediaType, ResponseType} from '../types';
 import MetaDataComponent from './MetaDataComponent';
 import {fetchData} from '../utils';
-
+import DOMPurify from 'dompurify';
 
 const ItemComponent = () => {
     const [item, setItem] = useState<ItemType>({} as ItemType);
@@ -122,8 +122,8 @@ const ItemComponent = () => {
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                        <Typography variant="body1" paragraph>
-                            {item?.description}
+                        <Typography variant="body1" paragraph component="div">
+                            <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.description) }} />
                         </Typography>
                     </Grid>
                 </Grid>

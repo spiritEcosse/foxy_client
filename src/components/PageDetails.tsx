@@ -4,6 +4,7 @@ import NotFound from './NotFound';
 import InternalServerError from './InternalServerError';
 import Loading from './Loading';
 import {PageType, ResponseType} from '../types';
+import DOMPurify from 'dompurify';
 
 const PageDetails = ({page, response}:  { page: PageType, response: ResponseType }) => {
     if (response.loading) {
@@ -24,7 +25,7 @@ const PageDetails = ({page, response}:  { page: PageType, response: ResponseType
                 {page.title}
             </Typography>
             <Paper elevation={3} style={{padding: '20px', marginBottom: '20px'}}>
-                {page.description}
+                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(page.description) }} />
             </Paper>
         </div>
     );
