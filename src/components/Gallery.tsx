@@ -47,10 +47,6 @@ const Gallery = ({page}: { page: PageType }) => {
 
     return (
         <div style={{padding: '20px', maxWidth: '100%'}}>
-            <button onClick={() => {
-                throw new Error('An error occurred');
-            }}>Break the world
-            </button>
             <Typography variant="h1" gutterBottom>
                 {page.title}
             </Typography>
