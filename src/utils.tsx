@@ -15,7 +15,9 @@ class CustomError extends Error {
 
 export const fetchData =  async (path: string) => {
     try {
-        const response = await axiosCached.get(`${import.meta.env.VITE_APP_SERVER_URL}/api/v1/${path}`);
+        const response = await axiosCached.get(
+            `${import.meta.env.VITE_APP_SERVER_URL}/api/v1/${path}`, {cache: {interpretHeader:false}}
+        );
         const isJson = response.headers['content-type']?.includes('application/json') ?? false;
         if (!isJson) {
             throw new Error('Response is not JSON.');
