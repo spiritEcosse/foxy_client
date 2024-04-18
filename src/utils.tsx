@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { setupCache } from 'axios-cache-interceptor';
 
-const axiosCached = setupCache(axios);
+const instance = axios.create();
 
 class CustomError extends Error {
     code: number;
@@ -12,6 +12,15 @@ class CustomError extends Error {
         this.name = 'CustomError';
     }
 }
+
+// Add a request interceptor
+instance.interceptors.request.use((config) => {
+    return config;
+}, (error) => {
+    return Promise.reject(error);
+});
+
+const axiosCached = setupCache(instance);
 
 export const fetchData =  async (path: string) => {
     try {
