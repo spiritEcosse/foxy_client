@@ -66,22 +66,41 @@ const ItemComponent = () => {
     };
 
     useEffect(() => {
-        if (slug !== undefined) {
-            fetchData(`item/${slug}`)
-                .then(data => {
-                    data.image = data.media ? data.media[0].src : null;
-                    if (data.media) {
-                        for (const media of data.media) {
-                            processMedia(media);
+        const fetchDataWr = async () => {
+            if (slug !== undefined) {
+                fetchData(`item/${slug}`)
+                    .then(data => {
+                        data.image = data.media ? data.media[0].src : null;
+                        if (data.media) {
+                            for (const media of data.media) {
+                                processMedia(media);
+                            }
                         }
-                    }
-                    setItem(data);
-                    setResponse({code: 200, message: 'OK', loading: false});
-                })
-                .catch(({code, message}) => {
-                    setResponse({code, message, loading: false});
-                });
-        }
+                        setItem(data);
+                        setResponse({code: 200, message: 'OK', loading: false});
+                    })
+                    .catch(({code, message}) => {
+                        setResponse({code, message, loading: false});
+                    });
+            }
+        };
+
+        fetchDataWr();
+
+        const handlePageShow = (event: Event) => {
+            if (event.persisted) {
+                // Page is shown from the BFCache, refetch data
+                fetchDataWr();
+                console.log('sdfsdf');
+            }
+        };
+
+        window.addEventListener('pageshow', handlePageShow);
+
+        // Cleanup function
+        return () => {
+            window.removeEventListener('pageshow', handlePageShow);
+        };
     }, [slug]);
 
     if (response.loading) {
