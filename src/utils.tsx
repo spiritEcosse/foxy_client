@@ -1,4 +1,7 @@
 import axios from 'axios';
+import { setupCache } from 'axios-cache-interceptor';
+
+const axiosCached = setupCache(axios);
 
 class CustomError extends Error {
     code: number;
@@ -12,7 +15,7 @@ class CustomError extends Error {
 
 export const fetchData =  async (path: string) => {
     try {
-        const response = await axios.get(`${import.meta.env.VITE_APP_SERVER_URL}/api/v1/${path}`);
+        const response = await axiosCached.get(`${import.meta.env.VITE_APP_SERVER_URL}/api/v1/${path}`);
         const isJson = response.headers['content-type']?.includes('application/json') ?? false;
         if (!isJson) {
             throw new Error('Response is not JSON.');
