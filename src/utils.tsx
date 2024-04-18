@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { setupCache } from 'axios-cache-interceptor';
 
-const axiosCached = setupCache(axios);
+const instance = axios.create();
+const axiosCached = setupCache(instance);
 
 class CustomError extends Error {
     code: number;
