@@ -18,8 +18,6 @@ import PageComponent from './components/PageComponent';
 import {ThemeProvider} from '@mui/material/styles';
 import theme from './components/CustomTheme';
 import {installTwicPics} from '@twicpics/components/react';
-import {setupCache} from 'axios-cache-interceptor';
-import Axios from 'axios';
 import * as Sentry from '@sentry/react';
 
 const helmetContext = {};
@@ -29,7 +27,6 @@ installTwicPics({
     // domain is mandatory
     domain
 });
-setupCache(Axios);
 
 if (process.env.VITE_APP_SENTRY_DSN !== 'null') {
     Sentry.init({
