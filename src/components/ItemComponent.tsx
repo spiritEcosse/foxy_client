@@ -61,7 +61,7 @@ const ItemComponent = () => {
         media.thumb = `${media.src}?twic=v1/cover=96x76`;
 
         if (!media.src?.includes('.mp4')) {
-            media.src = `${media.src}?twic=v1/cover=900x600`;
+            media.src = `${media.src}?twic=v1/cover=900x900`;
         }
     };
 
