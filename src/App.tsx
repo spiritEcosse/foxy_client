@@ -19,7 +19,7 @@ import {ThemeProvider} from '@mui/material/styles';
 import theme from './components/CustomTheme';
 import {installTwicPics} from '@twicpics/components/react';
 import * as Sentry from '@sentry/react';
-import {useEffect, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {CurrencyContext} from './components/CurrencyContext';
 
 const helmetContext = {};
@@ -61,14 +61,16 @@ if (process.env.VITE_APP_SENTRY_DSN !== 'null') {
 }
 
 function App() {
-    const [currency, setCurrency] = useState(localStorage.getItem('currency') || 'EUR');
+    const [currency, setCurrency] = useState(localStorage.getItem('currency') ?? 'EUR');
 
     useEffect(() => {
         localStorage.setItem('currency', currency);
     }, [currency]);
 
+    const value = useMemo(() => ({ currency, setCurrency }), [currency, setCurrency]);
+
     return (
-        <CurrencyContext.Provider value={{currency, setCurrency}}>
+        <CurrencyContext.Provider value={value}>
             <Router>
                 <HelmetProvider context={helmetContext}>
                     <ThemeProvider theme={theme}>
