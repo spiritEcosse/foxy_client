@@ -19,6 +19,8 @@ import {ThemeProvider} from '@mui/material/styles';
 import theme from './components/CustomTheme';
 import {installTwicPics} from '@twicpics/components/react';
 import * as Sentry from '@sentry/react';
+import {useEffect, useState} from 'react';
+import {CurrencyContext} from './components/CurrencyContext';
 
 const helmetContext = {};
 const domain = `https://${import.meta.env.VITE_APP_TWIC_PICS_NAME}.twic.pics`;
@@ -59,22 +61,30 @@ if (process.env.VITE_APP_SENTRY_DSN !== 'null') {
 }
 
 function App() {
+    const [currency, setCurrency] = useState(localStorage.getItem('currency') || 'EUR');
+
+    useEffect(() => {
+        localStorage.setItem('currency', currency);
+    }, [currency]);
+
     return (
-        <Router>
-            <HelmetProvider context={helmetContext}>
-                <ThemeProvider theme={theme}>
-                    <div className="App">
-                        <HeaderComponent/>
-                        <Routes>
-                            <Route path="/" element={<HomeComponent/>}/>
-                            <Route path="/:slug" element={<PageComponent/>}/>
-                            <Route path="/item/:slug" element={<ItemComponent/>}/>
-                        </Routes>
-                        <FooterComponent/>
-                    </div>
-                </ThemeProvider>
-            </HelmetProvider>
-        </Router>
+        <CurrencyContext.Provider value={{currency, setCurrency}}>
+            <Router>
+                <HelmetProvider context={helmetContext}>
+                    <ThemeProvider theme={theme}>
+                        <div className="App">
+                            <HeaderComponent/>
+                            <Routes>
+                                <Route path="/" element={<HomeComponent/>}/>
+                                <Route path="/:slug" element={<PageComponent/>}/>
+                                <Route path="/item/:slug" element={<ItemComponent/>}/>
+                            </Routes>
+                            <FooterComponent/>
+                        </div>
+                    </ThemeProvider>
+                </HelmetProvider>
+            </Router>
+        </CurrencyContext.Provider>
     );
 }
 

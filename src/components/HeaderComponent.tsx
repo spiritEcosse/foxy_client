@@ -14,6 +14,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import {Link} from 'react-router-dom';
+import {CurrencyContext} from './CurrencyContext';
+import {useContext} from 'react';
 
 interface HeaderComponentProps {
         window?: () => Window;
@@ -26,6 +28,7 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
         {id: 1, title: 'About', link: '/about'},
         {id: 2, title: 'Contact', link: '/contact'}
     ];
+    const { setCurrency } = useContext(CurrencyContext);
 
     const handleDrawerToggle = () => {
         setMobileOpen((prevState) => !prevState);
@@ -75,6 +78,8 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                         </Typography>
                     </Link>
                     <Box sx={{display: {xs: 'none', sm: 'block', marginLeft: 'auto'}}}>
+                        <Button variant="contained" onClick={() => setCurrency('USD')}>USD</Button>
+                        <Button variant="contained" onClick={() => setCurrency('EUR')}>EUR</Button>
                         {navItems.map(item => (
                             <Button component={Link} key={item.id} sx={{color: '#fff'}}
                                 to={item.link}>
