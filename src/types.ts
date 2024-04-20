@@ -20,6 +20,7 @@ export interface ItemType {
         media: MediaType[];
         description: string;
         meta_description: string;
+        price: number;
 }
 
 export interface PageType  {

@@ -14,6 +14,12 @@ class CustomError extends Error {
     }
 }
 
+export const fetchCurrencyRate = async (currency: string) => {
+    const response = await fetch('https://api.exchangerate-api.com/v4/latest/EUR');
+    const data = await response.json();
+    return data.rates[currency];
+};
+
 export const fetchData =  async (path: string) => {
     try {
         const response = await axiosCached.get(

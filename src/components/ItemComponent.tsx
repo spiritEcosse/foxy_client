@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {Grid, Paper, Typography} from '@mui/material';
 import {useParams} from 'react-router-dom';
 import NotFound from './NotFound';
@@ -13,8 +13,9 @@ import 'lightgallery/css/lg-video.css';
 import 'lightgallery/css/lightgallery.css';
 import {ItemType, MediaType, ResponseType} from '../types';
 import MetaDataComponent from './MetaDataComponent';
-import {fetchData} from '../utils';
+import {fetchCurrencyRate, fetchData} from '../utils';
 import DOMPurify from 'dompurify';
+import {CurrencyContext} from './CurrencyContext';
 
 const ItemComponent = () => {
     const [item, setItem] = useState<ItemType>({} as ItemType);
@@ -22,6 +23,9 @@ const ItemComponent = () => {
     const {slug} = useParams();
     const lightGallery = useRef<any>(null);
     const [container, setContainer] = useState<HTMLElement | null>(null);
+    const [conversionRate, setConversionRate] = useState(1);
+    const { currency } = useContext(CurrencyContext);
+
     const onInit = useCallback((detail: any) => {
         if (detail) {
             lightGallery.current = detail.instance;
@@ -34,7 +38,7 @@ const ItemComponent = () => {
         }
     }, []);
 
-    const getLgComponent = () => {
+    const getLgComponent = useMemo(() => {
         if (container !== null && item?.media) {
             return (
                 <LightGallery
@@ -52,7 +56,7 @@ const ItemComponent = () => {
             );
         }
         return null;
-    };
+    }, [container, item?.media, onInit]);
 
     const processMedia = (media: MediaType) => {
         if (media.thumb) {
@@ -64,6 +68,16 @@ const ItemComponent = () => {
             media.src = `${media.src}?twic=v1/cover=900x900`;
         }
     };
+
+    useEffect(() => {
+        if (currency !== 'EUR') {
+            fetchCurrencyRate(currency)
+                .then(rate => setConversionRate(rate))
+                .catch(error => console.error(error));
+        } else {
+            setConversionRate(1);
+        }
+    }, [currency]);
 
     useEffect(() => {
         if (slug !== undefined) {
@@ -96,6 +110,10 @@ const ItemComponent = () => {
         return <div>{response.message}</div>;
     }
 
+    const convertPrice = (price: number) => {
+        return (price * conversionRate).toFixed(2);
+    };
+
     return (
         <div style={{padding: '20px', maxWidth: '100%'}}>
             <MetaDataComponent page={{
@@ -118,10 +136,11 @@ const ItemComponent = () => {
                                 style={{width: '100%', paddingBottom: '100%'}}
                                 ref={setContainerRef}
                             ></div>
-                            {getLgComponent()}
+                            {getLgComponent}
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={6}>
+                        <p>Price: {currency} {convertPrice(item.price)}</p>
                         <Typography variant="body1" paragraph component="div">
                             <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.description) }} />
                         </Typography>
