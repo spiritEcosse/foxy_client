@@ -25,8 +25,8 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
     const {window} = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const navItems = [
-        {id: 1, title: 'About', link: '/about'},
-        {id: 2, title: 'Contact', link: '/contact'}
+        {id: 1, title: 'About', link: '/page/about'},
+        {id: 2, title: 'Contact', link: '/page/contact'}
     ];
     const { setCurrency } = useContext(CurrencyContext);
 
@@ -86,6 +86,7 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                                 {item.title}
                             </Button>
                         ))}
+                        <Button variant={'contained'} component={Link} to={'/login'}>Login</Button>
                     </Box>
                 </Toolbar>
             </AppBar>

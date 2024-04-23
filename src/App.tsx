@@ -21,6 +21,7 @@ import {installTwicPics} from '@twicpics/components/react';
 import * as Sentry from '@sentry/react';
 import {useEffect, useMemo, useState} from 'react';
 import {CurrencyContext} from './components/CurrencyContext';
+import {GoogleLoginComponent} from './components/GoogleLoginComponent';
 
 const helmetContext = {};
 const domain = `https://${import.meta.env.VITE_APP_TWIC_PICS_NAME}.twic.pics`;
@@ -78,7 +79,8 @@ function App() {
                             <HeaderComponent/>
                             <Routes>
                                 <Route path="/" element={<HomeComponent/>}/>
-                                <Route path="/:slug" element={<PageComponent/>}/>
+                                <Route path="/login" element={<GoogleLoginComponent/>}/>
+                                <Route path="/page/:slug" element={<PageComponent/>}/>
                                 <Route path="/item/:slug" element={<ItemComponent/>}/>
                             </Routes>
                             <FooterComponent/>
