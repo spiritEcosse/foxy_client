@@ -16,6 +16,9 @@ import Button from '@mui/material/Button';
 import {Link} from 'react-router-dom';
 import {CurrencyContext} from './CurrencyContext';
 import {useContext} from 'react';
+import {GoogleLogin} from '@react-oauth/google';
+import {jwtDecode} from 'jwt-decode';
+import {fetchData} from '../utils';
 
 interface HeaderComponentProps {
         window?: () => Window;
@@ -77,7 +80,7 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                             {import.meta.env.PROJECT_NAME}
                         </Typography>
                     </Link>
-                    <Box sx={{display: {xs: 'none', sm: 'block', marginLeft: 'auto'}}}>
+                    <Box sx={{display: {xs: 'none', sm: 'flex', marginLeft: 'auto'}}}>
                         <Button variant="contained" onClick={() => setCurrency('USD')}>USD</Button>
                         <Button variant="contained" onClick={() => setCurrency('EUR')}>EUR</Button>
                         {navItems.map(item => (
@@ -86,7 +89,28 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                                 {item.title}
                             </Button>
                         ))}
-                        <Button variant={'contained'} component={Link} to={'/login'}>Login</Button>
+                        <GoogleLogin
+                            onSuccess={credentialResponse => {
+                                console.log(credentialResponse);
+                                if (credentialResponse.credential) {
+                                    fetchData('auth/google_login', 'POST', {credentials: credentialResponse.credential})
+                                        .then(data => {
+                                            console.log(data);
+                                        })
+                                        .catch(({code, message}) => {
+                                            console.log(code, message);
+                                        });
+                                    console.log(credentialResponse.credential);
+                                    const decoded = jwtDecode(credentialResponse.credential);
+                                    console.log(decoded);
+                                } else {
+                                    console.log('Credential is undefined');
+                                }
+                            }}
+                            onError={() => {
+                                console.log('Login Failed');
+                            }}
+                        />
                     </Box>
                 </Toolbar>
             </AppBar>
