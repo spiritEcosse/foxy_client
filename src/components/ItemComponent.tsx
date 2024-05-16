@@ -29,9 +29,11 @@ const ItemComponent = () => {
     const [shippingRate, setShippingRate] = useState<ShippingRateType>({} as ShippingRateType);
     const currentDate = new Date();
     const minDeliveryDate = new Date();
-    minDeliveryDate.setDate(currentDate.getDate() + shippingRate.delivery_days_min);
     const maxDeliveryDate = new Date();
-    maxDeliveryDate.setDate(currentDate.getDate() + shippingRate.delivery_days_max);
+    if (shippingRate) {
+        minDeliveryDate.setDate(currentDate.getDate() + shippingRate.delivery_days_min);
+        maxDeliveryDate.setDate(currentDate.getDate() + shippingRate.delivery_days_max);
+    }
     const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'long' };
     const onInit = useCallback((detail: any) => {
         if (detail) {
@@ -157,7 +159,9 @@ const ItemComponent = () => {
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <p>Price: {currency} {convertPrice(item.price)}</p>
-                        <p>Delivery: {minDeliveryDate.toLocaleDateString('en-GB', options)} - {maxDeliveryDate.toLocaleDateString('en-GB', options)}</p>
+                        {shippingRate && (
+                            <p>Delivery: {minDeliveryDate.toLocaleDateString('en-GB', options)} - {maxDeliveryDate.toLocaleDateString('en-GB', options)}</p>
+                        )}
                         <Typography variant="body1" paragraph component="div">
                             <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(item.description)}}/>
                         </Typography>
