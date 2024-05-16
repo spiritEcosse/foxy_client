@@ -20,11 +20,11 @@ export const fetchCurrencyRate = async (currency: string) => {
     return data.rates[currency];
 };
 
-export const fetchData =  async (path: string, method: 'GET' | 'POST' = 'GET', body?: Record<string, unknown> ) => {
+export const fetchData =  async (url: string, path: string, method: 'GET' | 'POST' = 'GET', body?: Record<string, unknown> ) => {
     try {
         const response = await axiosCached({
             method,
-            url: `${import.meta.env.VITE_APP_SERVER_URL}/api/v1/${path}`,
+            url: url ?  url :`${import.meta.env.VITE_APP_SERVER_URL}/api/v1/${path}`,
             data: body,
             cache: {interpretHeader: false}
         });

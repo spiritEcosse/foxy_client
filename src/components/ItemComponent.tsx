@@ -11,7 +11,7 @@ import '../assets/lightgallery.css';
 import 'lightgallery/css/lg-thumbnail.css';
 import 'lightgallery/css/lg-video.css';
 import 'lightgallery/css/lightgallery.css';
-import {ItemType, MediaType, ResponseType} from '../types';
+import {ItemType, MediaType, ResponseType, ShippingRateType} from '../types';
 import MetaDataComponent from './MetaDataComponent';
 import {fetchCurrencyRate, fetchData} from '../utils';
 import DOMPurify from 'dompurify';
@@ -24,8 +24,15 @@ const ItemComponent = () => {
     const lightGallery = useRef<any>(null);
     const [container, setContainer] = useState<HTMLElement | null>(null);
     const [conversionRate, setConversionRate] = useState(1);
-    const { currency } = useContext(CurrencyContext);
-
+    const {currency} = useContext(CurrencyContext);
+    const [media, setMedia] = useState<MediaType[]>([]);
+    const [shippingRate, setShippingRate] = useState<ShippingRateType>({} as ShippingRateType);
+    const currentDate = new Date();
+    const minDeliveryDate = new Date();
+    minDeliveryDate.setDate(currentDate.getDate() + shippingRate.delivery_days_min);
+    const maxDeliveryDate = new Date();
+    maxDeliveryDate.setDate(currentDate.getDate() + shippingRate.delivery_days_max);
+    const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'long' };
     const onInit = useCallback((detail: any) => {
         if (detail) {
             lightGallery.current = detail.instance;
@@ -81,16 +88,25 @@ const ItemComponent = () => {
 
     useEffect(() => {
         if (slug !== undefined) {
-            fetchData(`item/${slug}`)
+            fetchData('', `item/${slug}`)
                 .then(data => {
-                    data.image = data.media ? data.media[0].src : null;
-                    if (data.media) {
-                        for (const media of data.media) {
+                    data.image = data._media ? data._media[0].src : null;
+                    if (data._media) {
+                        for (const media of data._media) {
                             processMedia(media);
                         }
                     }
-                    setItem(data);
+                    setItem(data._item);
+                    setMedia(data._media);
                     setResponse({code: 200, message: 'OK', loading: false});
+                })
+                .catch(({code, message}) => {
+                    setResponse({code, message, loading: false});
+                });
+
+            fetchData('', `shippingrate/item/${slug}`)
+                .then(data => {
+                    setShippingRate(data.shipping);
                 })
                 .catch(({code, message}) => {
                     setResponse({code, message, loading: false});
@@ -119,7 +135,7 @@ const ItemComponent = () => {
             <MetaDataComponent page={{
                 id: item.id,
                 title: item.title,
-                image: item.media[0].src,
+                image: media[0].src,
                 slug: item.slug,
                 description: item.description,
                 meta_description: item.meta_description,
@@ -141,8 +157,9 @@ const ItemComponent = () => {
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <p>Price: {currency} {convertPrice(item.price)}</p>
+                        <p>Delivery: {minDeliveryDate.toLocaleDateString('en-GB', options)} - {maxDeliveryDate.toLocaleDateString('en-GB', options)}</p>
                         <Typography variant="body1" paragraph component="div">
-                            <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.description) }} />
+                            <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(item.description)}}/>
                         </Typography>
                     </Grid>
                 </Grid>

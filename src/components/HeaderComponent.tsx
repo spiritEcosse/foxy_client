@@ -93,7 +93,7 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                             onSuccess={credentialResponse => {
                                 console.log(credentialResponse);
                                 if (credentialResponse.credential) {
-                                    fetchData('auth/google_login', 'POST', {credentials: credentialResponse.credential})
+                                    fetchData('', 'auth/google_login', 'POST', {credentials: credentialResponse.credential})
                                         .then(data => {
                                             console.log(data);
                                         })
