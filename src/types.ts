@@ -12,6 +12,11 @@ export interface MediaType  {
         thumb?: string;
 }
 
+export interface ShippingRateType  {
+        delivery_days_max: number;
+        delivery_days_min: number;
+}
+
 export interface ItemType {
         id: number;
         title: string;
@@ -21,6 +26,8 @@ export interface ItemType {
         description: string;
         meta_description: string;
         price: number;
+        delivery_days_min: number;
+        delivery_days_max: number;
 }
 
 export interface PageType  {

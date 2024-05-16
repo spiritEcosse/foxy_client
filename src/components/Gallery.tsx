@@ -23,11 +23,11 @@ const Gallery = ({page}: { page: PageType }) => {
 
     useEffect(() => {
         const path = `item?page=${pageFromUrl}&limit=${limit}`;
-        fetchData(path)
+        fetchData('', path )
             .then(data => {
                 setData(data.data);
                 setCountPages(data ? Math.ceil(data.total / limit) : 1);
-                setPageNumber(data ? data.page : 1);
+                setPageNumber(data ? data._page : 1);
                 setResponse({code: 200, message: 'OK', loading: false});
             })
             .catch(({ code, message }) => {
