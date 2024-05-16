@@ -20,11 +20,14 @@ export const fetchCurrencyRate = async (currency: string) => {
     return data.rates[currency];
 };
 
-export const fetchData =  async (path: string) => {
+export const fetchData =  async (url: string, path: string, method: 'GET' | 'POST' = 'GET', body?: Record<string, unknown> ) => {
     try {
-        const response = await axiosCached.get(
-            `${import.meta.env.VITE_APP_SERVER_URL}/api/v1/${path}`, {cache: {interpretHeader:false}}
-        );
+        const response = await axiosCached({
+            method,
+            url: url || `${import.meta.env.VITE_APP_SERVER_URL}/api/v1/${path}`,
+            data: body,
+            cache: {interpretHeader: false}
+        });
         const isJson = response.headers['content-type']?.includes('application/json') ?? false;
         if (!isJson) {
             throw new Error('Response is not JSON.');
