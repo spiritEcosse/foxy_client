@@ -24,7 +24,7 @@ export const fetchData =  async (url: string, path: string, method: 'GET' | 'POS
     try {
         const response = await axiosCached({
             method,
-            url: url ?  url :`${import.meta.env.VITE_APP_SERVER_URL}/api/v1/${path}`,
+            url: url || `${import.meta.env.VITE_APP_SERVER_URL}/api/v1/${path}`,
             data: body,
             cache: {interpretHeader: false}
         });
