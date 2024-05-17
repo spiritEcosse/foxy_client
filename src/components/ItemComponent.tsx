@@ -48,12 +48,12 @@ const ItemComponent = () => {
     }, []);
 
     const getLgComponent = useMemo(() => {
-        if (container !== null && item?.media) {
+        if (container !== null && media) {
             return (
                 <LightGallery
                     plugins={[lgThumbnail, lgVideo]}
                     dynamic
-                    dynamicEl={item?.media}
+                    dynamicEl={media}
                     closable={false}
                     showMaximizeIcon
                     thumbnail={true}
@@ -65,7 +65,7 @@ const ItemComponent = () => {
             );
         }
         return null;
-    }, [container, item?.media, onInit]);
+    }, [container, media, onInit]);
 
     const processMedia = (media: MediaType) => {
         if (media.thumb) {
