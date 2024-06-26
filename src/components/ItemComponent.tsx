@@ -16,6 +16,9 @@ import MetaDataComponent from './MetaDataComponent';
 import {fetchCurrencyRate, fetchData} from '../utils';
 import DOMPurify from 'dompurify';
 import {CurrencyContext} from './CurrencyContext';
+import Button from '@mui/material/Button';
+import {BasketContext} from './BasketContext';
+
 
 const ItemComponent = () => {
     const [item, setItem] = useState<ItemType>({} as ItemType);
@@ -34,7 +37,7 @@ const ItemComponent = () => {
         minDeliveryDate.setDate(currentDate.getDate() + shippingRate.delivery_days_min);
         maxDeliveryDate.setDate(currentDate.getDate() + shippingRate.delivery_days_max);
     }
-    const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'long' };
+    const options: Intl.DateTimeFormatOptions = {day: '2-digit', month: 'long'};
     const onInit = useCallback((detail: any) => {
         if (detail) {
             lightGallery.current = detail.instance;
@@ -46,6 +49,7 @@ const ItemComponent = () => {
             setContainer(node);
         }
     }, []);
+    const {addToBasket, removeFromBasket, isInBasket} = useContext(BasketContext);
 
     const getLgComponent = useMemo(() => {
         if (container !== null && media) {
@@ -100,6 +104,7 @@ const ItemComponent = () => {
                     }
                     setItem(data._item);
                     setMedia(data._media);
+
                     setResponse({code: 200, message: 'OK', loading: false});
                 })
                 .catch(({code, message}) => {
@@ -161,6 +166,11 @@ const ItemComponent = () => {
                         <p>Price: {currency} {convertPrice(item.price)}</p>
                         {shippingRate && (
                             <p>Delivery: {minDeliveryDate.toLocaleDateString('en-GB', options)} - {maxDeliveryDate.toLocaleDateString('en-GB', options)}</p>
+                        )}
+                        {isInBasket(item) ? (
+                            <Button variant="contained" onClick={() => removeFromBasket(item)}>Remove from cart</Button>
+                        ) : (
+                            <Button variant="contained" onClick={() => addToBasket(item)}>Add to cart</Button>
                         )}
                         <Typography variant="body1" paragraph component="div">
                             <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(item.description)}}/>

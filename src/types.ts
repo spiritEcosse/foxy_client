@@ -12,6 +12,16 @@ export interface MediaType  {
         thumb?: string;
 }
 
+export interface UserType  {
+        first_name: string;
+        last_name: string;
+        birthday: Date;
+        total_spent: number;
+        email: string;
+        has_newsletter: boolean;
+        created_at: Date;
+        updated_at: Date;
+}
 export interface ShippingRateType  {
         delivery_days_max: number;
         delivery_days_min: number;

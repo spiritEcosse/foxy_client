@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useContext} from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -15,14 +16,14 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import {Link} from 'react-router-dom';
 import {CurrencyContext} from './CurrencyContext';
-import {useContext} from 'react';
-import {GoogleLogin} from '@react-oauth/google';
-import {jwtDecode} from 'jwt-decode';
-import {fetchData} from '../utils';
+import {googleLogout} from '@react-oauth/google';
+import {UserContext} from './UserContext';
+import GoogleLoginComponent from './GoogleLoginComponent';
 
 interface HeaderComponentProps {
-        window?: () => Window;
+    window?: () => Window;
 }
+
 
 export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
     const {window} = props;
@@ -31,8 +32,8 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
         {id: 1, title: 'About', link: '/page/about'},
         {id: 2, title: 'Contact', link: '/page/contact'}
     ];
-    const { setCurrency } = useContext(CurrencyContext);
-
+    const {setCurrency} = useContext(CurrencyContext);
+    const {user, setUserAndStore} = useContext(UserContext);
     const handleDrawerToggle = () => {
         setMobileOpen((prevState) => !prevState);
     };
@@ -89,28 +90,15 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                                 {item.title}
                             </Button>
                         ))}
-                        <GoogleLogin
-                            onSuccess={credentialResponse => {
-                                console.log(credentialResponse);
-                                if (credentialResponse.credential) {
-                                    fetchData('', 'auth/google_login', 'POST', {credentials: credentialResponse.credential})
-                                        .then(data => {
-                                            console.log(data);
-                                        })
-                                        .catch(({code, message}) => {
-                                            console.log(code, message);
-                                        });
-                                    console.log(credentialResponse.credential);
-                                    const decoded = jwtDecode(credentialResponse.credential);
-                                    console.log(decoded);
-                                } else {
-                                    console.log('Credential is undefined');
-                                }
-                            }}
-                            onError={() => {
-                                console.log('Login Failed');
-                            }}
-                        />
+                        {user === null ? (
+                            <GoogleLoginComponent/>
+                        ) : (
+                            <><Typography variant="h6">{user.first_name}</Typography>
+                                <Button variant="contained" onClick={() => {
+                                    setUserAndStore(null);
+                                    googleLogout();
+                                }}>Logout</Button></>
+                        )}
                     </Box>
                 </Toolbar>
             </AppBar>
