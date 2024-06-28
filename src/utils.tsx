@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { setupCache } from 'axios-cache-interceptor';
+import {setupCache} from 'axios-cache-interceptor';
 
 const instance = axios.create();
 const axiosCached = setupCache(instance);
 
-class CustomError extends Error {
+export class CustomError extends Error {
     code: number;
 
     constructor(code: number, message: string) {
@@ -20,13 +20,16 @@ export const fetchCurrencyRate = async (currency: string) => {
     return data.rates[currency];
 };
 
-export const fetchData =  async (url: string, path: string, method: 'GET' | 'POST' = 'GET', body?: Record<string, unknown> ) => {
+export const fetchData = async (url: string, path: string, method: 'GET' | 'POST' = 'GET', body?: Record<string, unknown>, setShowLoginPopup?: (value: boolean) => void) => {
     try {
         const response = await axiosCached({
             method,
             url: url || `${import.meta.env.VITE_APP_SERVER_URL}/api/v1/${path}`,
             data: body,
-            cache: {interpretHeader: false}
+            cache: {interpretHeader: false},
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('auth')}`
+            }
         });
         const isJson = response.headers['content-type']?.includes('application/json') ?? false;
         if (!isJson) {
@@ -49,6 +52,10 @@ export const fetchData =  async (url: string, path: string, method: 'GET' | 'POS
             } else if (axiosError.code) {
                 code = parseInt(axiosError.code, 10) ?? 424;
             }
+        }
+        if ((code === 401 || code === 424) && setShowLoginPopup) {
+            setShowLoginPopup(true);
+            localStorage.setItem('auth', '');
         }
         throw new CustomError(code, message);
     }

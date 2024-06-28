@@ -1,16 +1,16 @@
-import React, { useContext } from 'react';
-import { BasketContext } from './BasketContext';
+import React, {useContext} from 'react';
+import {BasketContext} from './BasketContext';
 
 const BasketComponent = () => {
-    const { basket, removeFromBasket } = useContext(BasketContext);
+    const {basket, basket_item, removeFromBasket} = useContext(BasketContext);
 
     return (
         <div>
             <h2>Basket</h2>
-            {basket.map((item) => (
+            {basket_item.map((item) => (
                 <div key={item.id}>
                     <p>{item.title}</p>
-                    <button onClick={() => removeFromBasket(item.id)}>Remove from cart</button>
+                    <button onClick={() => removeFromBasket(item)}>Remove from cart</button>
                 </div>
             ))}
         </div>

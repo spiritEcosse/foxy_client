@@ -1,9 +1,8 @@
 import React from 'react';
-import {ItemType} from '../types';
+import {BasketType} from '../types';
 
 export const BasketContext = React.createContext({
-    basket: [] as ItemType[],
-    addToBasket: (item: ItemType) => {},
-    removeFromBasket: (item: ItemType) => {},
-    isInBasket: (item: ItemType): boolean  => {return false; },
+    basket: {} as BasketType | null,
+    setBasket: (value: BasketType | null) => {
+    },
 });

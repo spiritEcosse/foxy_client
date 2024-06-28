@@ -17,7 +17,7 @@ import {fetchCurrencyRate, fetchData} from '../utils';
 import DOMPurify from 'dompurify';
 import {CurrencyContext} from './CurrencyContext';
 import Button from '@mui/material/Button';
-import {BasketContext} from './BasketContext';
+import {BasketItemContext} from './BasketItemContext';
 
 
 const ItemComponent = () => {
@@ -49,7 +49,7 @@ const ItemComponent = () => {
             setContainer(node);
         }
     }, []);
-    const {addToBasket, removeFromBasket, isInBasket} = useContext(BasketContext);
+    const {addToBasket, removeFromBasket, isInBasket} = useContext(BasketItemContext);
 
     const getLgComponent = useMemo(() => {
         if (container !== null && media) {

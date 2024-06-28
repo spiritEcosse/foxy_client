@@ -19,6 +19,7 @@ const GoogleLoginComponent: React.FC = () => {
                     return;
                 }
                 const credential = credentialResponse.credential as string;
+                console.log(credential);
                 fetchData('', 'auth/google_login', 'POST', {credentials: credential})
                     .then((data: UserType) => {
                         setUserAndStore(data);

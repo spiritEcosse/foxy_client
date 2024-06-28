@@ -24,10 +24,12 @@ import {CurrencyContext} from './components/CurrencyContext';
 import AccountComponent from './components/AccountComponent';
 import OrderComponent from './components/OrderComponent';
 import OrderDetailsComponent from './components/OrderDetailsComponent';
-import {ItemType, UserType} from './types';
+import {BasketItemType, BasketType, ItemType, UserType} from './types';
 import {BasketContext} from './components/BasketContext';
 import {UserContext} from './components/UserContext';
 import {LoginPopupContext} from './components/LoginPopupContext';
+import {CustomError, fetchData} from './utils';
+import {BasketItemContext} from './components/BasketItemContext';
 
 const helmetContext = {};
 const domain = `https://${import.meta.env.VITE_APP_TWIC_PICS_NAME}.twic.pics`;
@@ -69,7 +71,8 @@ if (process.env.VITE_APP_SENTRY_DSN !== 'null') {
 
 function App() {
     const [currency, setCurrency] = useState(localStorage.getItem('currency') ?? 'EUR');
-    const [basket, setBasket] = useState<ItemType[]>([]);
+    const [basket, setBasket] = useState<BasketType | null>(JSON.parse(localStorage.getItem('basket') || 'null'));
+    const [basketItems, setBasketItems] = useState<BasketItemType[]>(JSON.parse(localStorage.getItem('basket_items') || '[]'));
     const [user, setUser] = useState<UserType | null>(JSON.parse(localStorage.getItem('user') || 'null'));
     const [showLoginPopup, setShowLoginPopup] = useState(false);
 
@@ -82,20 +85,57 @@ function App() {
         localStorage.setItem('currency', currency);
     }, [currency]);
 
-    const addToBasket = (item: ItemType) => {
-        if (user === null) {
+    const addToBasket = async (item: ItemType) => {
+        if (!user) {
             setShowLoginPopup(true);
+            return;
+        }
+
+        let currentBasket = basket;
+
+        if (!currentBasket) {
+            try {
+                currentBasket = await fetchData('', 'basket', 'POST', {
+                    user_id: user.id
+                });
+                setBasket(currentBasket);
+            } catch (error) {
+                if ((error as CustomError).code) {
+                    console.log((error as CustomError).code, (error as CustomError).message);
+                } else {
+                    console.log(error);
+                }
+                return;
+            }
+        }
+
+        if (currentBasket) {
+            try {
+                const basketItem = await fetchData('', 'basketitem', 'POST', {
+                    basket_id: currentBasket.id,
+                    item_id: item.id,
+                }, setShowLoginPopup);
+                setBasketItems((currentBasketItems) => [...currentBasketItems, basketItem]);
+            } catch (error) {
+                if ((error as CustomError).code) {
+                    console.log((error as CustomError).code, (error as CustomError).message);
+                } else {
+                    console.log(error);
+                }
+                return;
+            }
         } else {
-            setBasket((currentBasket) => [...currentBasket, item]);
+            console.log('Set up basket firstly.');
         }
     };
 
     const removeFromBasket = (excludeItem: ItemType) => {
-        setBasket((currentBasket) => currentBasket.filter((item) => item.id !== excludeItem.id));
+        setBasketItems((currentBasket) => currentBasket.filter((basketItem) => basketItem.item_id !== excludeItem.id));
     };
 
     const isInBasket = (item: ItemType): boolean => {
-        return basket.some((basketItem) => basketItem.id === item.id);
+        console.log(basketItems.some((basketItem) => basketItem.item_id === item.id));
+        return basketItems.some((basketItem) => basketItem.item_id === item.id);
     };
 
     const value = useMemo(() => ({currency, setCurrency}), [currency, setCurrency]);
@@ -103,27 +143,29 @@ function App() {
     return (
         <LoginPopupContext.Provider value={{showLoginPopup, setShowLoginPopup}}>
             <UserContext.Provider value={{user, setUser, setUserAndStore}}>
-                <BasketContext.Provider value={{basket, addToBasket, removeFromBasket, isInBasket}}>
-                    <CurrencyContext.Provider value={value}>
-                        <Router>
-                            <HelmetProvider context={helmetContext}>
-                                <ThemeProvider theme={theme}>
-                                    <div className="App">
-                                        <HeaderComponent/>
-                                        <Routes>
-                                            <Route path="/" element={<HomeComponent/>}/>
-                                            <Route path="/account" element={<AccountComponent/>}/>
-                                            <Route path="/account/order" element={<OrderComponent/>}/>
-                                            <Route path="/account/order/:id" element={<OrderDetailsComponent/>}/>
-                                            <Route path="/:slug" element={<PageComponent/>}/>
-                                            <Route path="/item/:slug" element={<ItemComponent/>}/>
-                                        </Routes>
-                                        <FooterComponent/>
-                                    </div>
-                                </ThemeProvider>
-                            </HelmetProvider>
-                        </Router>
-                    </CurrencyContext.Provider>
+                <BasketContext.Provider value={{basket, setBasket}}>
+                    <BasketItemContext.Provider value={{basketItems, addToBasket, removeFromBasket, isInBasket}}>
+                        <CurrencyContext.Provider value={value}>
+                            <Router>
+                                <HelmetProvider context={helmetContext}>
+                                    <ThemeProvider theme={theme}>
+                                        <div className="App">
+                                            <HeaderComponent/>
+                                            <Routes>
+                                                <Route path="/" element={<HomeComponent/>}/>
+                                                <Route path="/account" element={<AccountComponent/>}/>
+                                                <Route path="/account/order" element={<OrderComponent/>}/>
+                                                <Route path="/account/order/:id" element={<OrderDetailsComponent/>}/>
+                                                <Route path="/:slug" element={<PageComponent/>}/>
+                                                <Route path="/item/:slug" element={<ItemComponent/>}/>
+                                            </Routes>
+                                            <FooterComponent/>
+                                        </div>
+                                    </ThemeProvider>
+                                </HelmetProvider>
+                            </Router>
+                        </CurrencyContext.Provider>
+                    </BasketItemContext.Provider>
                 </BasketContext.Provider>
             </UserContext.Provider>
         </LoginPopupContext.Provider>
