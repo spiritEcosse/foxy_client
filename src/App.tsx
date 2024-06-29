@@ -79,6 +79,22 @@ function App() {
     const setUserAndStore = (user: UserType | null) => {
         setUser(user);
         localStorage.setItem('user', JSON.stringify(user));
+        if (!user) {
+            localStorage.setItem('auth', '');
+        }
+    };
+
+    const setBasketAndStore = (basket: BasketType | null) => {
+        setBasket(basket);
+        localStorage.setItem('basket', JSON.stringify(basket));
+    };
+
+    const setBasketItemsAndStore = (value: BasketItemType) => {
+        setBasketItems((currentBasketItems) => {
+            const updatedBasketItems = [...currentBasketItems, value];
+            localStorage.setItem('basket_items', JSON.stringify(updatedBasketItems));
+            return updatedBasketItems;
+        });
     };
 
     useEffect(() => {
@@ -86,7 +102,7 @@ function App() {
     }, [currency]);
 
     const addToBasket = async (item: ItemType) => {
-        if (!user) {
+        if (localStorage.getItem('user') == 'null') {
             setShowLoginPopup(true);
             return;
         }
@@ -95,10 +111,9 @@ function App() {
 
         if (!currentBasket) {
             try {
-                currentBasket = await fetchData('', 'basket', 'POST', {
-                    user_id: user.id
-                });
-                setBasket(currentBasket);
+                const body = {user_id: user.id};
+                currentBasket = await fetchData('', 'basket', 'POST', body);
+                setBasketAndStore(currentBasket);
             } catch (error) {
                 if ((error as CustomError).code) {
                     console.log((error as CustomError).code, (error as CustomError).message);
@@ -111,11 +126,12 @@ function App() {
 
         if (currentBasket) {
             try {
-                const basketItem = await fetchData('', 'basketitem', 'POST', {
+                const params = {
                     basket_id: currentBasket.id,
                     item_id: item.id,
-                }, setShowLoginPopup);
-                setBasketItems((currentBasketItems) => [...currentBasketItems, basketItem]);
+                };
+                const basketItem = await fetchData('', 'basketitem', 'POST', params);
+                setBasketItemsAndStore(basketItem);
             } catch (error) {
                 if ((error as CustomError).code) {
                     console.log((error as CustomError).code, (error as CustomError).message);
@@ -129,13 +145,31 @@ function App() {
         }
     };
 
-    const removeFromBasket = (excludeItem: ItemType) => {
-        setBasketItems((currentBasket) => currentBasket.filter((basketItem) => basketItem.item_id !== excludeItem.id));
+    const isInBasket = (item: ItemType): boolean => {
+        return basketItems.some((basketItem) => basketItem.item_id === item.id);
     };
 
-    const isInBasket = (item: ItemType): boolean => {
-        console.log(basketItems.some((basketItem) => basketItem.item_id === item.id));
-        return basketItems.some((basketItem) => basketItem.item_id === item.id);
+    const removeFromBasket = async (excludeItem: ItemType) => {
+        try {
+            const basketItem = basketItems.find((basketItem) => basketItem.item_id === excludeItem.id);
+            if (!basketItem) {
+                console.error(`No basket item found with item id ${excludeItem.id}`);
+                return;
+            }
+            await fetchData('', `basketitem/${basketItem.id}`, 'DELETE');
+            setBasketItems((currentBasket) => {
+                const updatedBasket = currentBasket.filter((basketItem) => basketItem.item_id !== excludeItem.id);
+                localStorage.setItem('basket_items', JSON.stringify(updatedBasket));
+                return updatedBasket;
+            });
+        } catch (error) {
+            if ((error as CustomError).code) {
+                console.log((error as CustomError).code, (error as CustomError).message);
+            } else {
+                console.log(error);
+            }
+            return;
+        }
     };
 
     const value = useMemo(() => ({currency, setCurrency}), [currency, setCurrency]);
@@ -143,8 +177,9 @@ function App() {
     return (
         <LoginPopupContext.Provider value={{showLoginPopup, setShowLoginPopup}}>
             <UserContext.Provider value={{user, setUser, setUserAndStore}}>
-                <BasketContext.Provider value={{basket, setBasket}}>
-                    <BasketItemContext.Provider value={{basketItems, addToBasket, removeFromBasket, isInBasket}}>
+                <BasketContext.Provider value={{basket, setBasket, setBasketAndStore}}>
+                    <BasketItemContext.Provider
+                        value={{basketItems, setBasketItemsAndStore, addToBasket, removeFromBasket, isInBasket}}>
                         <CurrencyContext.Provider value={value}>
                             <Router>
                                 <HelmetProvider context={helmetContext}>

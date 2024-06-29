@@ -50,6 +50,7 @@ const ItemComponent = () => {
         }
     }, []);
     const {addToBasket, removeFromBasket, isInBasket} = useContext(BasketItemContext);
+    const [showLoginPopup, setShowLoginPopup] = useState(false);
 
     const getLgComponent = useMemo(() => {
         if (container !== null && media) {
@@ -94,7 +95,7 @@ const ItemComponent = () => {
 
     useEffect(() => {
         if (slug !== undefined) {
-            fetchData('', `item/${slug}`)
+            fetchData('', `item/${slug}`, 'GET')
                 .then(data => {
                     data.image = data._media ? data._media[0].src : null;
                     if (data._media) {
@@ -111,7 +112,7 @@ const ItemComponent = () => {
                     setResponse({code, message, loading: false});
                 });
 
-            fetchData('', `shippingrate/item/${slug}`)
+            fetchData('', `shippingrate/item/${slug}`, 'GET')
                 .then(data => {
                     setShippingRate(data.shipping);
                 })

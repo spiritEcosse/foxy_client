@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import {Link, useLocation} from 'react-router-dom';
 import {PaginationItem, Paper, Typography} from '@mui/material';
 import Pagination from '@mui/material/Pagination';
@@ -8,7 +8,8 @@ import Loading from './Loading';
 import {ItemType, PageType, ResponseType} from '../types';
 import '@twicpics/components/style.css';
 import '../assets/gallery.scss';
-import { fetchData } from '../utils';
+import {fetchData} from '../utils';
+import {LoginPopupContext} from './LoginPopupContext';
 
 
 const Gallery = ({page}: { page: PageType }) => {
@@ -20,17 +21,18 @@ const Gallery = ({page}: { page: PageType }) => {
     const limit = 27;
     const [response, setResponse] = useState({loading: true} as ResponseType);
     const [data, setData] = useState<ItemType[]>([]);
+    const {showLoginPopup, setShowLoginPopup} = useContext(LoginPopupContext);
 
     useEffect(() => {
         const path = `item?page=${pageFromUrl}&limit=${limit}`;
-        fetchData('', path )
+        fetchData('', path, 'GET')
             .then(data => {
                 setData(data.data);
                 setCountPages(data ? Math.ceil(data.total / limit) : 1);
                 setPageNumber(data ? data._page : 1);
                 setResponse({code: 200, message: 'OK', loading: false});
             })
-            .catch(({ code, message }) => {
+            .catch(({code, message}) => {
                 setResponse({code, message, loading: false});
             });
     }, [pageFromUrl, limit]);

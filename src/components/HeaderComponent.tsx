@@ -90,7 +90,7 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                                 {item.title}
                             </Button>
                         ))}
-                        {user === null ? (
+                        {(localStorage.getItem('auth') === '' || localStorage.getItem('user') == 'null' || !user) ? (
                             <GoogleLoginComponent/>
                         ) : (
                             <><Typography variant="h6">{user.first_name}</Typography>

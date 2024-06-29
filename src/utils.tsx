@@ -20,7 +20,7 @@ export const fetchCurrencyRate = async (currency: string) => {
     return data.rates[currency];
 };
 
-export const fetchData = async (url: string, path: string, method: 'GET' | 'POST' = 'GET', body?: Record<string, unknown>, setShowLoginPopup?: (value: boolean) => void) => {
+export const fetchData = async (url: string, path: string, method: 'GET' | 'POST' | 'DELETE' = 'GET', body?: Record<string, unknown>) => {
     try {
         const response = await axiosCached({
             method,
@@ -37,6 +37,7 @@ export const fetchData = async (url: string, path: string, method: 'GET' | 'POST
         }
         return response.data;
     } catch (error) {
+        console.log(error);
         let message = 'Unknown Error';
         let code = 424;
 
@@ -50,12 +51,12 @@ export const fetchData = async (url: string, path: string, method: 'GET' | 'POST
                 message = 'An error occurred';
                 code = axiosError.response.status;
             } else if (axiosError.code) {
-                code = parseInt(axiosError.code, 10) ?? 424;
+                code = parseInt(axiosError.code, 10) ?? code;
             }
         }
-        if ((code === 401 || code === 424) && setShowLoginPopup) {
-            setShowLoginPopup(true);
+        if (code === 401) {
             localStorage.setItem('auth', '');
+            localStorage.setItem('user', 'null');
         }
         throw new CustomError(code, message);
     }

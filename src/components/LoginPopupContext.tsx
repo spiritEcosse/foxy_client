@@ -7,4 +7,3 @@ export const LoginPopupContext = React.createContext({
     setShowLoginPopup: (popup: boolean) => {
     },
 });
-
