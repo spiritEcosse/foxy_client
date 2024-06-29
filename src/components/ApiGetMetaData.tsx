@@ -15,7 +15,7 @@ const ApiGetMetaData = ({slug, handleFetchedPage}: {
     const {showLoginPopup, setShowLoginPopup} = useContext(LoginPopupContext);
 
     useEffect(() => {
-        fetchData('', `page/${slug}`, 'GET')
+        fetchData('', `page/${slug}`, 'GET', setShowLoginPopup)
             .then(data => {
                 setPage(data);
                 handleFetchedPage({page: data, response: {code: 200, message: 'OK', loading: false}});

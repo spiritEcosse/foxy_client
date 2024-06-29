@@ -95,7 +95,7 @@ const ItemComponent = () => {
 
     useEffect(() => {
         if (slug !== undefined) {
-            fetchData('', `item/${slug}`, 'GET')
+            fetchData('', `item/${slug}`, 'GET', setShowLoginPopup)
                 .then(data => {
                     data.image = data._media ? data._media[0].src : null;
                     if (data._media) {
@@ -112,7 +112,7 @@ const ItemComponent = () => {
                     setResponse({code, message, loading: false});
                 });
 
-            fetchData('', `shippingrate/item/${slug}`, 'GET')
+            fetchData('', `shippingrate/item/${slug}`, 'GET', setShowLoginPopup)
                 .then(data => {
                     setShippingRate(data.shipping);
                 })

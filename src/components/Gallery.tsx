@@ -25,7 +25,7 @@ const Gallery = ({page}: { page: PageType }) => {
 
     useEffect(() => {
         const path = `item?page=${pageFromUrl}&limit=${limit}`;
-        fetchData('', path, 'GET')
+        fetchData('', path, 'GET', setShowLoginPopup)
             .then(data => {
                 setData(data.data);
                 setCountPages(data ? Math.ceil(data.total / limit) : 1);

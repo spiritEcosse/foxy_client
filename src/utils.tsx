@@ -20,7 +20,7 @@ export const fetchCurrencyRate = async (currency: string) => {
     return data.rates[currency];
 };
 
-export const fetchData = async (url: string, path: string, method: 'GET' | 'POST' | 'DELETE' = 'GET', body?: Record<string, unknown>) => {
+export const fetchData = async (url: string, path: string, method: 'GET' | 'POST' | 'DELETE' = 'GET', setShowLoginPopup: (value: boolean) => void, body?: Record<string, unknown>) => {
     try {
         const response = await axiosCached({
             method,
@@ -39,10 +39,12 @@ export const fetchData = async (url: string, path: string, method: 'GET' | 'POST
     } catch (error) {
         console.log(error);
         let message = 'Unknown Error';
-        let code = 424;
+        let code = 1000;
 
         if (axios.isAxiosError(error)) {
             const axiosError = error;
+            console.log(axiosError.response);
+
             if (!axiosError.response) {
                 message = 'No Server Response';
             } else if (axiosError.code === 'ERR_NETWORK') {
@@ -54,9 +56,10 @@ export const fetchData = async (url: string, path: string, method: 'GET' | 'POST
                 code = parseInt(axiosError.code, 10) ?? code;
             }
         }
-        if (code === 401) {
+        if (message === 'No Server Response') {
             localStorage.setItem('auth', '');
             localStorage.setItem('user', 'null');
+            setShowLoginPopup(true);
         }
         throw new CustomError(code, message);
     }

@@ -109,10 +109,10 @@ function App() {
 
         let currentBasket = basket;
 
-        if (!currentBasket) {
+        if (!currentBasket && user) {
             try {
                 const body = {user_id: user.id};
-                currentBasket = await fetchData('', 'basket', 'POST', body);
+                currentBasket = await fetchData('', 'basket', 'POST', setShowLoginPopup, body);
                 setBasketAndStore(currentBasket);
             } catch (error) {
                 if ((error as CustomError).code) {
@@ -130,7 +130,7 @@ function App() {
                     basket_id: currentBasket.id,
                     item_id: item.id,
                 };
-                const basketItem = await fetchData('', 'basketitem', 'POST', params);
+                const basketItem = await fetchData('', 'basketitem', 'POST', setShowLoginPopup, params);
                 setBasketItemsAndStore(basketItem);
             } catch (error) {
                 if ((error as CustomError).code) {
@@ -151,12 +151,16 @@ function App() {
 
     const removeFromBasket = async (excludeItem: ItemType) => {
         try {
+            if (localStorage.getItem('user') == 'null') {
+                setShowLoginPopup(true);
+                return;
+            }
             const basketItem = basketItems.find((basketItem) => basketItem.item_id === excludeItem.id);
             if (!basketItem) {
                 console.error(`No basket item found with item id ${excludeItem.id}`);
                 return;
             }
-            await fetchData('', `basketitem/${basketItem.id}`, 'DELETE');
+            await fetchData('', `basketitem/${basketItem.id}`, 'DELETE', setShowLoginPopup);
             setBasketItems((currentBasket) => {
                 const updatedBasket = currentBasket.filter((basketItem) => basketItem.item_id !== excludeItem.id);
                 localStorage.setItem('basket_items', JSON.stringify(updatedBasket));
