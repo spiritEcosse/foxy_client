@@ -43,7 +43,6 @@ export const fetchData = async (url: string, path: string, method: 'GET' | 'POST
 
         if (axios.isAxiosError(error)) {
             const axiosError = error;
-            console.log(axiosError.response);
 
             if (!axiosError.response) {
                 message = 'No Server Response';
@@ -59,6 +58,8 @@ export const fetchData = async (url: string, path: string, method: 'GET' | 'POST
         if (message === 'No Server Response') {
             localStorage.setItem('auth', '');
             localStorage.setItem('user', 'null');
+            localStorage.setItem('basket', 'null');
+            localStorage.setItem('basket_items', '[]');
             setShowLoginPopup(true);
         }
         throw new CustomError(code, message);

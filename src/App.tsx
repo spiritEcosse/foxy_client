@@ -30,6 +30,7 @@ import {UserContext} from './components/UserContext';
 import {LoginPopupContext} from './components/LoginPopupContext';
 import {CustomError, fetchData} from './utils';
 import {BasketItemContext} from './components/BasketItemContext';
+import BasketComponent from './components/BasketComponent';
 
 const helmetContext = {};
 const domain = `https://${import.meta.env.VITE_APP_TWIC_PICS_NAME}.twic.pics`;
@@ -141,12 +142,12 @@ function App() {
                 return;
             }
         } else {
-            console.log('Set up basket firstly.');
+            console.log('Set up basket.scss firstly.');
         }
     };
 
     const isInBasket = (item: ItemType): boolean => {
-        return basketItems.some((basketItem) => basketItem.item_id === item.id);
+        return basketItems.some((basketItem) => basketItem.item.id === item.id);
     };
 
     const removeFromBasket = async (excludeItem: ItemType) => {
@@ -155,14 +156,14 @@ function App() {
                 setShowLoginPopup(true);
                 return;
             }
-            const basketItem = basketItems.find((basketItem) => basketItem.item_id === excludeItem.id);
+            const basketItem = basketItems.find((basketItem) => basketItem.item.id === excludeItem.id);
             if (!basketItem) {
                 console.error(`No basket item found with item id ${excludeItem.id}`);
                 return;
             }
             await fetchData('', `basketitem/${basketItem.id}`, 'DELETE', setShowLoginPopup);
             setBasketItems((currentBasket) => {
-                const updatedBasket = currentBasket.filter((basketItem) => basketItem.item_id !== excludeItem.id);
+                const updatedBasket = currentBasket.filter((basketItem) => basketItem.item.id !== excludeItem.id);
                 localStorage.setItem('basket_items', JSON.stringify(updatedBasket));
                 return updatedBasket;
             });
@@ -192,6 +193,7 @@ function App() {
                                             <HeaderComponent/>
                                             <Routes>
                                                 <Route path="/" element={<HomeComponent/>}/>
+                                                <Route path="/cart" element={<BasketComponent/>}/>
                                                 <Route path="/account" element={<AccountComponent/>}/>
                                                 <Route path="/account/order" element={<OrderComponent/>}/>
                                                 <Route path="/account/order/:id" element={<OrderDetailsComponent/>}/>

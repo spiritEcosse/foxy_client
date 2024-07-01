@@ -19,11 +19,23 @@ import {CurrencyContext} from './CurrencyContext';
 import {googleLogout} from '@react-oauth/google';
 import {UserContext} from './UserContext';
 import GoogleLoginComponent from './GoogleLoginComponent';
+import {styled} from '@mui/material/styles';
+import Badge, {BadgeProps} from '@mui/material/Badge';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import {BasketItemContext} from './BasketItemContext';
 
 interface HeaderComponentProps {
     window?: () => Window;
 }
 
+const StyledBadge = styled(Badge)<BadgeProps>(({theme}) => ({
+    '& .MuiBadge-badge': {
+        right: -3,
+        top: 13,
+        border: `2px solid ${theme.palette.background.paper}`,
+        padding: '0 4px',
+    },
+}));
 
 export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
     const {window} = props;
@@ -32,6 +44,7 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
         {id: 1, title: 'About', link: '/page/about'},
         {id: 2, title: 'Contact', link: '/page/contact'}
     ];
+    const {basketItems, removeFromBasket} = useContext(BasketItemContext);
     const {setCurrency} = useContext(CurrencyContext);
     const {user, setUserAndStore} = useContext(UserContext);
     const handleDrawerToggle = () => {
@@ -90,6 +103,13 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                                 {item.title}
                             </Button>
                         ))}
+                        <Link to="cart">
+                            <IconButton aria-label="cart">
+                                <StyledBadge badgeContent={basketItems.length} color="secondary">
+                                    <ShoppingCartIcon/>
+                                </StyledBadge>
+                            </IconButton>
+                        </Link>
                         {(localStorage.getItem('auth') === '' || localStorage.getItem('user') == 'null' || !user) ? (
                             <GoogleLoginComponent/>
                         ) : (

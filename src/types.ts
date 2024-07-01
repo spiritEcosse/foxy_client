@@ -14,9 +14,8 @@ export interface MediaType {
 
 export interface BasketItemType {
     id: number;
-    item_id: number;
+    item: ItemType;
     quantity: number;
-    price: number;
     created_at: Date;
     updated_at: Date;
 }
