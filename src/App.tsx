@@ -24,13 +24,14 @@ import {CurrencyContext} from './components/CurrencyContext';
 import AccountComponent from './components/AccountComponent';
 import OrderComponent from './components/OrderComponent';
 import OrderDetailsComponent from './components/OrderDetailsComponent';
-import {BasketItemType, BasketType, ItemType, UserType} from './types';
+import {AddressType, BasketItemType, BasketType, ItemType, UserType} from './types';
 import {BasketContext} from './components/BasketContext';
 import {UserContext} from './components/UserContext';
 import {LoginPopupContext} from './components/LoginPopupContext';
 import {CustomError, fetchData} from './utils';
 import {BasketItemContext} from './components/BasketItemContext';
-import BasketComponent from './components/BasketComponent';
+import CheckoutComponent from './components/CheckoutComponent';
+import {AddressContext} from './components/AddressContext';
 
 const helmetContext = {};
 const domain = `https://${import.meta.env.VITE_APP_TWIC_PICS_NAME}.twic.pics`;
@@ -73,6 +74,7 @@ if (process.env.VITE_APP_SENTRY_DSN !== 'null') {
 function App() {
     const [currency, setCurrency] = useState(localStorage.getItem('currency') ?? 'EUR');
     const [basket, setBasket] = useState<BasketType | null>(JSON.parse(localStorage.getItem('basket') || 'null'));
+    const [address, setAddress] = useState<AddressType | null>(JSON.parse(localStorage.getItem('address') || 'null'));
     const [basketItems, setBasketItems] = useState<BasketItemType[]>(JSON.parse(localStorage.getItem('basket_items') || '[]'));
     const [user, setUser] = useState<UserType | null>(JSON.parse(localStorage.getItem('user') || 'null'));
     const [showLoginPopup, setShowLoginPopup] = useState(false);
@@ -88,6 +90,11 @@ function App() {
     const setBasketAndStore = (basket: BasketType | null) => {
         setBasket(basket);
         localStorage.setItem('basket', JSON.stringify(basket));
+    };
+
+    const setAddressAndStore = (address: AddressType | null) => {
+        setAddress(address);
+        localStorage.setItem('address', JSON.stringify(address));
     };
 
     const setBasketItemsAndStore = (value: BasketItemType) => {
@@ -180,36 +187,39 @@ function App() {
     const value = useMemo(() => ({currency, setCurrency}), [currency, setCurrency]);
 
     return (
-        <LoginPopupContext.Provider value={{showLoginPopup, setShowLoginPopup}}>
-            <UserContext.Provider value={{user, setUser, setUserAndStore}}>
-                <BasketContext.Provider value={{basket, setBasket, setBasketAndStore}}>
-                    <BasketItemContext.Provider
-                        value={{basketItems, setBasketItemsAndStore, addToBasket, removeFromBasket, isInBasket}}>
-                        <CurrencyContext.Provider value={value}>
-                            <Router>
-                                <HelmetProvider context={helmetContext}>
-                                    <ThemeProvider theme={theme}>
-                                        <div className="App">
-                                            <HeaderComponent/>
-                                            <Routes>
-                                                <Route path="/" element={<HomeComponent/>}/>
-                                                <Route path="/cart" element={<BasketComponent/>}/>
-                                                <Route path="/account" element={<AccountComponent/>}/>
-                                                <Route path="/account/order" element={<OrderComponent/>}/>
-                                                <Route path="/account/order/:id" element={<OrderDetailsComponent/>}/>
-                                                <Route path="/:slug" element={<PageComponent/>}/>
-                                                <Route path="/item/:slug" element={<ItemComponent/>}/>
-                                            </Routes>
-                                            <FooterComponent/>
-                                        </div>
-                                    </ThemeProvider>
-                                </HelmetProvider>
-                            </Router>
-                        </CurrencyContext.Provider>
-                    </BasketItemContext.Provider>
-                </BasketContext.Provider>
-            </UserContext.Provider>
-        </LoginPopupContext.Provider>
+        <AddressContext.Provider value={{address, setAddress, setAddressAndStore}}>
+            <LoginPopupContext.Provider value={{showLoginPopup, setShowLoginPopup}}>
+                <UserContext.Provider value={{user, setUser, setUserAndStore}}>
+                    <BasketContext.Provider value={{basket, setBasket, setBasketAndStore}}>
+                        <BasketItemContext.Provider
+                            value={{basketItems, setBasketItemsAndStore, addToBasket, removeFromBasket, isInBasket}}>
+                            <CurrencyContext.Provider value={value}>
+                                <Router>
+                                    <HelmetProvider context={helmetContext}>
+                                        <ThemeProvider theme={theme}>
+                                            <div className="App">
+                                                <HeaderComponent/>
+                                                <Routes>
+                                                    <Route path="/" element={<HomeComponent/>}/>
+                                                    <Route path="/checkout" element={<CheckoutComponent/>}/>
+                                                    <Route path="/account" element={<AccountComponent/>}/>
+                                                    <Route path="/account/order" element={<OrderComponent/>}/>
+                                                    <Route path="/account/order/:id"
+                                                        element={<OrderDetailsComponent/>}/>
+                                                    <Route path="/:slug" element={<PageComponent/>}/>
+                                                    <Route path="/item/:slug" element={<ItemComponent/>}/>
+                                                </Routes>
+                                                <FooterComponent/>
+                                            </div>
+                                        </ThemeProvider>
+                                    </HelmetProvider>
+                                </Router>
+                            </CurrencyContext.Provider>
+                        </BasketItemContext.Provider>
+                    </BasketContext.Provider>
+                </UserContext.Provider>
+            </LoginPopupContext.Provider>
+        </AddressContext.Provider>
     );
 }
 

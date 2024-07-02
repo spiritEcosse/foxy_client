@@ -12,6 +12,27 @@ export interface MediaType {
     thumb?: string;
 }
 
+export interface CountryType {
+    id: number;
+    title: string;
+    code: string;
+    created_at: Date;
+    updated_at: Date;
+}
+
+export interface AddressType {
+    id: number;
+    address: string;
+    country_id: number;
+    country: CountryType;
+    city: string;
+    zipcode: string;
+    avatar: string;
+    user_id: number;
+    created_at: Date;
+    updated_at: Date;
+}
+
 export interface BasketItemType {
     id: number;
     item: ItemType;

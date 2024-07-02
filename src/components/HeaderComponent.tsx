@@ -103,7 +103,7 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                                 {item.title}
                             </Button>
                         ))}
-                        <Link to="cart">
+                        <Link to="checkout">
                             <IconButton aria-label="cart">
                                 <StyledBadge badgeContent={basketItems.length} color="secondary">
                                     <ShoppingCartIcon/>
