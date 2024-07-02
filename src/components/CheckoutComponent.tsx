@@ -9,7 +9,6 @@ import {
     Accordion,
     AccordionDetails,
     AccordionSummary,
-    Autocomplete,
     Checkbox,
     Paper,
     Table,
@@ -18,13 +17,14 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    TextField,
     Typography
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import {fetchData} from '../utils';
-import {CountryType} from '../types';
+import AddressForm from './AddressForm';
 import {AddressContext} from './AddressContext';
+import {fetchData} from '../utils';
+import {AddressType} from '../types';
+import {UserContext} from './UserContext';
 
 const CheckoutComponent = () => {
     const {basketItems, removeFromBasket} = useContext(BasketItemContext);
@@ -37,20 +37,9 @@ const CheckoutComponent = () => {
     const total = totalExTaxes + taxes + deliveryFees;
     const roundedTotal = Math.round(total * 100) / 100;
     const [expanded, setExpanded] = React.useState<string | false>(false);
-    const {address, setAddress, setAddressAndStore} = useContext(AddressContext);
-    const [countries, setCountries] = useState<CountryType[]>([]);
-    const [countriesLoaded, setCountriesLoaded] = useState(false);
+    const {address, setAddressAndStore} = useContext(AddressContext);
     const [showLoginPopup, setShowLoginPopup] = useState(false);
-    const loadCountries = () => {
-        if (!countriesLoaded) {
-            fetchData('', 'country?limit=200', 'GET', setShowLoginPopup)
-                .then(data => {
-                    setCountries(data.data);
-                    setCountriesLoaded(true);
-                })
-                .catch(error => console.error('Error:', error));
-        }
-    };
+    const {user, setUserAndStore} = useContext(UserContext);
 
     const handleChange =
         (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
@@ -100,9 +89,34 @@ const CheckoutComponent = () => {
         );
     }
 
-    const handleSubmit = (event: React.ChangeEvent<HTMLInputElement>) => {
-        event.preventDefault();
-        // Handle form submission here
+    const createOrder = async () => {
+        if (!address || !user) {
+            return;
+        }
+
+        if (address.id === 0) {
+            await fetchData('', 'address', 'POST', setShowLoginPopup, {
+                address: address.address,
+                country_id: address.country_id,
+                city: address.city,
+                zipcode: address.zipcode,
+                user_id: user.id
+            }).then((data: AddressType) => {
+                console.log(data);
+                setAddressAndStore(data);
+            });
+
+            // fetchData('', 'order', 'POST', setShowLoginPopup, {
+            //     address_id: data.data.id,
+            //     total: total,
+            //     items: basketItems.map((basketItem) => ({
+            //         item_id: basketItem.item.id,
+            //         quantity: basketItem.quantity,
+            //     })),
+            // }).then(() => {
+            //     deleteAllItems();
+            // });
+        }
     };
 
     return (
@@ -191,13 +205,7 @@ const CheckoutComponent = () => {
                 </AccordionDetails>
             </Accordion>
 
-            <Accordion expanded={expanded === 'addressPanel'} onChange={(event, isExpanded) => {
-                handleChange('addressPanel')(event, isExpanded);
-                if (isExpanded) {
-                    loadCountries();
-                }
-            }}
-            >
+            <Accordion expanded={expanded === 'addressPanel'} onChange={handleChange('addressPanel')}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon/>}
                     aria-controls="addressPanel-content"
@@ -207,50 +215,22 @@ const CheckoutComponent = () => {
                         Address
                     </Typography>
                     <Typography
-                        sx={{color: 'text.secondary'}}>{address ? `Your address is ${address.country.title}` : 'Point your address, please'}.</Typography>
+                        sx={{color: 'text.secondary'}}>{address ? `Your country: ${address.country.title}, city: ${address.city}, address: ${address.address}, zipcode: ${address.zipcode}` : 'Point your address, please'}.</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <div>
-                        <form onSubmit={handleSubmit}>
-                            <Autocomplete
-                                id="country-search"
-                                options={countries}
-                                renderInput={(params) => <TextField {...params} required label="Country"
-                                    variant="outlined"/>}
-                                getOptionLabel={(option: CountryType) => option.title}
-                                style={{width: 300}}
-                            />
-                            <TextField
-                                name="address"
-                                label="Address"
-                                required
-                                value={address?.address}
-                                fullWidth
-                                margin="normal"
-                            />
-                            <TextField
-                                name="city"
-                                label="City"
-                                value={address?.city}
-                                required
-                                fullWidth
-                                margin="normal"
-                            />
-                            <TextField
-                                name="zipcode"
-                                label="Zipcode"
-                                value={address?.zipcode}
-                                fullWidth
-                                required
-                                margin="normal"
-                            />
-                            <Button type="submit" variant="contained" color="primary">
-                                Submit
-                            </Button>
-                        </form>
-                    </div>
+                    <AddressForm/>
                 </AccordionDetails>
             </Accordion>
+            <Button
+                type="submit"
+                sx={{mt: 2, mb: 2}}
+                variant="contained"
+                color="primary"
+                onClick={createOrder}
+                disabled={!address || !address.country_id || !address.city || !address.address || !address.zipcode}
+            >
+                Create an order
+            </Button>
         </div>
     );
 };

@@ -79,6 +79,25 @@ function App() {
     const [user, setUser] = useState<UserType | null>(JSON.parse(localStorage.getItem('user') || 'null'));
     const [showLoginPopup, setShowLoginPopup] = useState(false);
 
+    const updateAddressField = (fieldName: keyof AddressType, newValue: any) => {
+        setAddress((prevAddress) => {
+            if (prevAddress) {
+                return {...prevAddress, [fieldName]: newValue};
+            }
+            return {
+                id: 0,
+                address: '',
+                country_id: 0,
+                country: {id: 0, title: '', code: '', created_at: new Date(), updated_at: new Date()},
+                city: '',
+                zipcode: '',
+                user_id: 0,
+                created_at: new Date(),
+                updated_at: new Date()
+            };
+        });
+    };
+
     const setUserAndStore = (user: UserType | null) => {
         setUser(user);
         localStorage.setItem('user', JSON.stringify(user));
@@ -187,7 +206,7 @@ function App() {
     const value = useMemo(() => ({currency, setCurrency}), [currency, setCurrency]);
 
     return (
-        <AddressContext.Provider value={{address, setAddress, setAddressAndStore}}>
+        <AddressContext.Provider value={{address, setAddress, setAddressAndStore, updateAddressField}}>
             <LoginPopupContext.Provider value={{showLoginPopup, setShowLoginPopup}}>
                 <UserContext.Provider value={{user, setUser, setUserAndStore}}>
                     <BasketContext.Provider value={{basket, setBasket, setBasketAndStore}}>
