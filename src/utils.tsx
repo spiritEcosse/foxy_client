@@ -20,7 +20,7 @@ export const fetchCurrencyRate = async (currency: string) => {
     return data.rates[currency];
 };
 
-export const fetchData = async (url: string, path: string, method: 'GET' | 'POST' | 'DELETE' = 'GET', setShowLoginPopup: (value: boolean) => void, body?: Record<string, unknown>) => {
+export const fetchData = async (url: string, path: string, method: 'GET' | 'POST' | 'DELETE' | 'PUT' = 'GET', setShowLoginPopup: (value: boolean) => void, body?: Record<string, unknown>) => {
     try {
         const response = await axiosCached({
             method,

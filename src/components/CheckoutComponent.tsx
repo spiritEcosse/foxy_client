@@ -102,21 +102,30 @@ const CheckoutComponent = () => {
                 zipcode: address.zipcode,
                 user_id: user.id
             }).then((data: AddressType) => {
-                console.log(data);
                 setAddressAndStore(data);
             });
-
-            // fetchData('', 'order', 'POST', setShowLoginPopup, {
-            //     address_id: data.data.id,
-            //     total: total,
-            //     items: basketItems.map((basketItem) => ({
-            //         item_id: basketItem.item.id,
-            //         quantity: basketItem.quantity,
-            //     })),
-            // }).then(() => {
-            //     deleteAllItems();
-            // });
+        } else {
+            await fetchData('', `address/${address.id}`, 'PUT', setShowLoginPopup, {
+                address: address.address,
+                country_id: address.country_id,
+                city: address.city,
+                zipcode: address.zipcode,
+                user_id: user.id
+            }).then((data: AddressType) => {
+                setAddressAndStore(data);
+            });
         }
+
+        // fetchData('', 'order', 'POST', setShowLoginPopup, {
+        //     address_id: data.data.id,
+        //     total: total,
+        //     items: basketItems.map((basketItem) => ({
+        //         item_id: basketItem.item.id,
+        //         quantity: basketItem.quantity,
+        //     })),
+        // }).then(() => {
+        //     deleteAllItems();
+        // });
     };
 
     return (
