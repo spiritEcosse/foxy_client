@@ -25,6 +25,7 @@ import {AddressContext} from './AddressContext';
 import {fetchData} from '../utils';
 import {AddressType} from '../types';
 import {UserContext} from './UserContext';
+import {BasketContext} from './BasketContext';
 
 const CheckoutComponent = () => {
     const {basketItems, removeFromBasket} = useContext(BasketItemContext);
@@ -40,6 +41,7 @@ const CheckoutComponent = () => {
     const {address, setAddressAndStore} = useContext(AddressContext);
     const [showLoginPopup, setShowLoginPopup] = useState(false);
     const {user, setUserAndStore} = useContext(UserContext);
+    const {basket, setBasket} = useContext(BasketContext);
 
     const handleChange =
         (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
@@ -90,7 +92,7 @@ const CheckoutComponent = () => {
     }
 
     const createOrder = async () => {
-        if (!address || !user) {
+        if (!address || !user || !basket) {
             return;
         }
 
@@ -103,6 +105,8 @@ const CheckoutComponent = () => {
                 user_id: user.id
             }).then((data: AddressType) => {
                 setAddressAndStore(data);
+            }).catch((error) => {
+                console.error('Error:', error);
             });
         } else {
             await fetchData('', `address/${address.id}`, 'PUT', setShowLoginPopup, {
@@ -113,8 +117,23 @@ const CheckoutComponent = () => {
                 user_id: user.id
             }).then((data: AddressType) => {
                 setAddressAndStore(data);
+            }).catch((error) => {
+                console.error('Error:', error);
             });
         }
+
+        const items = basketItems.map((basketItem) => ({
+            id: basketItem.id,
+            item_id: basketItem.item.id,
+            price: basketItem.item.price,
+            basket_id: basket.id
+        }));
+
+        fetchData('', 'basketitem/items', 'PUT', setShowLoginPopup, {
+            items: items
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
 
         // fetchData('', 'order', 'POST', setShowLoginPopup, {
         //     address_id: data.data.id,
