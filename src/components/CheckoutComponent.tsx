@@ -29,7 +29,7 @@ import {BasketContext} from './BasketContext';
 import {OrderContext} from './OrderContext';
 
 const CheckoutComponent = () => {
-    const {basketItems, removeFromBasket} = useContext(BasketItemContext);
+    const {basketItems, setBasketItemsAndStore, removeFromBasket} = useContext(BasketItemContext);
     const [checked, setChecked] = React.useState<number[]>([]);
     const navigate = useNavigate();
     const totalExTaxes = basketItems.reduce((total, item) => total + item.item.price * item.quantity, 0);
@@ -96,6 +96,7 @@ const CheckoutComponent = () => {
     const createOrder = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         if (!address || !user || !basket) {
+            console.error('Address, user or basket is not set');
             return;
         }
 
@@ -151,6 +152,7 @@ const CheckoutComponent = () => {
             user_id: user.id,
             in_use: false
         }).then(() => {
+            setBasketItemsAndStore([]);
             setBasketAndStore(null);
         });
     };

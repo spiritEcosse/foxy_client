@@ -113,12 +113,17 @@ function App() {
         localStorage.setItem('basket', JSON.stringify(basket));
     };
 
+    const setBasketItemsAndStore = (basketItems: BasketItemType[]) => {
+        setBasketItems(basketItems);
+        localStorage.setItem('basket_items', JSON.stringify(basketItems));
+    };
+
     const setAddressAndStore = (address: AddressType | null) => {
         setAddress(address);
         localStorage.setItem('address', JSON.stringify(address));
     };
 
-    const setBasketItemsAndStore = (value: BasketItemType) => {
+    const setBasketItemAndStore = (value: BasketItemType) => {
         setBasketItems((currentBasketItems) => {
             const updatedBasketItems = [...currentBasketItems, value];
             localStorage.setItem('basket_items', JSON.stringify(updatedBasketItems));
@@ -160,7 +165,7 @@ function App() {
                     item_id: item.id,
                 };
                 const basketItem = await fetchData('', 'basketitem', 'POST', setShowLoginPopup, params);
-                setBasketItemsAndStore(basketItem);
+                setBasketItemAndStore(basketItem);
             } catch (error) {
                 if ((error as CustomError).code) {
                     console.log((error as CustomError).code, (error as CustomError).message);
@@ -216,7 +221,9 @@ function App() {
                             <BasketItemContext.Provider
                                 value={{
                                     basketItems,
+                                    setBasketItems,
                                     setBasketItemsAndStore,
+                                    setBasketItemAndStore,
                                     addToBasket,
                                     removeFromBasket,
                                     isInBasket

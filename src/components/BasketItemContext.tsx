@@ -3,7 +3,11 @@ import {BasketItemType, ItemType} from '../types';
 
 export const BasketItemContext = React.createContext({
     basketItems: [] as BasketItemType[],
-    setBasketItemsAndStore: ((value: BasketItemType) => {
+    setBasketItems: (value: BasketItemType[]) => {
+    },
+    setBasketItemsAndStore: (value: BasketItemType[]) => {
+    },
+    setBasketItemAndStore: ((value: BasketItemType) => {
     }),
     addToBasket: (item: ItemType) => {
     },
