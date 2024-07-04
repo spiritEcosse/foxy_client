@@ -40,6 +40,23 @@ export interface BasketItemType {
     updated_at: Date;
 }
 
+export interface OrderType {
+    id: number;
+    status: string;
+    date: Date;
+    total: number;
+    total_ex_taxes: number;
+    delivery_fees: number;
+    tax_rate: number;
+    taxes: number;
+    user_id: number;
+    reference: string;
+    created_at: Date;
+    updated_at: Date;
+    basket_id: number;
+    address_id: number;
+}
+
 export interface BasketType {
     id: number;
     user_id: number;

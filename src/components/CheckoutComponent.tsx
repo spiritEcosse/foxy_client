@@ -23,9 +23,10 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddressForm from './AddressForm';
 import {AddressContext} from './AddressContext';
 import {fetchData} from '../utils';
-import {AddressType} from '../types';
+import {AddressType, OrderType} from '../types';
 import {UserContext} from './UserContext';
 import {BasketContext} from './BasketContext';
+import {OrderContext} from './OrderContext';
 
 const CheckoutComponent = () => {
     const {basketItems, removeFromBasket} = useContext(BasketItemContext);
@@ -41,7 +42,8 @@ const CheckoutComponent = () => {
     const {address, setAddressAndStore} = useContext(AddressContext);
     const [showLoginPopup, setShowLoginPopup] = useState(false);
     const {user, setUserAndStore} = useContext(UserContext);
-    const {basket, setBasket} = useContext(BasketContext);
+    const {order, setOrder} = useContext(OrderContext);
+    const {basket, setBasket, setBasketAndStore} = useContext(BasketContext);
 
     const handleChange =
         (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
@@ -91,7 +93,8 @@ const CheckoutComponent = () => {
         );
     }
 
-    const createOrder = async () => {
+    const createOrder = async (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
         if (!address || !user || !basket) {
             return;
         }
@@ -105,8 +108,6 @@ const CheckoutComponent = () => {
                 user_id: user.id
             }).then((data: AddressType) => {
                 setAddressAndStore(data);
-            }).catch((error) => {
-                console.error('Error:', error);
             });
         } else {
             await fetchData('', `address/${address.id}`, 'PUT', setShowLoginPopup, {
@@ -117,8 +118,6 @@ const CheckoutComponent = () => {
                 user_id: user.id
             }).then((data: AddressType) => {
                 setAddressAndStore(data);
-            }).catch((error) => {
-                console.error('Error:', error);
             });
         }
 
@@ -131,20 +130,29 @@ const CheckoutComponent = () => {
 
         fetchData('', 'basketitem/items', 'PUT', setShowLoginPopup, {
             items: items
-        }).catch((error) => {
-            console.error('Error:', error);
         });
 
-        // fetchData('', 'order', 'POST', setShowLoginPopup, {
-        //     address_id: data.data.id,
-        //     total: total,
-        //     items: basketItems.map((basketItem) => ({
-        //         item_id: basketItem.item.id,
-        //         quantity: basketItem.quantity,
-        //     })),
-        // }).then(() => {
-        //     deleteAllItems();
-        // });
+        await fetchData('', 'order', 'POST', setShowLoginPopup, {
+            basket_id: basket.id,
+            total: total,
+            total_ex_taxes: totalExTaxes,
+            delivery_fees: deliveryFees,
+            tax_rate: taxRate,
+            taxes: taxes,
+            user_id: user.id,
+            reference: 'ref',
+            address_id: address.id
+        }).then((data: OrderType) => {
+            setOrder(data);
+            alert(`Order created! ${data?.id}`);
+        });
+
+        await fetchData('', `basket/${basket.id}`, 'PUT', setShowLoginPopup, {
+            user_id: user.id,
+            in_use: false
+        }).then(() => {
+            setBasketAndStore(null);
+        });
     };
 
     return (
@@ -191,7 +199,8 @@ const CheckoutComponent = () => {
                                         </TableCell>
                                         <TableCell>
                                             <IconButton edge="end" aria-label="delete"
-                                                onClick={() => removeFromBasket(basketItem.item)}>
+                                                onClick={() => removeFromBasket(basketItem.item)}
+                                            >
                                                 <DeleteIcon/>
                                             </IconButton>
                                         </TableCell>
@@ -254,7 +263,7 @@ const CheckoutComponent = () => {
                 sx={{mt: 2, mb: 2}}
                 variant="contained"
                 color="primary"
-                onClick={createOrder}
+                onClick={(event) => createOrder(event)}
                 disabled={!address || !address.country_id || !address.city || !address.address || !address.zipcode}
             >
                 Create an order
