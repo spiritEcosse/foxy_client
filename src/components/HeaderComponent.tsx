@@ -23,6 +23,9 @@ import {styled} from '@mui/material/styles';
 import Badge, {BadgeProps} from '@mui/material/Badge';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import {BasketItemContext} from './BasketItemContext';
+import {BasketContext} from './BasketContext';
+import {AddressContext} from './AddressContext';
+import {OrderContext} from './OrderContext';
 
 interface HeaderComponentProps {
     window?: () => Window;
@@ -44,12 +47,15 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
         {id: 1, title: 'About', link: '/page/about'},
         {id: 2, title: 'Contact', link: '/page/contact'}
     ];
-    const {basketItems, removeFromBasket} = useContext(BasketItemContext);
+    const {basketItems, removeFromBasket, setBasketItemsAndStore} = useContext(BasketItemContext);
     const {setCurrency} = useContext(CurrencyContext);
     const {user, setUserAndStore} = useContext(UserContext);
     const handleDrawerToggle = () => {
         setMobileOpen((prevState) => !prevState);
     };
+    const {basket, setBasketAndStore} = useContext(BasketContext);
+    const {address, setAddressAndStore} = useContext(AddressContext);
+    const {order, setOrder} = useContext(OrderContext);
 
     const drawer = (
         <Box onClick={handleDrawerToggle} sx={{textAlign: 'center'}}>
@@ -115,7 +121,12 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                         ) : (
                             <><Typography variant="h6">{user.first_name}</Typography>
                                 <Button variant="contained" onClick={() => {
+                                    localStorage.setItem('auth', '');
                                     setUserAndStore(null);
+                                    setAddressAndStore(null);
+                                    setBasketAndStore(null);
+                                    setOrder(null);
+                                    setBasketItemsAndStore([]);
                                     googleLogout();
                                 }}>Logout</Button></>
                         )}

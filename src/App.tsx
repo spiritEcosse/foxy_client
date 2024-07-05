@@ -141,27 +141,10 @@ function App() {
             return;
         }
 
-        let currentBasket = basket;
-
-        if (!currentBasket && user) {
-            try {
-                const body = {user_id: user.id};
-                currentBasket = await fetchData('', 'basket', 'POST', setShowLoginPopup, body);
-                setBasketAndStore(currentBasket);
-            } catch (error) {
-                if ((error as CustomError).code) {
-                    console.log((error as CustomError).code, (error as CustomError).message);
-                } else {
-                    console.log(error);
-                }
-                return;
-            }
-        }
-
-        if (currentBasket) {
+        if (basket) {
             try {
                 const params = {
-                    basket_id: currentBasket.id,
+                    basket_id: basket.id,
                     item_id: item.id,
                 };
                 const basketItem = await fetchData('', 'basketitem', 'POST', setShowLoginPopup, params);
