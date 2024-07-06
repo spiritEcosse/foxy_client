@@ -33,6 +33,7 @@ import {BasketItemContext} from './components/BasketItemContext';
 import CheckoutComponent from './components/CheckoutComponent';
 import {AddressContext} from './components/AddressContext';
 import {OrderContext} from './components/OrderContext';
+import SuccessOrderComponent from './components/SuccessOrderComponent';
 
 const helmetContext = {};
 const domain = `https://${import.meta.env.VITE_APP_TWIC_PICS_NAME}.twic.pics`;
@@ -236,6 +237,8 @@ function App() {
                                                     <HeaderComponent/>
                                                     <Routes>
                                                         <Route path="/" element={<HomeComponent/>}/>
+                                                        <Route path="/success_order"
+                                                            element={<SuccessOrderComponent/>}/>
                                                         <Route path="/checkout" element={<CheckoutComponent/>}/>
                                                         <Route path="/account" element={<AccountComponent/>}/>
                                                         <Route path="/account/order" element={<OrderComponent/>}/>

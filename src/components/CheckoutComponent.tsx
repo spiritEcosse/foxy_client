@@ -145,7 +145,6 @@ const CheckoutComponent = () => {
             address_id: address.id
         }).then((data: OrderType) => {
             setOrder(data);
-            alert(`Order created! ${data?.id}`);
         });
 
         await fetchData('', `basket/${basket.id}`, 'PUT', setShowLoginPopup, {
@@ -155,6 +154,12 @@ const CheckoutComponent = () => {
             setBasketItemsAndStore([]);
             setBasketAndStore(null);
         });
+<<<<<<< Updated upstream
+=======
+        const _basket = await fetchData('', 'basket', 'POST', setShowLoginPopup, {user_id: user.id});
+        setBasketAndStore(_basket);
+        navigate('/success_order');
+>>>>>>> Stashed changes
     };
 
     return (
