@@ -27,12 +27,8 @@ import {OrderType} from '../types';
 import {UserContext} from './UserContext';
 import {BasketContext} from './BasketContext';
 import {OrderContext} from './OrderContext';
-
-declare global {
-    interface Window {
-        google: any;
-    }
-}
+import GooglePayButton from '@google-pay/button-react';
+import Box from '@mui/material/Box';
 
 const CheckoutComponent = () => {
     const {basketItems, setBasketItemsAndStore, removeFromBasket} = useContext(BasketItemContext);
@@ -50,66 +46,50 @@ const CheckoutComponent = () => {
     const {user, setUserAndStore} = useContext(UserContext);
     const {order, setOrder} = useContext(OrderContext);
     const {basket, setBasket, setBasketAndStore} = useContext(BasketContext);
-    const [googlePayClient, setGooglePayClient] = useState<any>(null);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
     useEffect(() => {
-        const script = document.createElement('script');
-        script.src = 'https://pay.google.com/gp/p/js/pay.js';
-        script.async = true;
-        script.onload = () => initializeGooglePay();
-        document.body.appendChild(script);
-    }, []);
+        // Update the button disabled state based on address fields
+        const isDisabled = !address || !address.country_id || !address.city || !address.address || !address.zipcode;
+        setIsButtonDisabled(isDisabled);
+    }, [address]);
 
-    const initializeGooglePay = () => {
-        const client = new window.google.payments.api.PaymentsClient({environment: 'TEST'});
-        const button = client.createButton({
-            onClick: () => handleGooglePay(),
-        });
-
-        document.getElementById('google-pay-button').appendChild(button);
-        setGooglePayClient(client);
-    };
-
-    const handleGooglePay = async () => {
-        const paymentDataRequest = {
-            apiVersion: 2,
-            apiVersionMinor: 0,
-            allowedPaymentMethods: [
-                {
-                    type: 'CARD',
+    const googlePayConfig = {
+        environment: 'TEST', // Use 'PRODUCTION' for real payments
+        apiVersion: 2,
+        apiVersionMinor: 0,
+        allowedPaymentMethods: [
+            {
+                type: 'CARD',
+                parameters: {
+                    allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+                    allowedCardNetworks: ['AMEX', 'DISCOVER', 'MASTERCARD', 'VISA'],
+                },
+                tokenizationSpecification: {
+                    type: 'PAYMENT_GATEWAY',
                     parameters: {
-                        allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
-                        allowedCardNetworks: ['MASTERCARD', 'VISA'],
-                    },
-                    tokenizationSpecification: {
-                        type: 'PAYMENT_GATEWAY',
-                        parameters: {
-                            gateway: 'example',
-                            gatewayMerchantId: 'exampleGatewayMerchantId',
-                        },
+                        gateway: 'example', // Replace with your gateway
+                        gatewayMerchantId: 'exampleGatewayMerchantId', // Replace with your gateway merchant ID
                     },
                 },
-            ],
-            merchantInfo: {
-                merchantId: 'your-merchant-id',
-                merchantName: 'Example Merchant',
             },
-            transactionInfo: {
-                totalPriceStatus: 'FINAL',
-                totalPriceLabel: 'Total',
-                totalPrice: '100.00',
-                currencyCode: 'USD',
-                countryCode: 'US',
-            },
-        };
+        ],
+        merchantInfo: {
+            merchantId: '01234567890123456789', // Replace with your merchant ID
+            merchantName: 'Example Merchant',
+        },
+        transactionInfo: {
+            totalPriceStatus: 'FINAL',
+            totalPriceLabel: 'Total',
+            totalPrice: '1.00', // Replace with the actual amount
+            currencyCode: 'USD',
+            countryCode: 'US',
+        },
+    };
 
-        try {
-            const paymentData = await googlePayClient.loadPaymentData(paymentDataRequest);
-            console.log('Payment successful', paymentData);
-            // Handle the successful payment here (e.g., create an order, navigate to success page)
-        } catch (error) {
-            console.error('Payment failed', error);
-        }
+    const onLoadPaymentData = (paymentData: any) => {
+        console.log('Load payment data', paymentData);
+        createOrder();
     };
 
     const handleChange =
@@ -160,8 +140,7 @@ const CheckoutComponent = () => {
         );
     }
 
-    const createOrder = async (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
+    const createOrder = async () => {
         if (!address || !user || !basket) {
             console.error('Address, user or basket is not set');
             return;
@@ -327,17 +306,21 @@ const CheckoutComponent = () => {
                     <AddressForm/>
                 </AccordionDetails>
             </Accordion>
-            <div id="google-pay-button"></div>
-            <Button
-                type="submit"
+            <Box
                 sx={{mt: 2, mb: 2}}
-                variant="contained"
-                color="primary"
-                onClick={(event) => createOrder(event)}
-                disabled={!address || !address.country_id || !address.city || !address.address || !address.zipcode}
-            >
-                Create an order
-            </Button>
+                style={{
+                    pointerEvents: isButtonDisabled ? 'none' : 'auto',
+                    opacity: isButtonDisabled ? 0.5 : 1
+                }}>
+                <GooglePayButton
+                    environment="TEST"
+                    paymentRequest={googlePayConfig}
+                    onLoadPaymentData={onLoadPaymentData}
+                    buttonColor="white"
+                    buttonRadius="4"
+                    buttonType="buy"
+                />
+            </Box>
         </div>
     );
 };
