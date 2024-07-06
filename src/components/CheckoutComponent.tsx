@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {BasketItemContext} from './BasketItemContext';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -28,6 +28,12 @@ import {UserContext} from './UserContext';
 import {BasketContext} from './BasketContext';
 import {OrderContext} from './OrderContext';
 
+declare global {
+    interface Window {
+        google: any;
+    }
+}
+
 const CheckoutComponent = () => {
     const {basketItems, setBasketItemsAndStore, removeFromBasket} = useContext(BasketItemContext);
     const [checked, setChecked] = React.useState<number[]>([]);
@@ -44,6 +50,67 @@ const CheckoutComponent = () => {
     const {user, setUserAndStore} = useContext(UserContext);
     const {order, setOrder} = useContext(OrderContext);
     const {basket, setBasket, setBasketAndStore} = useContext(BasketContext);
+    const [googlePayClient, setGooglePayClient] = useState<any>(null);
+
+    useEffect(() => {
+        const script = document.createElement('script');
+        script.src = 'https://pay.google.com/gp/p/js/pay.js';
+        script.async = true;
+        script.onload = () => initializeGooglePay();
+        document.body.appendChild(script);
+    }, []);
+
+    const initializeGooglePay = () => {
+        const client = new window.google.payments.api.PaymentsClient({environment: 'TEST'});
+        const button = client.createButton({
+            onClick: () => handleGooglePay(),
+        });
+
+        document.getElementById('google-pay-button').appendChild(button);
+        setGooglePayClient(client);
+    };
+
+    const handleGooglePay = async () => {
+        const paymentDataRequest = {
+            apiVersion: 2,
+            apiVersionMinor: 0,
+            allowedPaymentMethods: [
+                {
+                    type: 'CARD',
+                    parameters: {
+                        allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+                        allowedCardNetworks: ['MASTERCARD', 'VISA'],
+                    },
+                    tokenizationSpecification: {
+                        type: 'PAYMENT_GATEWAY',
+                        parameters: {
+                            gateway: 'example',
+                            gatewayMerchantId: 'exampleGatewayMerchantId',
+                        },
+                    },
+                },
+            ],
+            merchantInfo: {
+                merchantId: 'your-merchant-id',
+                merchantName: 'Example Merchant',
+            },
+            transactionInfo: {
+                totalPriceStatus: 'FINAL',
+                totalPriceLabel: 'Total',
+                totalPrice: '100.00',
+                currencyCode: 'USD',
+                countryCode: 'US',
+            },
+        };
+
+        try {
+            const paymentData = await googlePayClient.loadPaymentData(paymentDataRequest);
+            console.log('Payment successful', paymentData);
+            // Handle the successful payment here (e.g., create an order, navigate to success page)
+        } catch (error) {
+            console.error('Payment failed', error);
+        }
+    };
 
     const handleChange =
         (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
@@ -262,6 +329,7 @@ const CheckoutComponent = () => {
                     <AddressForm/>
                 </AccordionDetails>
             </Accordion>
+            <div id="google-pay-button"></div>
             <Button
                 type="submit"
                 sx={{mt: 2, mb: 2}}
