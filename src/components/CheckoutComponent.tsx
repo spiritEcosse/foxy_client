@@ -23,7 +23,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddressForm from './AddressForm';
 import {AddressContext} from './AddressContext';
 import {fetchData} from '../utils';
-import {AddressType, OrderType} from '../types';
+import {OrderType} from '../types';
 import {UserContext} from './UserContext';
 import {BasketContext} from './BasketContext';
 import {OrderContext} from './OrderContext';
@@ -143,7 +143,7 @@ const CheckoutComponent = () => {
         });
     };
 
-    if (basketItems.length === 0) {
+    if (basketItems.length === 0 || localStorage.getItem('basket_items') === '[]') {
         return (
             <div style={{
                 display: 'flex',
@@ -167,27 +167,25 @@ const CheckoutComponent = () => {
             return;
         }
 
+        let _address;
         if (address.id === 0) {
-            await fetchData('', 'address', 'POST', setShowLoginPopup, {
+            _address = await fetchData('', 'address', 'POST', setShowLoginPopup, {
                 address: address.address,
                 country_id: address.country_id,
                 city: address.city,
                 zipcode: address.zipcode,
                 user_id: user.id
-            }).then((data: AddressType) => {
-                setAddressAndStore(data);
             });
         } else {
-            await fetchData('', `address/${address.id}`, 'PUT', setShowLoginPopup, {
+            _address = await fetchData('', `address/${address.id}`, 'PUT', setShowLoginPopup, {
                 address: address.address,
                 country_id: address.country_id,
                 city: address.city,
                 zipcode: address.zipcode,
                 user_id: user.id
-            }).then((data: AddressType) => {
-                setAddressAndStore(data);
             });
         }
+        setAddressAndStore(_address);
 
         const items = basketItems.map((basketItem) => ({
             id: basketItem.id,

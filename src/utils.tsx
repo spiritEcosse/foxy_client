@@ -60,6 +60,7 @@ export const fetchData = async (url: string, path: string, method: 'GET' | 'POST
             localStorage.setItem('user', 'null');
             localStorage.setItem('basket', 'null');
             localStorage.setItem('basket_items', '[]');
+            localStorage.setItem('address', 'null');
             setShowLoginPopup(true);
         }
         throw new CustomError(code, message);

@@ -6,7 +6,7 @@ import {AddressContext} from './AddressContext';
 import {UserContext} from './UserContext';
 
 const AddressForm = () => {
-    const {address, setAddress, updateAddressField} = useContext(AddressContext);
+    const {address, setAddress, setAddressAndStore, updateAddressField} = useContext(AddressContext);
     const {user, setUserAndStore} = useContext(UserContext);
     const [countries, setCountries] = useState<CountryType[]>([]);
     const [showLoginPopup, setShowLoginPopup] = useState(false);
@@ -18,15 +18,15 @@ const AddressForm = () => {
             })
             .catch(error => console.error('Error:', error));
 
-        if (user) {
+        if (user && !address) {
             fetchData('', `address?user_id=${user.id}`, 'GET', setShowLoginPopup)
                 .then((data) => {
                     if (data.data.length) {
-                        setAddress(data.data[0]);
+                        setAddressAndStore(data.data[0]);
                     }
                 }).catch(error => console.error('Error:', error));
         }
-    }, [user, setAddress]);
+    }, [user, address, setAddressAndStore]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         updateAddressField(event.target.name as keyof AddressType, event.target.value);
