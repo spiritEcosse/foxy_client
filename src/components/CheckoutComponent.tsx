@@ -154,12 +154,9 @@ const CheckoutComponent = () => {
             setBasketItemsAndStore([]);
             setBasketAndStore(null);
         });
-<<<<<<< Updated upstream
-=======
         const _basket = await fetchData('', 'basket', 'POST', setShowLoginPopup, {user_id: user.id});
         setBasketAndStore(_basket);
         navigate('/success_order');
->>>>>>> Stashed changes
     };
 
     return (
