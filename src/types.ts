@@ -46,7 +46,6 @@ export interface OrderType {
     date: Date;
     total: number;
     total_ex_taxes: number;
-    delivery_fees: number;
     tax_rate: number;
     taxes: number;
     user_id: number;
@@ -62,6 +61,11 @@ export interface BasketType {
     user_id: number;
     created_at: Date;
     updated_at: Date;
+}
+
+export interface FinancialDetailsType {
+    id: number;
+    tax_rate: number;
 }
 
 export interface UserType {

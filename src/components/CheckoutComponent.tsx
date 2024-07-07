@@ -35,10 +35,9 @@ const CheckoutComponent = () => {
     const [checked, setChecked] = React.useState<number[]>([]);
     const navigate = useNavigate();
     const totalExTaxes = basketItems.reduce((total, item) => total + item.item.price * item.quantity, 0);
-    const taxRate = 0.2; // 20%
+    const [taxRate, setTaxRate] = useState(0);
     const taxes = Math.round(totalExTaxes * taxRate * 100) / 100;
-    const deliveryFees = 100;
-    const total = totalExTaxes + taxes + deliveryFees;
+    const total = totalExTaxes + taxes;
     const roundedTotal = Math.round(total * 100) / 100;
     const [expanded, setExpanded] = React.useState<string | false>(false);
     const {address, setAddressAndStore} = useContext(AddressContext);
@@ -49,10 +48,24 @@ const CheckoutComponent = () => {
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
     useEffect(() => {
+        const fetchTaxRate = async () => {
+            try {
+                const response = await fetchData('', 'financialdetails', 'GET', setShowLoginPopup);
+                if (response.data.length) {
+                    setTaxRate(response.data[0].tax_rate);
+                } else {
+                    console.error('No tax rate data found');
+                }
+            } catch (error) {
+                console.error('Failed to fetch tax rate:', error);
+            }
+        };
+
+        fetchTaxRate();
         // Update the button disabled state based on address fields
         const isDisabled = !address || !address.country_id || !address.city || !address.address || !address.zipcode;
         setIsButtonDisabled(isDisabled);
-    }, [address]);
+    }, [address, setTaxRate]);
 
     const googlePayConfig = {
         environment: 'TEST', // Use 'PRODUCTION' for real payments
@@ -181,7 +194,6 @@ const CheckoutComponent = () => {
             basket_id: basket.id,
             total: total,
             total_ex_taxes: totalExTaxes,
-            delivery_fees: deliveryFees,
             tax_rate: taxRate,
             taxes: taxes,
             user_id: user.id,
@@ -271,10 +283,6 @@ const CheckoutComponent = () => {
                                 <TableRow>
                                     <TableCell colSpan={6}>Total Excluding Taxes</TableCell>
                                     <TableCell>{`${totalExTaxes} €`}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell colSpan={6}>Delivery Fees</TableCell>
-                                    <TableCell>{`${deliveryFees} €`}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell colSpan={6}>Taxes {taxRate * 100}%</TableCell>
