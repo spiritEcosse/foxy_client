@@ -23,7 +23,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddressForm from './AddressForm';
 import {AddressContext} from './AddressContext';
 import {fetchData} from '../utils';
-import {OrderType} from '../types';
+import {FinancialDetailsType, OrderType} from '../types';
 import {UserContext} from './UserContext';
 import {BasketContext} from './BasketContext';
 import {OrderContext} from './OrderContext';
@@ -35,8 +35,8 @@ const CheckoutComponent = () => {
     const [checked, setChecked] = React.useState<number[]>([]);
     const navigate = useNavigate();
     const totalExTaxes = basketItems.reduce((total, item) => total + item.item.price * item.quantity, 0);
-    const [taxRate, setTaxRate] = useState(0);
-    const taxes = Math.round(totalExTaxes * taxRate * 100) / 100;
+    const [financialDetails, setFinancialDetails] = useState<FinancialDetailsType>({} as FinancialDetailsType);
+    const taxes = Math.round(totalExTaxes * (financialDetails.tax_rate || 0) * 100) / 100;
     const total = totalExTaxes + taxes;
     const roundedTotal = Math.round(total * 100) / 100;
     const [expanded, setExpanded] = React.useState<string | false>(false);
@@ -48,24 +48,24 @@ const CheckoutComponent = () => {
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
     useEffect(() => {
-        const fetchTaxRate = async () => {
+        const fetchFinancialDetails = async () => {
             try {
                 const response = await fetchData('', 'financialdetails', 'GET', setShowLoginPopup);
                 if (response.data.length) {
-                    setTaxRate(response.data[0].tax_rate);
+                    setFinancialDetails(response.data[0]);
                 } else {
-                    console.error('No tax rate data found');
+                    console.error('No financial details found');
                 }
             } catch (error) {
-                console.error('Failed to fetch tax rate:', error);
+                console.error('Failed to fetch financial details:', error);
             }
         };
 
-        fetchTaxRate();
+        fetchFinancialDetails();
         // Update the button disabled state based on address fields
         const isDisabled = !address || !address.country_id || !address.city || !address.address || !address.zipcode;
         setIsButtonDisabled(isDisabled);
-    }, [address, setTaxRate]);
+    }, [address, setFinancialDetails]);
 
     const googlePayConfig = {
         environment: 'TEST', // Use 'PRODUCTION' for real payments
@@ -81,22 +81,22 @@ const CheckoutComponent = () => {
                 tokenizationSpecification: {
                     type: 'PAYMENT_GATEWAY',
                     parameters: {
-                        gateway: 'example', // Replace with your gateway
-                        gatewayMerchantId: 'exampleGatewayMerchantId', // Replace with your gateway merchant ID
+                        gateway: financialDetails.gateway,
+                        gatewayMerchantId: financialDetails.gateway_merchant_id
                     },
                 },
             },
         ],
         merchantInfo: {
-            merchantId: '01234567890123456789', // Replace with your merchant ID
-            merchantName: 'Example Merchant',
+            merchantId: financialDetails.merchant_id,
+            merchantName: financialDetails.merchant_name
         },
         transactionInfo: {
             totalPriceStatus: 'FINAL',
             totalPriceLabel: 'Total',
-            totalPrice: '1.00', // Replace with the actual amount
-            currencyCode: 'USD',
-            countryCode: 'US',
+            totalPrice: `${roundedTotal}`,
+            currencyCode: 'EUR',
+            countryCode: address?.country.code || 'US',
         },
     };
 
@@ -194,7 +194,7 @@ const CheckoutComponent = () => {
             basket_id: basket.id,
             total: total,
             total_ex_taxes: totalExTaxes,
-            tax_rate: taxRate,
+            tax_rate: financialDetails.tax_rate,
             taxes: taxes,
             user_id: user.id,
             reference: 'ref',
@@ -285,7 +285,7 @@ const CheckoutComponent = () => {
                                     <TableCell>{`${totalExTaxes} €`}</TableCell>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell colSpan={6}>Taxes {taxRate * 100}%</TableCell>
+                                    <TableCell colSpan={6}>Taxes {financialDetails.tax_rate * 100}%</TableCell>
                                     <TableCell>{`${taxes} €`}</TableCell>
                                 </TableRow>
                                 <TableRow>

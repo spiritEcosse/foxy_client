@@ -66,6 +66,12 @@ export interface BasketType {
 export interface FinancialDetailsType {
     id: number;
     tax_rate: number;
+    gateway: string;
+    gateway_merchant_id: string;
+    merchant_id: string;
+    merchant_name: string;
+    created_at: Date;
+    updated_at: Date;
 }
 
 export interface UserType {
