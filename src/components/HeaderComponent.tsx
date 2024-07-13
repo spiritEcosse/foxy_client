@@ -104,12 +104,14 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                         </Typography>
                     </Link>
                     <Box sx={{display: {sm: 'flex', marginLeft: 'auto'}}}>
-                        {navItems.map(item => (
-                            <Button component={Link} key={item.id} sx={{color: '#fff'}}
-                                to={item.link}>
-                                {item.title}
-                            </Button>
-                        ))}
+                        <Box sx={{display: {xs: 'none', sm: 'flex', marginLeft: 'auto'}}}>
+                            {navItems.map(item => (
+                                <Button component={Link} key={item.id} sx={{color: '#fff'}}
+                                    to={item.link}>
+                                    {item.title}
+                                </Button>
+                            ))}
+                        </Box>
                         <IconButton
                             size="small"
                             edge="end"
