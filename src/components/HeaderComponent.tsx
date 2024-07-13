@@ -16,7 +16,6 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import {Link} from 'react-router-dom';
 import {CurrencyContext} from './CurrencyContext';
-import {googleLogout} from '@react-oauth/google';
 import {UserContext} from './UserContext';
 import GoogleLoginComponent from './GoogleLoginComponent';
 import {styled} from '@mui/material/styles';
@@ -26,6 +25,10 @@ import {BasketItemContext} from './BasketItemContext';
 import {BasketContext} from './BasketContext';
 import {AddressContext} from './AddressContext';
 import {OrderContext} from './OrderContext';
+import EuroIcon from '@mui/icons-material/Euro';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import LogoutIcon from '@mui/icons-material/Logout';
+import {googleLogout} from '@react-oauth/google';
 
 interface HeaderComponentProps {
     window?: () => Window;
@@ -100,35 +103,65 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                             {import.meta.env.PROJECT_NAME}
                         </Typography>
                     </Link>
-                    <Box sx={{display: {xs: 'none', sm: 'flex', marginLeft: 'auto'}}}>
-                        <Button variant="contained" onClick={() => setCurrency('USD')}>USD</Button>
-                        <Button variant="contained" onClick={() => setCurrency('EUR')}>EUR</Button>
+                    <Box sx={{display: {sm: 'flex', marginLeft: 'auto'}}}>
                         {navItems.map(item => (
                             <Button component={Link} key={item.id} sx={{color: '#fff'}}
                                 to={item.link}>
                                 {item.title}
                             </Button>
                         ))}
+                        <IconButton
+                            size="small"
+                            edge="end"
+                            aria-label="usd"
+                            // aria-controls={menuId}
+                            aria-haspopup="true"
+                            onClick={() => setCurrency('USD')}
+                            color="inherit"
+                        >
+                            <AttachMoneyIcon/>
+                        </IconButton>
+                        <IconButton
+                            size="small"
+                            edge="end"
+                            aria-label="eur"
+                            // aria-controls={menuId}
+                            aria-haspopup="true"
+                            onClick={() => setCurrency('EUR')}
+                            color="inherit"
+                        >
+                            <EuroIcon/>
+                        </IconButton>
                         <Link to="checkout">
-                            <IconButton aria-label="cart">
-                                <StyledBadge badgeContent={basketItems.length} color="secondary">
+                            <IconButton aria-label="cart" color="inherit" sx={{color: 'white'}}>
+                                <Badge badgeContent={basketItems.length}>
                                     <ShoppingCartIcon/>
-                                </StyledBadge>
+                                </Badge>
                             </IconButton>
                         </Link>
                         {(localStorage.getItem('auth') === '' || localStorage.getItem('user') == 'null' || !user) ? (
                             <GoogleLoginComponent/>
                         ) : (
-                            <><Typography variant="h6">{user.first_name}</Typography>
-                                <Button variant="contained" onClick={() => {
-                                    localStorage.setItem('auth', '');
-                                    setUserAndStore(null);
-                                    setAddressAndStore(null);
-                                    setBasketAndStore(null);
-                                    setOrder(null);
-                                    setBasketItemsAndStore([]);
-                                    googleLogout();
-                                }}>Logout</Button></>
+                            <>
+                                <IconButton
+                                    size="small"
+                                    edge="end"
+                                    aria-label="logout"
+                                    aria-haspopup="true"
+                                    onClick={() => {
+                                        localStorage.setItem('auth', '');
+                                        setUserAndStore(null);
+                                        setAddressAndStore(null);
+                                        setBasketAndStore(null);
+                                        setOrder(null);
+                                        setBasketItemsAndStore([]);
+                                        googleLogout();
+                                    }}
+                                    color="inherit"
+                                >
+                                    <LogoutIcon/>
+                                </IconButton>
+                            </>
                         )}
                     </Box>
                 </Toolbar>
