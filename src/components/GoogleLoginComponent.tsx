@@ -47,17 +47,17 @@ const GoogleLoginComponent: React.FC = () => {
                     return;
                 }
                 const credential = credentialResponse.credential as string;
-                const _user: UserType = await fetchData('', 'auth/google_login', 'POST', {credentials: credential});
+                const _user: UserType = await fetchData('', 'auth/google_login', 'POST', {credentials: credential}, true);
                 setUserAndStore(_user);
                 localStorage.setItem('auth', credential);
 
-                const responseBasketGet = await fetchData('', `basket?user_id=${_user.id}&in_use=true`, 'GET');
+                const responseBasketGet = await fetchData('', `basket?user_id=${_user.id}&in_use=true`, 'GET', {}, true);
                 let _basket;
                 if (responseBasketGet.data.length === 0) {
-                    _basket = await fetchData('', 'basket', 'POST', {user_id: _user.id});
+                    _basket = await fetchData('', 'basket', 'POST', {user_id: _user.id}, true);
                 } else {
                     _basket = responseBasketGet.data[0];
-                    const responseBasketItems = await fetchData('', `basketitem?basket_id=${_basket.id}`, 'GET');
+                    const responseBasketItems = await fetchData('', `basketitem?basket_id=${_basket.id}`, 'GET', {}, true);
                     setBasketItemsAndStore(responseBasketItems.data);
                 }
                 setBasketAndStore(_basket);

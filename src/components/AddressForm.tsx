@@ -18,7 +18,7 @@ const AddressForm = () => {
             .catch(error => console.error('Error:', error));
 
         if (user && !address) {
-            fetchData('', `address?user_id=${user.id}`, 'GET')
+            fetchData('', `address?user_id=${user.id}`, 'GET', {}, true)
                 .then((data) => {
                     if (data.data.length) {
                         setAddressAndStore(data.data[0]);

@@ -49,7 +49,7 @@ const CheckoutComponent = () => {
     useEffect(() => {
         const fetchFinancialDetails = async () => {
             try {
-                const response = await fetchData('', 'financialdetails', 'GET');
+                const response = await fetchData('', 'financialdetails', 'GET', {}, true);
                 if (response.data.length) {
                     setFinancialDetails(response.data[0]);
                 } else {
@@ -165,7 +165,7 @@ const CheckoutComponent = () => {
                 city: address.city,
                 zipcode: address.zipcode,
                 user_id: user.id
-            });
+            }, true);
         } else {
             _address = await fetchData('', `address/${address.id}`, 'PUT', {
                 address: address.address,
@@ -173,7 +173,7 @@ const CheckoutComponent = () => {
                 city: address.city,
                 zipcode: address.zipcode,
                 user_id: user.id
-            });
+            }, true);
         }
         setAddressAndStore(_address);
 
@@ -186,7 +186,7 @@ const CheckoutComponent = () => {
 
         fetchData('', 'basketitem/items', 'PUT', {
             items: items
-        });
+        }, true);
 
         await fetchData('', 'order', 'POST', {
             basket_id: basket.id,
@@ -197,18 +197,18 @@ const CheckoutComponent = () => {
             user_id: user.id,
             reference: 'ref',
             address_id: address.id
-        }).then((data: OrderType) => {
+        }, true).then((data: OrderType) => {
             setOrder(data);
         });
 
         await fetchData('', `basket/${basket.id}`, 'PUT', {
             user_id: user.id,
             in_use: false
-        }).then(() => {
+        }, true).then(() => {
             setBasketItemsAndStore([]);
             setBasketAndStore(null);
         });
-        const _basket = await fetchData('', 'basket', 'POST', {user_id: user.id});
+        const _basket = await fetchData('', 'basket', 'POST', {user_id: user.id}, true);
         setBasketAndStore(_basket);
         navigate('/success_order');
     };

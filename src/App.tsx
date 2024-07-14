@@ -169,7 +169,7 @@ function App() {
                 basket_id: basket.id,
                 item_id: item.id,
             };
-            const basketItem = await fetchData('', 'basketitem', 'POST', params);
+            const basketItem = await fetchData('', 'basketitem', 'POST', params, true);
             setBasketItemAndStore(basketItem);
         } catch (error) {
             if ((error as CustomError).code) {
@@ -196,7 +196,7 @@ function App() {
                 console.error(`No basket item found with item id ${excludeItem.id}`);
                 return;
             }
-            await fetchData('', `basketitem/${basketItem.id}`, 'DELETE');
+            await fetchData('', `basketitem/${basketItem.id}`, 'DELETE', {}, true);
             setBasketItems((currentBasket) => {
                 const updatedBasket = currentBasket.filter((basketItem) => basketItem.item.id !== excludeItem.id);
                 localStorage.setItem('basket_items', JSON.stringify(updatedBasket));
