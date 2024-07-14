@@ -20,7 +20,7 @@ export const fetchCurrencyRate = async (currency: string) => {
     return data.rates[currency];
 };
 
-export const fetchData = async (url: string, path: string, method: 'GET' | 'POST' | 'DELETE' | 'PUT' = 'GET', setShowLoginPopup: (value: boolean) => void, body?: Record<string, unknown>) => {
+export const fetchData = async (url: string, path: string, method: 'GET' | 'POST' | 'DELETE' | 'PUT' = 'GET', body?: Record<string, unknown>) => {
     try {
         const response = await axiosCached({
             method,
@@ -56,12 +56,9 @@ export const fetchData = async (url: string, path: string, method: 'GET' | 'POST
             }
         }
         if (message === 'No Server Response') {
-            localStorage.setItem('auth', '');
-            localStorage.setItem('user', 'null');
-            localStorage.setItem('basket', 'null');
-            localStorage.setItem('basket_items', '[]');
-            localStorage.setItem('address', 'null');
-            setShowLoginPopup(true);
+            localStorage.removeItem('auth');
+            localStorage.setItem('showLoginPopup', 'true');
+            window.dispatchEvent(new Event('storage'));
         }
         throw new CustomError(code, message);
     }

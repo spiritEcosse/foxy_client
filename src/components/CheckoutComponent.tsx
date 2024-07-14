@@ -41,7 +41,6 @@ const CheckoutComponent = () => {
     const roundedTotal = Math.round(total * 100) / 100;
     const [expanded, setExpanded] = React.useState<string | false>(false);
     const {address, setAddressAndStore} = useContext(AddressContext);
-    const [showLoginPopup, setShowLoginPopup] = useState(false);
     const {user, setUserAndStore} = useContext(UserContext);
     const {order, setOrder} = useContext(OrderContext);
     const {basket, setBasket, setBasketAndStore} = useContext(BasketContext);
@@ -50,7 +49,7 @@ const CheckoutComponent = () => {
     useEffect(() => {
         const fetchFinancialDetails = async () => {
             try {
-                const response = await fetchData('', 'financialdetails', 'GET', setShowLoginPopup);
+                const response = await fetchData('', 'financialdetails', 'GET');
                 if (response.data.length) {
                     setFinancialDetails(response.data[0]);
                 } else {
@@ -101,7 +100,6 @@ const CheckoutComponent = () => {
     };
 
     const onLoadPaymentData = (paymentData: any) => {
-        console.log('Load payment data', paymentData);
         createOrder();
     };
 
@@ -136,7 +134,7 @@ const CheckoutComponent = () => {
         });
     };
 
-    if (basketItems.length === 0 || localStorage.getItem('basket_items') === '[]') {
+    if (basketItems.length === 0) {
         return (
             <div style={{
                 display: 'flex',
@@ -161,7 +159,7 @@ const CheckoutComponent = () => {
 
         let _address;
         if (address.id === 0) {
-            _address = await fetchData('', 'address', 'POST', setShowLoginPopup, {
+            _address = await fetchData('', 'address', 'POST', {
                 address: address.address,
                 country_id: address.country_id,
                 city: address.city,
@@ -169,7 +167,7 @@ const CheckoutComponent = () => {
                 user_id: user.id
             });
         } else {
-            _address = await fetchData('', `address/${address.id}`, 'PUT', setShowLoginPopup, {
+            _address = await fetchData('', `address/${address.id}`, 'PUT', {
                 address: address.address,
                 country_id: address.country_id,
                 city: address.city,
@@ -186,11 +184,11 @@ const CheckoutComponent = () => {
             basket_id: basket.id
         }));
 
-        fetchData('', 'basketitem/items', 'PUT', setShowLoginPopup, {
+        fetchData('', 'basketitem/items', 'PUT', {
             items: items
         });
 
-        await fetchData('', 'order', 'POST', setShowLoginPopup, {
+        await fetchData('', 'order', 'POST', {
             basket_id: basket.id,
             total: total,
             total_ex_taxes: totalExTaxes,
@@ -203,14 +201,14 @@ const CheckoutComponent = () => {
             setOrder(data);
         });
 
-        await fetchData('', `basket/${basket.id}`, 'PUT', setShowLoginPopup, {
+        await fetchData('', `basket/${basket.id}`, 'PUT', {
             user_id: user.id,
             in_use: false
         }).then(() => {
             setBasketItemsAndStore([]);
             setBasketAndStore(null);
         });
-        const _basket = await fetchData('', 'basket', 'POST', setShowLoginPopup, {user_id: user.id});
+        const _basket = await fetchData('', 'basket', 'POST', {user_id: user.id});
         setBasketAndStore(_basket);
         navigate('/success_order');
     };

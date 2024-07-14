@@ -1,5 +1,5 @@
 // GoogleLoginComponent.tsx
-import React, {useContext, useState} from 'react';
+import React, {useContext} from 'react';
 import {UserContext} from './UserContext';
 import {LoginPopupContext} from './LoginPopupContext';
 import {BasketContext} from './BasketContext';
@@ -30,40 +30,38 @@ const style = {
 
 const GoogleLoginComponent: React.FC = () => {
     const {setUserAndStore} = useContext(UserContext);
-    const {showLoginPopup, setShowLoginPopup} = useContext(LoginPopupContext);
+    const {showLoginPopup, setShowLoginPopupAndStore} = useContext(LoginPopupContext);
     const {basket, setBasket, setBasketAndStore} = useContext(BasketContext);
     const {basketItems, setBasketItemsAndStore} = useContext(BasketItemContext);
-    const [openModal, setOpenModal] = useState(false);
 
     // Define the login function to open the modal
     const login = () => {
-        setOpenModal(true);
+        setShowLoginPopupAndStore(true);
     };
 
     const googleLoginButton = (
         <GoogleLogin
-            useOneTap={showLoginPopup}
             onSuccess={async (credentialResponse: any) => {
                 if (!credentialResponse.credential) {
                     console.log('Credential is undefined');
                     return;
                 }
                 const credential = credentialResponse.credential as string;
-                const _user: UserType = await fetchData('', 'auth/google_login', 'POST', setShowLoginPopup, {credentials: credential});
-                setShowLoginPopup(false);
+                const _user: UserType = await fetchData('', 'auth/google_login', 'POST', {credentials: credential});
                 setUserAndStore(_user);
                 localStorage.setItem('auth', credential);
 
-                const responseBasketGet = await fetchData('', `basket?user_id=${_user.id}&in_use=true`, 'GET', setShowLoginPopup);
+                const responseBasketGet = await fetchData('', `basket?user_id=${_user.id}&in_use=true`, 'GET');
                 let _basket;
                 if (responseBasketGet.data.length === 0) {
-                    _basket = await fetchData('', 'basket', 'POST', setShowLoginPopup, {user_id: _user.id});
+                    _basket = await fetchData('', 'basket', 'POST', {user_id: _user.id});
                 } else {
                     _basket = responseBasketGet.data[0];
-                    const responseBasketItems = await fetchData('', `basketitem?basket_id=${_basket.id}`, 'GET', setShowLoginPopup);
+                    const responseBasketItems = await fetchData('', `basketitem?basket_id=${_basket.id}`, 'GET');
                     setBasketItemsAndStore(responseBasketItems.data);
                 }
                 setBasketAndStore(_basket);
+                setShowLoginPopupAndStore(false);
             }}
             onError={() => {
                 console.log('Login Failed');
@@ -74,8 +72,8 @@ const GoogleLoginComponent: React.FC = () => {
     // Example modal component (simplified for demonstration)
     const renderModal = (
         <Modal
-            open={openModal}
-            onClose={() => setOpenModal(false)}
+            open={showLoginPopup}
+            onClose={() => setShowLoginPopupAndStore(false)}
             aria-labelledby="login-modal-title"
             aria-describedby="login-modal-description"
         >

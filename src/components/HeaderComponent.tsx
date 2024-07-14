@@ -18,8 +18,7 @@ import {Link} from 'react-router-dom';
 import {CurrencyContext} from './CurrencyContext';
 import {UserContext} from './UserContext';
 import GoogleLoginComponent from './GoogleLoginComponent';
-import {styled} from '@mui/material/styles';
-import Badge, {BadgeProps} from '@mui/material/Badge';
+import Badge from '@mui/material/Badge';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import {BasketItemContext} from './BasketItemContext';
 import {BasketContext} from './BasketContext';
@@ -31,20 +30,12 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import {googleLogout} from '@react-oauth/google';
 
 interface HeaderComponentProps {
-    window?: () => Window;
+    windowProps?: () => Window;
 }
 
-const StyledBadge = styled(Badge)<BadgeProps>(({theme}) => ({
-    '& .MuiBadge-badge': {
-        right: -3,
-        top: 13,
-        border: `2px solid ${theme.palette.background.paper}`,
-        padding: '0 4px',
-    },
-}));
 
 export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
-    const {window} = props;
+    const {windowProps} = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const navItems = [
         {id: 1, title: 'About', link: '/page/about'},
@@ -78,7 +69,14 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
         </Box>
     );
 
-    const container = window !== undefined ? () => window().document.body : undefined;
+    const container = windowProps !== undefined ? () => windowProps().document.body : undefined;
+
+    const handleLogoutClick = () => {
+        googleLogout();
+        localStorage.removeItem('auth');
+        localStorage.setItem('showLoginPopup', 'false');
+        window.dispatchEvent(new Event('storage'));
+    };
 
     return (
         <Box sx={{display: 'flex'}}>
@@ -141,7 +139,7 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                                 </Badge>
                             </IconButton>
                         </Link>
-                        {(localStorage.getItem('auth') === '' || localStorage.getItem('user') == 'null' || !user) ? (
+                        {(!user) ? (
                             <GoogleLoginComponent/>
                         ) : (
                             <>
@@ -150,15 +148,7 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                                     edge="end"
                                     aria-label="logout"
                                     aria-haspopup="true"
-                                    onClick={() => {
-                                        localStorage.setItem('auth', '');
-                                        setUserAndStore(null);
-                                        setAddressAndStore(null);
-                                        setBasketAndStore(null);
-                                        setOrder(null);
-                                        setBasketItemsAndStore([]);
-                                        googleLogout();
-                                    }}
+                                    onClick={handleLogoutClick}
                                     color="inherit"
                                 >
                                     <LogoutIcon/>

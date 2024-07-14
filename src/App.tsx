@@ -80,7 +80,8 @@ function App() {
     const [basketItems, setBasketItems] = useState<BasketItemType[]>(JSON.parse(localStorage.getItem('basket_items') || '[]'));
     const [user, setUser] = useState<UserType | null>(JSON.parse(localStorage.getItem('user') || 'null'));
     const [order, setOrder] = useState<OrderType | null>(null);
-    const [showLoginPopup, setShowLoginPopup] = useState(false);
+    const [showLoginPopup, setShowLoginPopup] = useState(JSON.parse(localStorage.getItem('showLoginPopup') || 'false'));
+    const [auth, setAuth] = useState(localStorage.getItem('auth'));
 
     const updateAddressField = (fieldName: keyof AddressType, newValue: any) => {
         setAddress((prevAddress) => {
@@ -104,9 +105,11 @@ function App() {
     const setUserAndStore = (user: UserType | null) => {
         setUser(user);
         localStorage.setItem('user', JSON.stringify(user));
-        if (!user) {
-            localStorage.setItem('auth', '');
-        }
+    };
+
+    const setShowLoginPopupAndStore = (value: boolean) => {
+        setShowLoginPopup(value);
+        localStorage.setItem('showLoginPopup', JSON.stringify(value));
     };
 
     const setBasketAndStore = (basket: BasketType | null) => {
@@ -134,32 +137,47 @@ function App() {
 
     useEffect(() => {
         localStorage.setItem('currency', currency);
-    }, [currency]);
+        const handleStorageChange = () => {
+            setAuth(localStorage.getItem('auth'));
+            setUserAndStore(null);
+            setAddressAndStore(null);
+            setBasketAndStore(null);
+            setOrder(null);
+            setBasketItemsAndStore([]);
+            localStorage.removeItem('user');
+            localStorage.removeItem('basket');
+            localStorage.removeItem('basket_items');
+            localStorage.removeItem('address');
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+
+        // Cleanup the event listener
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, [currency, auth]);
 
     const addToBasket = async (item: ItemType) => {
-        if (localStorage.getItem('user') == 'null') {
-            setShowLoginPopup(true);
+        if (!basket) {
+            setShowLoginPopupAndStore(true);
             return;
         }
 
-        if (basket) {
-            try {
-                const params = {
-                    basket_id: basket.id,
-                    item_id: item.id,
-                };
-                const basketItem = await fetchData('', 'basketitem', 'POST', setShowLoginPopup, params);
-                setBasketItemAndStore(basketItem);
-            } catch (error) {
-                if ((error as CustomError).code) {
-                    console.log((error as CustomError).code, (error as CustomError).message);
-                } else {
-                    console.log(error);
-                }
-                return;
+        try {
+            const params = {
+                basket_id: basket.id,
+                item_id: item.id,
+            };
+            const basketItem = await fetchData('', 'basketitem', 'POST', params);
+            setBasketItemAndStore(basketItem);
+        } catch (error) {
+            if ((error as CustomError).code) {
+                console.log((error as CustomError).code, (error as CustomError).message);
+            } else {
+                console.log(error);
             }
-        } else {
-            console.log('Set up basket.scss firstly.');
+            return;
         }
     };
 
@@ -169,8 +187,8 @@ function App() {
 
     const removeFromBasket = async (excludeItem: ItemType) => {
         try {
-            if (localStorage.getItem('user') == 'null') {
-                setShowLoginPopup(true);
+            if (!basketItems) {
+                setShowLoginPopupAndStore(true);
                 return;
             }
             const basketItem = basketItems.find((basketItem) => basketItem.item.id === excludeItem.id);
@@ -178,7 +196,7 @@ function App() {
                 console.error(`No basket item found with item id ${excludeItem.id}`);
                 return;
             }
-            await fetchData('', `basketitem/${basketItem.id}`, 'DELETE', setShowLoginPopup);
+            await fetchData('', `basketitem/${basketItem.id}`, 'DELETE');
             setBasketItems((currentBasket) => {
                 const updatedBasket = currentBasket.filter((basketItem) => basketItem.item.id !== excludeItem.id);
                 localStorage.setItem('basket_items', JSON.stringify(updatedBasket));
@@ -199,7 +217,7 @@ function App() {
     return (
         <OrderContext.Provider value={{order, setOrder}}>
             <AddressContext.Provider value={{address, setAddress, setAddressAndStore, updateAddressField}}>
-                <LoginPopupContext.Provider value={{showLoginPopup, setShowLoginPopup}}>
+                <LoginPopupContext.Provider value={{showLoginPopup, setShowLoginPopup, setShowLoginPopupAndStore}}>
                     <UserContext.Provider value={{user, setUser, setUserAndStore}}>
                         <BasketContext.Provider value={{basket, setBasket, setBasketAndStore}}>
                             <BasketItemContext.Provider

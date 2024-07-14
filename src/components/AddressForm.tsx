@@ -9,17 +9,16 @@ const AddressForm = () => {
     const {address, setAddress, setAddressAndStore, updateAddressField} = useContext(AddressContext);
     const {user, setUserAndStore} = useContext(UserContext);
     const [countries, setCountries] = useState<CountryType[]>([]);
-    const [showLoginPopup, setShowLoginPopup] = useState(false);
 
     useEffect(() => {
-        fetchData('', 'country?limit=100', 'GET', setShowLoginPopup)
+        fetchData('', 'country?limit=100', 'GET')
             .then(data => {
                 setCountries(data.data);
             })
             .catch(error => console.error('Error:', error));
 
         if (user && !address) {
-            fetchData('', `address?user_id=${user.id}`, 'GET', setShowLoginPopup)
+            fetchData('', `address?user_id=${user.id}`, 'GET')
                 .then((data) => {
                     if (data.data.length) {
                         setAddressAndStore(data.data[0]);
