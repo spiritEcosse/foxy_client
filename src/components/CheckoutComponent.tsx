@@ -67,7 +67,7 @@ const CheckoutComponent = () => {
     }, [address, setFinancialDetails]);
 
     const googlePayConfig = {
-        environment: 'TEST', // Use 'PRODUCTION' for real payments
+        environment: import.meta.env.VITE_APP_GOOGLE_PAY_ENV,
         apiVersion: 2,
         apiVersionMinor: 0,
         allowedPaymentMethods: [
@@ -319,7 +319,6 @@ const CheckoutComponent = () => {
                     opacity: isButtonDisabled ? 0.5 : 1
                 }}>
                 <GooglePayButton
-                    environment="TEST"
                     paymentRequest={googlePayConfig}
                     onLoadPaymentData={onLoadPaymentData}
                     buttonColor="white"
