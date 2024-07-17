@@ -28,6 +28,7 @@ import EuroIcon from '@mui/icons-material/Euro';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import LogoutIcon from '@mui/icons-material/Logout';
 import {googleLogout} from '@react-oauth/google';
+import PersonIcon from '@mui/icons-material/Person';
 
 interface HeaderComponentProps {
     windowProps?: () => Window;
@@ -133,7 +134,7 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                             <EuroIcon/>
                         </IconButton>
                         <Link to="checkout">
-                            <IconButton aria-label="cart" color="inherit" sx={{color: 'white'}}>
+                            <IconButton aria-label="cart" sx={{color: 'white'}}>
                                 <Badge badgeContent={basketItems.length}>
                                     <ShoppingCartIcon/>
                                 </Badge>
@@ -143,6 +144,17 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                             <GoogleLoginComponent/>
                         ) : (
                             <>
+                                <Link to="account">
+                                    <IconButton
+                                        size="small"
+                                        edge="end"
+                                        aria-label="account"
+                                        aria-haspopup="true"
+                                        sx={{color: 'white'}}
+                                    >
+                                        <PersonIcon/>
+                                    </IconButton>
+                                </Link>
                                 <IconButton
                                     size="small"
                                     edge="end"

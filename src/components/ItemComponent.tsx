@@ -134,7 +134,7 @@ const ItemComponent = () => {
     }
 
     const convertPrice = (price: number) => {
-        return (price * conversionRate).toFixed(2);
+        return price * conversionRate;
     };
 
     return (
@@ -163,7 +163,10 @@ const ItemComponent = () => {
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                        <p>Price: {currency} {convertPrice(item.price)}</p>
+                        <p>Price: {`${convertPrice(item.price).toLocaleString(undefined, {
+                            style: 'currency',
+                            currency: currency
+                        })}`}</p>
                         {shippingRate && (
                             <p>Delivery: {minDeliveryDate.toLocaleDateString('en-GB', options)} - {maxDeliveryDate.toLocaleDateString('en-GB', options)}</p>
                         )}

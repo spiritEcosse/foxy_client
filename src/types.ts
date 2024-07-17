@@ -54,6 +54,9 @@ export interface OrderType {
     updated_at: Date;
     basket_id: number;
     address_id: number;
+    basket_items: BasketItemType[];
+    user: UserType;
+    address: AddressType;
 }
 
 export interface BasketType {

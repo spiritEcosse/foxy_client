@@ -225,8 +225,10 @@ const CheckoutComponent = () => {
                         Cart
                     </Typography>
                     <Typography sx={{color: 'text.secondary'}}>You have count of items: {basketItems.length}. Total
-                        price
-                        is {`${roundedTotal} €`}.</Typography>
+                        price is {roundedTotal.toLocaleString(undefined, {
+                        style: 'currency',
+                        currency: 'EUR'
+                    })}.</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <Button variant="contained" color="secondary" onClick={deleteCheckedItems}>
@@ -273,22 +275,37 @@ const CheckoutComponent = () => {
                                             </div>
                                         </TableCell>
                                         <TableCell>{basketItem.item.title}</TableCell>
-                                        <TableCell>{`${basketItem.item.price} €`}</TableCell>
+                                        <TableCell>{`${basketItem.item.price.toLocaleString(undefined, {
+                                            style: 'currency',
+                                            currency: 'EUR'
+                                        })}`}</TableCell>
                                         <TableCell>{basketItem.quantity}</TableCell>
-                                        <TableCell>{`${basketItem.item.price * basketItem.quantity} €`}</TableCell>
+                                        <TableCell>{`${(basketItem.item.price * basketItem.quantity).toLocaleString(undefined, {
+                                            style: 'currency',
+                                            currency: 'EUR'
+                                        })}`}</TableCell>
                                     </TableRow>
                                 ))}
                                 <TableRow>
                                     <TableCell colSpan={6}>Total Excluding Taxes</TableCell>
-                                    <TableCell>{`${totalExTaxes} €`}</TableCell>
+                                    <TableCell>{`${totalExTaxes.toLocaleString(undefined, {
+                                        style: 'currency',
+                                        currency: 'EUR'
+                                    })}`}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell colSpan={6}>Taxes {financialDetails.tax_rate * 100}%</TableCell>
-                                    <TableCell>{`${taxes} €`}</TableCell>
+                                    <TableCell>{`${taxes.toLocaleString(undefined, {
+                                        style: 'currency',
+                                        currency: 'EUR'
+                                    })}`}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell colSpan={6}>Total</TableCell>
-                                    <TableCell>{`${roundedTotal} €`}</TableCell>
+                                    <TableCell>{`${roundedTotal.toLocaleString(undefined, {
+                                        style: 'currency',
+                                        currency: 'EUR'
+                                    })}`}</TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
