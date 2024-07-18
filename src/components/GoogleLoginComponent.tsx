@@ -11,6 +11,7 @@ import {GoogleLogin} from '@react-oauth/google';
 import {UserType} from '../types';
 import {fetchData} from '../utils';
 import Box from '@mui/material/Box';
+import {useError} from './ErrorContext';
 
 const style = {
     position: 'absolute',
@@ -33,8 +34,8 @@ const GoogleLoginComponent: React.FC = () => {
     const {showLoginPopup, setShowLoginPopupAndStore} = useContext(LoginPopupContext);
     const {basket, setBasket, setBasketAndStore} = useContext(BasketContext);
     const {basketItems, setBasketItemsAndStore} = useContext(BasketItemContext);
+    const {setErrorMessage} = useError();
 
-    // Define the login function to open the modal
     const login = () => {
         setShowLoginPopupAndStore(true);
     };
@@ -43,28 +44,32 @@ const GoogleLoginComponent: React.FC = () => {
         <GoogleLogin
             onSuccess={async (credentialResponse: any) => {
                 if (!credentialResponse.credential) {
-                    console.log('Credential is undefined');
+                    setErrorMessage('Login Failed');
                     return;
                 }
-                const credential = credentialResponse.credential as string;
-                const _user: UserType = await fetchData('', 'auth/google_login', 'POST', {credentials: credential}, true);
-                setUserAndStore(_user);
-                localStorage.setItem('auth', credential);
+                try {
+                    const credential = credentialResponse.credential as string;
+                    const _user: UserType = await fetchData('', 'auth/google_login', 'POST', {credentials: credential}, true);
+                    setUserAndStore(_user);
+                    localStorage.setItem('auth', credential);
 
-                const responseBasketGet = await fetchData('', `basket?user_id=${_user.id}&in_use=true`, 'GET', {}, true);
-                let _basket;
-                if (responseBasketGet.data.length === 0) {
-                    _basket = await fetchData('', 'basket', 'POST', {user_id: _user.id}, true);
-                } else {
-                    _basket = responseBasketGet.data[0];
-                    const responseBasketItems = await fetchData('', `basketitem?basket_id=${_basket.id}`, 'GET', {}, true);
-                    setBasketItemsAndStore(responseBasketItems.data);
+                    const responseBasketGet = await fetchData('', `basket?user_id=${_user.id}&in_use=true`, 'GET', {}, true);
+                    let _basket;
+                    if (responseBasketGet.data.length === 0) {
+                        _basket = await fetchData('', 'basket', 'POST', {user_id: _user.id}, true);
+                    } else {
+                        _basket = responseBasketGet.data[0];
+                        const responseBasketItems = await fetchData('', `basketitem?basket_id=${_basket.id}`, 'GET', {}, true);
+                        setBasketItemsAndStore(responseBasketItems.data);
+                    }
+                    setBasketAndStore(_basket);
+                    setShowLoginPopupAndStore(false);
+                } catch (error) {
+                    setErrorMessage(`Error fetching data: ${error}`);
                 }
-                setBasketAndStore(_basket);
-                setShowLoginPopupAndStore(false);
             }}
             onError={() => {
-                console.log('Login Failed');
+                setErrorMessage('Login Failed');
             }}
         />
     );

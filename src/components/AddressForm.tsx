@@ -4,27 +4,32 @@ import {AddressType, CountryType} from '../types';
 import {fetchData} from '../utils';
 import {AddressContext} from './AddressContext';
 import {UserContext} from './UserContext';
+import {useError} from './ErrorContext';
 
 const AddressForm = () => {
     const {address, setAddress, setAddressAndStore, updateAddressField} = useContext(AddressContext);
     const {user, setUserAndStore} = useContext(UserContext);
     const [countries, setCountries] = useState<CountryType[]>([]);
+    const {setErrorMessage} = useError();
+
+    const fetchDataAndUpdateState = async () => {
+        try {
+            const countriesData = await fetchData('', 'country?limit=100', 'GET');
+            setCountries(countriesData.data);
+
+            if (user && !address) {
+                const addressData = await fetchData('', `address?user_id=${user.id}`, 'GET', {}, true);
+                if (addressData.data.length) {
+                    setAddressAndStore(addressData.data[0]);
+                }
+            }
+        } catch (error) {
+            setErrorMessage(`Error fetching data: ${error}`);
+        }
+    };
 
     useEffect(() => {
-        fetchData('', 'country?limit=100', 'GET')
-            .then(data => {
-                setCountries(data.data);
-            })
-            .catch(error => console.error('Error:', error));
-
-        if (user && !address) {
-            fetchData('', `address?user_id=${user.id}`, 'GET', {}, true)
-                .then((data) => {
-                    if (data.data.length) {
-                        setAddressAndStore(data.data[0]);
-                    }
-                }).catch(error => console.error('Error:', error));
-        }
+        fetchDataAndUpdateState();
     }, [user, address, setAddressAndStore]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

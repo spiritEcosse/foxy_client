@@ -18,6 +18,7 @@ import DOMPurify from 'dompurify';
 import {CurrencyContext} from './CurrencyContext';
 import Button from '@mui/material/Button';
 import {BasketItemContext} from './BasketItemContext';
+import {useError} from './ErrorContext';
 
 
 const ItemComponent = () => {
@@ -50,6 +51,7 @@ const ItemComponent = () => {
         }
     }, []);
     const {addToBasket, removeFromBasket, isInBasket} = useContext(BasketItemContext);
+    const {setErrorMessage} = useError();
 
     const getLgComponent = useMemo(() => {
         if (container !== null && media) {
@@ -108,6 +110,7 @@ const ItemComponent = () => {
                     setResponse({code: 200, message: 'OK', loading: false});
                 })
                 .catch(({code, message}) => {
+                    setErrorMessage(`Error fetching data: ${message}`);
                     setResponse({code, message, loading: false});
                 });
 
@@ -116,6 +119,7 @@ const ItemComponent = () => {
                     setShippingRate(data.shipping);
                 })
                 .catch(({code, message}) => {
+                    setErrorMessage(`Error fetching data: ${message}`);
                     setResponse({code, message, loading: false});
                 });
         }

@@ -9,6 +9,7 @@ import Box from '@mui/material/Box';
 import PopupState, {bindPopover, bindTrigger} from 'material-ui-popup-state';
 import '../assets/basket.scss';
 import {BasketItemContext} from './BasketItemContext';
+import {useError} from './ErrorContext';
 
 const StyledLink = styled(Link)(({theme}) => ({
     color: theme.palette.primary.main,
@@ -100,6 +101,7 @@ const AccountComponent = () => {
     const [pageNumber, setPageNumber] = useState(1);
     const [countPages, setCountPages] = useState(1);
     const [orders, setOrders] = useState<OrderType[]>([]);
+    const {setErrorMessage} = useError();
 
     useEffect(() => {
         if (!user) {
@@ -111,6 +113,8 @@ const AccountComponent = () => {
                     setOrders(data.data);
                     setCountPages(data ? Math.ceil(data.total / limit) : 1);
                     setPageNumber(data ? data._page : 1);
+                }).catch(({code, message}) => {
+                    setErrorMessage(`Error fetching data: ${message}, code: ${code}`);
                 });
         }
     }, [user, navigate, pageFromUrl, limit]);

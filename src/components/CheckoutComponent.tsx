@@ -29,6 +29,7 @@ import {BasketContext} from './BasketContext';
 import {OrderContext} from './OrderContext';
 import GooglePayButton from '@google-pay/button-react';
 import Box from '@mui/material/Box';
+import {useError} from './ErrorContext';
 
 const CheckoutComponent = () => {
     const {basketItems, setBasketItemsAndStore, removeFromBasket} = useContext(BasketItemContext);
@@ -45,6 +46,7 @@ const CheckoutComponent = () => {
     const {order, setOrder} = useContext(OrderContext);
     const {basket, setBasket, setBasketAndStore} = useContext(BasketContext);
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+    const {setErrorMessage} = useError();
 
     useEffect(() => {
         const fetchFinancialDetails = async () => {
@@ -53,10 +55,10 @@ const CheckoutComponent = () => {
                 if (response.data.length) {
                     setFinancialDetails(response.data[0]);
                 } else {
-                    console.error('No financial details found');
+                    setErrorMessage('No financial details found. You cannot proceed with the order.');
                 }
             } catch (error) {
-                console.error('Failed to fetch financial details:', error);
+                setErrorMessage(`Failed to fetch financial details: ${error}`);
             }
         };
 
@@ -157,60 +159,64 @@ const CheckoutComponent = () => {
             return;
         }
 
-        let _address;
-        if (address.id === 0) {
-            _address = await fetchData('', 'address', 'POST', {
-                address: address.address,
-                country_id: address.country_id,
-                city: address.city,
-                zipcode: address.zipcode,
-                user_id: user.id
+        try {
+            let _address;
+            if (address.id === 0) {
+                _address = await fetchData('', 'address', 'POST', {
+                    address: address.address,
+                    country_id: address.country_id,
+                    city: address.city,
+                    zipcode: address.zipcode,
+                    user_id: user.id
+                }, true);
+            } else {
+                _address = await fetchData('', `address/${address.id}`, 'PUT', {
+                    address: address.address,
+                    country_id: address.country_id,
+                    city: address.city,
+                    zipcode: address.zipcode,
+                    user_id: user.id
+                }, true);
+            }
+            setAddressAndStore(_address);
+
+            const items = basketItems.map((basketItem) => ({
+                id: basketItem.id,
+                item_id: basketItem.item.id,
+                price: basketItem.item.price,
+                basket_id: basket.id
+            }));
+
+            await fetchData('', 'basketitem/items', 'PUT', {
+                items: items
             }, true);
-        } else {
-            _address = await fetchData('', `address/${address.id}`, 'PUT', {
-                address: address.address,
-                country_id: address.country_id,
-                city: address.city,
-                zipcode: address.zipcode,
-                user_id: user.id
-            }, true);
+
+            await fetchData('', 'order', 'POST', {
+                basket_id: basket.id,
+                total: total,
+                total_ex_taxes: totalExTaxes,
+                tax_rate: financialDetails.tax_rate,
+                taxes: taxes,
+                user_id: user.id,
+                reference: 'ref',
+                address_id: address.id
+            }, true).then((data: OrderType) => {
+                setOrder(data);
+            });
+
+            await fetchData('', `basket/${basket.id}`, 'PUT', {
+                user_id: user.id,
+                in_use: false
+            }, true).then(() => {
+                setBasketItemsAndStore([]);
+                setBasketAndStore(null);
+            });
+            const _basket = await fetchData('', 'basket', 'POST', {user_id: user.id}, true);
+            setBasketAndStore(_basket);
+            navigate('/success_order');
+        } catch (error) {
+            setErrorMessage(`Failed to create order: ${error}`);
         }
-        setAddressAndStore(_address);
-
-        const items = basketItems.map((basketItem) => ({
-            id: basketItem.id,
-            item_id: basketItem.item.id,
-            price: basketItem.item.price,
-            basket_id: basket.id
-        }));
-
-        fetchData('', 'basketitem/items', 'PUT', {
-            items: items
-        }, true);
-
-        await fetchData('', 'order', 'POST', {
-            basket_id: basket.id,
-            total: total,
-            total_ex_taxes: totalExTaxes,
-            tax_rate: financialDetails.tax_rate,
-            taxes: taxes,
-            user_id: user.id,
-            reference: 'ref',
-            address_id: address.id
-        }, true).then((data: OrderType) => {
-            setOrder(data);
-        });
-
-        await fetchData('', `basket/${basket.id}`, 'PUT', {
-            user_id: user.id,
-            in_use: false
-        }, true).then(() => {
-            setBasketItemsAndStore([]);
-            setBasketAndStore(null);
-        });
-        const _basket = await fetchData('', 'basket', 'POST', {user_id: user.id}, true);
-        setBasketAndStore(_basket);
-        navigate('/success_order');
     };
 
     return (

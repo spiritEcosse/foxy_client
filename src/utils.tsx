@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {setupCache} from 'axios-cache-interceptor';
+import * as Sentry from '@sentry/react';
 
 const instance = axios.create();
 const axiosCached = setupCache(instance);
@@ -37,7 +38,7 @@ export const fetchData = async (url: string, path: string, method: 'GET' | 'POST
         }
         return response.data;
     } catch (error) {
-        console.log(error);
+        Sentry.captureException(error);
         let message = 'Unknown Error';
         let code = 1000;
 
@@ -49,16 +50,17 @@ export const fetchData = async (url: string, path: string, method: 'GET' | 'POST
             } else if (axiosError.code === 'ERR_NETWORK') {
                 message = 'Network Error';
             } else if (axiosError.response.status) {
-                message = 'An error occurred';
+                message = axiosError.response.data.error ?? axiosError.response.data.message ?? axiosError.response.statusText;
                 code = axiosError.response.status;
             } else if (axiosError.code) {
                 code = parseInt(axiosError.code, 10) ?? code;
             }
         }
-        if (message === 'No Server Response') {
+        if (code === 401) {
             localStorage.removeItem('auth');
             localStorage.setItem('showLoginPopup', 'true');
             window.dispatchEvent(new Event('storage'));
+            message = 'Login Required';
         }
         throw new CustomError(code, message);
     }
