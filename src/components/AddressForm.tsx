@@ -30,7 +30,7 @@ const AddressForm = () => {
 
     useEffect(() => {
         fetchDataAndUpdateState();
-    }, [user, address, setAddressAndStore]);
+    }, [fetchDataAndUpdateState]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         updateAddressField(event.target.name as keyof AddressType, event.target.value);

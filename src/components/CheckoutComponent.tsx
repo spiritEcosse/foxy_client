@@ -66,7 +66,7 @@ const CheckoutComponent = () => {
         // Update the button disabled state based on address fields
         const isDisabled = !address || !address.country_id || !address.city || !address.address || !address.zipcode;
         setIsButtonDisabled(isDisabled);
-    }, [address, setFinancialDetails]);
+    }, [address, setErrorMessage]);
 
     const googlePayConfig = {
         environment: import.meta.env.VITE_APP_GOOGLE_PAY_ENV,
