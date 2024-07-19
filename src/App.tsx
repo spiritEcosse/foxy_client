@@ -115,7 +115,7 @@ function App() {
             setBasketAndStore(null);
             setOrder(null);
             setBasketItemsAndStore([]);
-            setShowLoginPopup(showLoginPopup);
+            setShowLoginPopup(JSON.parse(localStorage.getItem('showLoginPopup') || 'false'));
             localStorage.removeItem('user');
             localStorage.removeItem('basket');
             localStorage.removeItem('basket_items');
