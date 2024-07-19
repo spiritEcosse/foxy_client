@@ -5,20 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
 import {Link, useNavigate} from 'react-router-dom';
 import '../assets/basket.scss';
-import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Checkbox,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Typography
-} from '@mui/material';
+import {Accordion, AccordionDetails, AccordionSummary, ButtonGroup, Checkbox, Grid, Typography} from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddressForm from './AddressForm';
 import {AddressContext} from './AddressContext';
@@ -30,6 +17,7 @@ import {OrderContext} from './OrderContext';
 import GooglePayButton from '@google-pay/button-react';
 import Box from '@mui/material/Box';
 import {useError} from './ErrorContext';
+import Divider from '@mui/material/Divider';
 
 const CheckoutComponent = () => {
     const {basketItems, setBasketItemsAndStore, removeFromBasket} = useContext(BasketItemContext);
@@ -168,7 +156,7 @@ const CheckoutComponent = () => {
 
     const createOrder = async () => {
         if (!address || !user || !basket) {
-            console.error('Address, user or basket is not set');
+            setErrorMessage('Address, user or basket is not set');
             return;
         }
 
@@ -226,7 +214,8 @@ const CheckoutComponent = () => {
     };
 
     return (
-        <div>
+        <div style={{padding: '20px'}}>
+            <h1>Checkout</h1>
             <Accordion expanded={expanded === 'basketItemsPanel'} onChange={handleChange('basketItemsPanel')}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon/>}
@@ -243,85 +232,99 @@ const CheckoutComponent = () => {
                     })}.</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Button variant="contained" color="secondary" onClick={deleteCheckedItems}>
-                        Delete Checked Items
-                    </Button>
-                    <Button variant="contained" color="secondary" onClick={deleteAllItems}>
-                        Delete All Items
-                    </Button>
-                    <TableContainer component={Paper}>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell></TableCell>
-                                    <TableCell>Delete</TableCell>
-                                    <TableCell>Image</TableCell>
-                                    <TableCell>Title</TableCell>
-                                    <TableCell>Price</TableCell>
-                                    <TableCell>Quantity</TableCell>
-                                    <TableCell>Total</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {basketItems.map((basketItem, index) => (
-                                    <TableRow key={basketItem.id}>
-                                        <TableCell padding="checkbox">
-                                            <Checkbox checked={checked.indexOf(index) !== -1}
-                                                onChange={handleCheck(index)}/>
-                                        </TableCell>
-                                        <TableCell>
-                                            <IconButton edge="end" aria-label="delete"
-                                                onClick={() => removeFromBasket(basketItem.item)}
-                                            >
-                                                <DeleteIcon/>
-                                            </IconButton>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="basketItem" key={basketItem.item.id}
-                                                style={{backgroundImage: `url(${basketItem.item.src}?twic=v1/output=preview`}}>
-                                                <Link to={`/item/${basketItem.item.slug}`}>
-                                                    <img
-                                                        data-twic-src={`image:${new URL(basketItem.item.src).pathname}?twic=v1/cover=100x100`}
-                                                        alt={basketItem.item.title}/>
-                                                </Link>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>{basketItem.item.title}</TableCell>
-                                        <TableCell>{`${basketItem.item.price.toLocaleString(undefined, {
+                    <ButtonGroup variant="contained" aria-label="Basic button group">
+                        <Button variant="contained" color="secondary" onClick={deleteCheckedItems}>
+                            Delete Checked Items
+                        </Button>
+                        <Button variant="contained" color="secondary" onClick={deleteAllItems}>
+                            Delete All Items
+                        </Button>
+                    </ButtonGroup>
+                    <Grid container spacing={2} alignItems="center" sx={{mt: 2, mb: 2}}>
+                        <Grid item xs={12}>
+                            <Grid container spacing={2} alignItems="center">
+                                <Grid item xs={1}></Grid>
+                                <Grid item xs={1}>Delete</Grid>
+                                <Grid item xs={2}>Image</Grid>
+                                <Grid item xs={2}>Title</Grid>
+                                <Grid item xs={2}>Price</Grid>
+                                <Grid item xs={2}>Quantity</Grid>
+                                <Grid item xs={2}>Total</Grid>
+                            </Grid>
+                            <Divider/>
+                        </Grid>
+
+                        {basketItems.map((basketItem, index) => (
+                            <Grid item xs={12} key={basketItem.id}>
+                                <Grid container spacing={2} alignItems="center">
+                                    <Grid item xs={1}>
+                                        <Checkbox
+                                            checked={checked.indexOf(index) !== -1}
+                                            onChange={handleCheck(index)}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={1}>
+                                        <IconButton edge="end" aria-label="delete"
+                                            onClick={() => removeFromBasket(basketItem.item)}>
+                                            <DeleteIcon/>
+                                        </IconButton>
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <div className="basketItem" key={basketItem.item.id}
+                                            style={{backgroundImage: `url(${basketItem.item.src}?twic=v1/output=preview)`}}>
+                                            <Link to={`/item/${basketItem.item.slug}`}>
+                                                <img
+                                                    data-twic-src={`image:${new URL(basketItem.item.src).pathname}?twic=v1/cover=100x100`}
+                                                    alt={basketItem.item.title}/>
+                                            </Link>
+                                        </div>
+                                    </Grid>
+                                    <Grid item xs={2}>{basketItem.item.title}</Grid>
+                                    <Grid item xs={2}>
+                                        {`${basketItem.item.price.toLocaleString(undefined, {
                                             style: 'currency',
                                             currency: 'EUR'
-                                        })}`}</TableCell>
-                                        <TableCell>{basketItem.quantity}</TableCell>
-                                        <TableCell>{`${(basketItem.item.price * basketItem.quantity).toLocaleString(undefined, {
+                                        })}`}
+                                    </Grid>
+                                    <Grid item xs={2}>{basketItem.quantity}</Grid>
+                                    <Grid item xs={2}>
+                                        {`${(basketItem.item.price * basketItem.quantity).toLocaleString(undefined, {
                                             style: 'currency',
                                             currency: 'EUR'
-                                        })}`}</TableCell>
-                                    </TableRow>
-                                ))}
-                                <TableRow>
-                                    <TableCell colSpan={6}>Total Excluding Taxes</TableCell>
-                                    <TableCell>{`${totalExTaxes.toLocaleString(undefined, {
-                                        style: 'currency',
-                                        currency: 'EUR'
-                                    })}`}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell colSpan={6}>Taxes {financialDetails.tax_rate * 100}%</TableCell>
-                                    <TableCell>{`${taxes.toLocaleString(undefined, {
-                                        style: 'currency',
-                                        currency: 'EUR'
-                                    })}`}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell colSpan={6}>Total</TableCell>
-                                    <TableCell>{`${roundedTotal.toLocaleString(undefined, {
-                                        style: 'currency',
-                                        currency: 'EUR'
-                                    })}`}</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                                        })}`}
+                                    </Grid>
+                                </Grid>
+                                <Divider/>
+                            </Grid>
+                        ))}
+
+                        <Grid item xs={12}>
+                            <Grid container spacing={2} alignItems="center">
+                                <Grid item xs={10}>Total Excluding Taxes</Grid>
+                                <Grid item xs={2}>
+                                    {`${totalExTaxes.toLocaleString(undefined, {style: 'currency', currency: 'EUR'})}`}
+                                </Grid>
+                            </Grid>
+                            <Divider/>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Grid container spacing={2} alignItems="center">
+                                <Grid item xs={10}>Taxes {financialDetails.tax_rate * 100}%</Grid>
+                                <Grid item xs={2}>
+                                    {`${taxes.toLocaleString(undefined, {style: 'currency', currency: 'EUR'})}`}
+                                </Grid>
+                            </Grid>
+                            <Divider/>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Grid container spacing={2} alignItems="center">
+                                <Grid item xs={10}>Total</Grid>
+                                <Grid item xs={2}>
+                                    {`${roundedTotal.toLocaleString(undefined, {style: 'currency', currency: 'EUR'})}`}
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Grid>
                 </AccordionDetails>
             </Accordion>
 

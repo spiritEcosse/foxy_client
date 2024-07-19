@@ -161,6 +161,7 @@ function App() {
             const basketItem = basketItems.find((basketItem) => basketItem.item.id === excludeItem.id);
             if (!basketItem) {
                 console.error(`No basket item found with item id ${excludeItem.id}`);
+                setErrorMessage('Error removing item from basket');
                 return;
             }
             await fetchData('', `basketitem/${basketItem.id}`, 'DELETE', {}, true);

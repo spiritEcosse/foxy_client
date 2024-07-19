@@ -121,7 +121,7 @@ const AccountComponent = () => {
 
     return (
         <div style={{padding: '20px', maxWidth: '100%'}}>
-            <h2>Orders</h2>
+            <h1>Orders</h1>
             <Paper style={{padding: '20px'}}>
                 <div style={{display: 'flex', justifyContent: 'center', marginBottom: '20px'}}>
                     <Pagination
