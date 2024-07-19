@@ -47,6 +47,7 @@ const CheckoutComponent = () => {
     const {basket, setBasket, setBasketAndStore} = useContext(BasketContext);
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
     const {setErrorMessage} = useError();
+    const [previousAddress, setPreviousAddress] = useState(address);
 
     useEffect(() => {
         const fetchFinancialDetails = async () => {
@@ -63,10 +64,13 @@ const CheckoutComponent = () => {
         };
 
         fetchFinancialDetails();
+    }, []);
+
+    useEffect(() => {
         // Update the button disabled state based on address fields
         const isDisabled = !address || !address.country_id || !address.city || !address.address || !address.zipcode;
         setIsButtonDisabled(isDisabled);
-    }, [address, setErrorMessage]);
+    }, [address]);
 
     const googlePayConfig = {
         environment: import.meta.env.VITE_APP_GOOGLE_PAY_ENV,
@@ -153,32 +157,35 @@ const CheckoutComponent = () => {
         );
     }
 
+    const hasAddressChanged = () => {
+        return address && previousAddress && (
+            address.country_id !== previousAddress.country_id ||
+            address.city !== previousAddress.city ||
+            address.address !== previousAddress.address ||
+            address.zipcode !== previousAddress.zipcode
+        );
+    };
+
     const createOrder = async () => {
         if (!address || !user || !basket) {
             console.error('Address, user or basket is not set');
             return;
         }
 
+        let currentAddressId = address.id;
         try {
-            let _address;
-            if (address.id === 0) {
-                _address = await fetchData('', 'address', 'POST', {
+            // How to detect if fields in address has changed and then create a new address?
+            if (hasAddressChanged() || !address.id) {
+                const _address = await fetchData('', 'address', 'POST', {
                     address: address.address,
                     country_id: address.country_id,
                     city: address.city,
                     zipcode: address.zipcode,
                     user_id: user.id
                 }, true);
-            } else {
-                _address = await fetchData('', `address/${address.id}`, 'PUT', {
-                    address: address.address,
-                    country_id: address.country_id,
-                    city: address.city,
-                    zipcode: address.zipcode,
-                    user_id: user.id
-                }, true);
+                setAddressAndStore(_address);
+                currentAddressId = _address.id;
             }
-            setAddressAndStore(_address);
 
             const items = basketItems.map((basketItem) => ({
                 id: basketItem.id,
@@ -198,8 +205,7 @@ const CheckoutComponent = () => {
                 tax_rate: financialDetails.tax_rate,
                 taxes: taxes,
                 user_id: user.id,
-                reference: 'ref',
-                address_id: address.id
+                address_id: currentAddressId
             }, true).then((data: OrderType) => {
                 setOrder(data);
             });
