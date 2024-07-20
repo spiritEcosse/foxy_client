@@ -14,7 +14,7 @@ const InternalServerError = () => {
         }}>
             <h1>Internal Server Error</h1>
             <p>Sorry, something went wrong. Please try again later.</p>
-            <Button variant="contained" component={Link} to="/">Back Home</Button>
+            <Button variant="contained" component={Link} to="/">Continue Shopping</Button>
         </div>
     );
 };

@@ -20,9 +20,9 @@ export default function NotFound() {
                             404
                         </Typography>
                         <Typography variant="h6">
-                            The page you’re looking for doesn’t exist.
+                            The page you’re looking for does’t exist.
                         </Typography>
-                        <Button variant="contained" component={Link} to="/">Back Home</Button>
+                        <Button variant="contained" component={Link} to="/">Continue Shopping</Button>
                     </Grid>
                     <Grid xs={6} item={true}>
                         <img

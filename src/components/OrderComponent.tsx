@@ -11,14 +11,7 @@ import '../assets/basket.scss';
 import {BasketItemContext} from './BasketItemContext';
 import {useError} from './ErrorContext';
 import Loading from './Loading';
-
-const StyledLink = styled(Link)(({theme}) => ({
-    color: theme.palette.primary.main,
-    textDecoration: 'none', // Optional: removes underline from links
-    '&:hover': {
-        textDecoration: 'underline', // Optional: adds underline on hover
-    },
-}));
+import {StyledLink} from './CustomTheme';
 
 const OrderCard = styled(Box)(({theme}) => ({
     backgroundColor: theme.palette.background.paper,
@@ -120,6 +113,23 @@ const OrderComponent = () => {
 
     if (loading) {
         return <Loading/>;
+    }
+
+    if (orders.length === 0) {
+        return (
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '470px'
+            }}>
+                <p>You don't have orders.</p>
+                <Button variant="contained" color="primary" onClick={() => navigate('/')}>
+                    Continue Shopping
+                </Button>
+            </div>
+        );
     }
 
     return (

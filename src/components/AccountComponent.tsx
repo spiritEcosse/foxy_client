@@ -1,5 +1,5 @@
-import React, {useContext} from 'react';
-import {Paper} from '@mui/material';
+import React, {useContext, useState} from 'react';
+import {CircularProgress, Paper} from '@mui/material';
 import {Link, useNavigate} from 'react-router-dom';
 import Button from '@mui/material/Button';
 import {fetchData} from '../utils';
@@ -10,6 +10,7 @@ const AccountComponent = () => {
     const {setErrorMessage} = useError();
     const navigate = useNavigate();
     const {user, setUserAndStore} = useContext(UserContext);
+    const [isDeleting, setIsDeleting] = useState(false); // State to track deletion process
 
     const deleteAccount = async () => {
         if (!user) {
@@ -17,7 +18,7 @@ const AccountComponent = () => {
             navigate('/');
             return;
         }
-
+        setIsDeleting(true); // Start deletion process
         try {
             await fetchData('', `user/${user.id}`, 'DELETE');
             localStorage.removeItem('auth');
@@ -27,6 +28,8 @@ const AccountComponent = () => {
             navigate('/');
         } catch (error) {
             setErrorMessage('Couldn\'t delete account');
+        } finally {
+            setIsDeleting(false); // End deletion process
         }
     };
 
@@ -38,8 +41,8 @@ const AccountComponent = () => {
                     Orders
                 </Button>
                 <div style={{minHeight: '40vh'}}></div>
-                <Button variant={'contained'} color={'warning'} onClick={() => deleteAccount()}>
-                    Delete Account
+                <Button variant={'contained'} color={'warning'} onClick={() => deleteAccount()} disabled={isDeleting}>
+                    {isDeleting ? <CircularProgress size={24}/> : 'Delete Account'}
                 </Button>
             </Paper>
         </div>

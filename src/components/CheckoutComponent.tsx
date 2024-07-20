@@ -10,7 +10,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddressForm from './AddressForm';
 import {AddressContext} from './AddressContext';
 import {fetchData} from '../utils';
-import {FinancialDetailsType, OrderType} from '../types';
+import {FinancialDetailsType} from '../types';
 import {UserContext} from './UserContext';
 import {BasketContext} from './BasketContext';
 import {OrderContext} from './OrderContext';
@@ -18,6 +18,7 @@ import GooglePayButton from '@google-pay/button-react';
 import Box from '@mui/material/Box';
 import {useError} from './ErrorContext';
 import Divider from '@mui/material/Divider';
+import Loading from './Loading';
 
 const CheckoutComponent = () => {
     const {basketItems, setBasketItemsAndStore, removeFromBasket} = useContext(BasketItemContext);
@@ -36,6 +37,7 @@ const CheckoutComponent = () => {
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
     const {setErrorMessage} = useError();
     const [previousAddress, setPreviousAddress] = useState(address);
+    const [paying, setPaying] = useState(false);
 
     useEffect(() => {
         const fetchFinancialDetails = async () => {
@@ -136,9 +138,9 @@ const CheckoutComponent = () => {
                 alignItems: 'center',
                 height: '470px'
             }}>
-                <p>Your basket is empty.</p>
+                <p>Your cart is empty.</p>
                 <Button variant="contained" color="primary" onClick={() => navigate('/')}>
-                    Return to Home Page
+                    Continue Shopping
                 </Button>
             </div>
         );
@@ -158,6 +160,8 @@ const CheckoutComponent = () => {
             setErrorMessage('Address, user or basket is not set');
             return;
         }
+
+        setPaying(true);
 
         let currentAddressId = address.id;
         try {
@@ -185,7 +189,7 @@ const CheckoutComponent = () => {
                 items: items
             }, true);
 
-            await fetchData('', 'order', 'POST', {
+            const createdOrder = await fetchData('', 'order', 'POST', {
                 basket_id: basket.id,
                 total: total,
                 total_ex_taxes: totalExTaxes,
@@ -193,22 +197,21 @@ const CheckoutComponent = () => {
                 taxes: taxes,
                 user_id: user.id,
                 address_id: currentAddressId
-            }, true).then((data: OrderType) => {
-                setOrder(data);
             });
+            setOrder(createdOrder);
 
             await fetchData('', `basket/${basket.id}`, 'PUT', {
                 user_id: user.id,
                 in_use: false
-            }, true).then(() => {
-                setBasketItemsAndStore([]);
-                setBasketAndStore(null);
             });
             const _basket = await fetchData('', 'basket', 'POST', {user_id: user.id}, true);
             setBasketAndStore(_basket);
+            setBasketItemsAndStore([]);
             navigate('/success_order');
         } catch (error) {
             setErrorMessage(`Failed to create order: ${error}`);
+        } finally {
+            setPaying(false);
         }
     };
 
@@ -349,13 +352,19 @@ const CheckoutComponent = () => {
                     pointerEvents: isButtonDisabled ? 'none' : 'auto',
                     opacity: isButtonDisabled ? 0.5 : 1
                 }}>
-                <GooglePayButton
-                    paymentRequest={googlePayConfig}
-                    onLoadPaymentData={onLoadPaymentData}
-                    buttonColor="white"
-                    buttonRadius="4"
-                    buttonType="buy"
-                />
+                {
+                    paying ? (
+                        <Loading/>
+                    ) : (
+                        <GooglePayButton
+                            paymentRequest={googlePayConfig}
+                            onLoadPaymentData={onLoadPaymentData}
+                            buttonColor="white"
+                            buttonRadius="4"
+                            buttonType="buy"
+                        />
+                    )
+                }
             </Box>
         </div>
     );
