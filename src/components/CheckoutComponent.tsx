@@ -55,7 +55,6 @@ const CheckoutComponent = () => {
     }, []);
 
     useEffect(() => {
-        // Update the button disabled state based on address fields
         const isDisabled = !address || !address.country_id || !address.city || !address.address || !address.zipcode;
         setIsButtonDisabled(isDisabled);
     }, [address]);
@@ -135,7 +134,7 @@ const CheckoutComponent = () => {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                height: '100vh'
+                height: '470px'
             }}>
                 <p>Your basket is empty.</p>
                 <Button variant="contained" color="primary" onClick={() => navigate('/')}>

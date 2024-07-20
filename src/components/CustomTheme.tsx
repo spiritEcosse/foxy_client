@@ -9,7 +9,7 @@ const CustomTheme = createTheme({
         secondary: {
             main: '#00617A',
             contrastText: '#fff'
-        }
+        },
     }
 });
 CustomTheme.typography.h1 = {
