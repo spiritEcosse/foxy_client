@@ -17,7 +17,7 @@ const SuccessOrderComponent: React.FC = () => {
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px'}}>
             <h2>Order Success</h2>
             {order && (
-                <p>Your order with ID: {order.id} has been successfully placed.</p>
+                <p>Your order with ID: {order.reference} has been successfully placed.</p>
             )}
             <Button variant="contained" color="primary" onClick={() => navigate('/')}>
                 Continue Shopping
