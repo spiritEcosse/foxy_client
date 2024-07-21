@@ -1,16 +1,29 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {CircularProgress, Paper} from '@mui/material';
 import {Link, useNavigate} from 'react-router-dom';
 import Button from '@mui/material/Button';
 import {fetchData} from '../utils';
 import {useError} from './ErrorContext';
 import {UserContext} from './UserContext';
+import Loading from './Loading';
 
 const AccountComponent = () => {
     const {setErrorMessage} = useError();
     const navigate = useNavigate();
     const {user, setUserAndStore} = useContext(UserContext);
     const [isDeleting, setIsDeleting] = useState(false); // State to track deletion process
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (!user) {
+            navigate('/');
+        }
+        setLoading(false);
+    }, [user, navigate]);
+
+    if (loading) {
+        return <Loading/>;
+    }
 
     const deleteAccount = async () => {
         if (!user) {
