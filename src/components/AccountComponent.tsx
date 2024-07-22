@@ -14,6 +14,7 @@ const AccountComponent = () => {
     const [isDeleting, setIsDeleting] = useState(false); // State to track deletion process
     const [loading, setLoading] = useState(true);
 
+    
     useEffect(() => {
         if (!user) {
             navigate('/');
