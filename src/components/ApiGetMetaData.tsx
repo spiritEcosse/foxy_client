@@ -13,12 +13,12 @@ const ApiGetMetaData = ({slug, handleFetchedPage}: {
     const [page, setPage] = useState<PageType>({} as PageType);
 
     useEffect(() => {
-        fetchData('', `page/${slug}`)
+        fetchData('', `page/${slug}`, 'GET')
             .then(data => {
                 setPage(data);
                 handleFetchedPage({page: data, response: {code: 200, message: 'OK', loading: false}});
             })
-            .catch(({ code, message }) => {
+            .catch(({code, message}) => {
                 handleFetchedPage({page: page, response: {code, message, loading: false}});
             });
     }, [slug, handleFetchedPage, page]);

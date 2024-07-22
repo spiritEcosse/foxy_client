@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useContext} from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -15,27 +16,41 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import {Link} from 'react-router-dom';
 import {CurrencyContext} from './CurrencyContext';
-import {useContext} from 'react';
-import {GoogleLogin} from '@react-oauth/google';
-import {jwtDecode} from 'jwt-decode';
-import {fetchData} from '../utils';
+import {UserContext} from './UserContext';
+import GoogleLoginComponent from './GoogleLoginComponent';
+import Badge from '@mui/material/Badge';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import {BasketItemContext} from './BasketItemContext';
+import {BasketContext} from './BasketContext';
+import {AddressContext} from './AddressContext';
+import {OrderContext} from './OrderContext';
+import EuroIcon from '@mui/icons-material/Euro';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import LogoutIcon from '@mui/icons-material/Logout';
+import {googleLogout} from '@react-oauth/google';
+import PersonIcon from '@mui/icons-material/Person';
 
 interface HeaderComponentProps {
-        window?: () => Window;
+    windowProps?: () => Window;
 }
 
+
 export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
-    const {window} = props;
+    const {windowProps} = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const navItems = [
         {id: 1, title: 'About', link: '/page/about'},
         {id: 2, title: 'Contact', link: '/page/contact'}
     ];
-    const { setCurrency } = useContext(CurrencyContext);
-
+    const {basketItems, removeFromBasket, setBasketItemsAndStore} = useContext(BasketItemContext);
+    const {setCurrency} = useContext(CurrencyContext);
+    const {user, setUserAndStore} = useContext(UserContext);
     const handleDrawerToggle = () => {
         setMobileOpen((prevState) => !prevState);
     };
+    const {basket, setBasketAndStore} = useContext(BasketContext);
+    const {address, setAddressAndStore} = useContext(AddressContext);
+    const {order, setOrder} = useContext(OrderContext);
 
     const drawer = (
         <Box onClick={handleDrawerToggle} sx={{textAlign: 'center'}}>
@@ -55,7 +70,14 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
         </Box>
     );
 
-    const container = window !== undefined ? () => window().document.body : undefined;
+    const container = windowProps !== undefined ? () => windowProps().document.body : undefined;
+
+    const handleLogoutClick = () => {
+        googleLogout();
+        localStorage.removeItem('auth');
+        localStorage.setItem('showLoginPopup', 'false');
+        window.dispatchEvent(new Event('storage'));
+    };
 
     return (
         <Box sx={{display: 'flex'}}>
@@ -80,37 +102,71 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                             {import.meta.env.PROJECT_NAME}
                         </Typography>
                     </Link>
-                    <Box sx={{display: {xs: 'none', sm: 'flex', marginLeft: 'auto'}}}>
-                        <Button variant="contained" onClick={() => setCurrency('USD')}>USD</Button>
-                        <Button variant="contained" onClick={() => setCurrency('EUR')}>EUR</Button>
-                        {navItems.map(item => (
-                            <Button component={Link} key={item.id} sx={{color: '#fff'}}
-                                to={item.link}>
-                                {item.title}
-                            </Button>
-                        ))}
-                        <GoogleLogin
-                            onSuccess={credentialResponse => {
-                                console.log(credentialResponse);
-                                if (credentialResponse.credential) {
-                                    fetchData('', 'auth/google_login', 'POST', {credentials: credentialResponse.credential})
-                                        .then(data => {
-                                            console.log(data);
-                                        })
-                                        .catch(({code, message}) => {
-                                            console.log(code, message);
-                                        });
-                                    console.log(credentialResponse.credential);
-                                    const decoded = jwtDecode(credentialResponse.credential);
-                                    console.log(decoded);
-                                } else {
-                                    console.log('Credential is undefined');
-                                }
-                            }}
-                            onError={() => {
-                                console.log('Login Failed');
-                            }}
-                        />
+                    <Box sx={{display: {sm: 'flex', marginLeft: 'auto'}}}>
+                        <Box sx={{display: {xs: 'none', sm: 'flex', marginLeft: 'auto'}}}>
+                            {navItems.map(item => (
+                                <Button component={Link} key={item.id} sx={{color: '#fff'}}
+                                    to={item.link}>
+                                    {item.title}
+                                </Button>
+                            ))}
+                        </Box>
+                        <IconButton
+                            size="small"
+                            edge="end"
+                            aria-label="usd"
+                            // aria-controls={menuId}
+                            aria-haspopup="true"
+                            onClick={() => setCurrency('USD')}
+                            color="inherit"
+                        >
+                            <AttachMoneyIcon/>
+                        </IconButton>
+                        <IconButton
+                            size="small"
+                            edge="end"
+                            aria-label="eur"
+                            // aria-controls={menuId}
+                            aria-haspopup="true"
+                            onClick={() => setCurrency('EUR')}
+                            color="inherit"
+                        >
+                            <EuroIcon/>
+                        </IconButton>
+                        <Link to="checkout">
+                            <IconButton aria-label="cart" sx={{color: 'white'}}>
+                                <Badge badgeContent={basketItems.length}>
+                                    <ShoppingCartIcon/>
+                                </Badge>
+                            </IconButton>
+                        </Link>
+                        {(!user) ? (
+                            <GoogleLoginComponent/>
+                        ) : (
+                            <>
+                                <Link to="account">
+                                    <IconButton
+                                        size="small"
+                                        edge="end"
+                                        aria-label="account"
+                                        aria-haspopup="true"
+                                        sx={{color: 'white'}}
+                                    >
+                                        <PersonIcon/>
+                                    </IconButton>
+                                </Link>
+                                <IconButton
+                                    size="small"
+                                    edge="end"
+                                    aria-label="logout"
+                                    aria-haspopup="true"
+                                    onClick={handleLogoutClick}
+                                    color="inherit"
+                                >
+                                    <LogoutIcon/>
+                                </IconButton>
+                            </>
+                        )}
                     </Box>
                 </Toolbar>
             </AppBar>

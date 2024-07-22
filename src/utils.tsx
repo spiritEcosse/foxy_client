@@ -1,10 +1,11 @@
 import axios from 'axios';
-import { setupCache } from 'axios-cache-interceptor';
+import {setupCache} from 'axios-cache-interceptor';
+import * as Sentry from '@sentry/react';
 
 const instance = axios.create();
 const axiosCached = setupCache(instance);
 
-class CustomError extends Error {
+export class CustomError extends Error {
     code: number;
 
     constructor(code: number, message: string) {
@@ -20,13 +21,16 @@ export const fetchCurrencyRate = async (currency: string) => {
     return data.rates[currency];
 };
 
-export const fetchData =  async (url: string, path: string, method: 'GET' | 'POST' = 'GET', body?: Record<string, unknown> ) => {
+export const fetchData = async (url: string, path: string, method: 'GET' | 'POST' | 'DELETE' | 'PUT' = 'GET', body?: Record<string, unknown>, disableCache = false) => {
     try {
         const response = await axiosCached({
             method,
             url: url || `${import.meta.env.VITE_APP_SERVER_URL}/api/v1/${path}`,
             data: body,
-            cache: {interpretHeader: false}
+            cache: disableCache ? false : {interpretHeader: false},
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('auth')}`
+            }
         });
         const isJson = response.headers['content-type']?.includes('application/json') ?? false;
         if (!isJson) {
@@ -34,21 +38,29 @@ export const fetchData =  async (url: string, path: string, method: 'GET' | 'POS
         }
         return response.data;
     } catch (error) {
+        Sentry.captureException(error);
         let message = 'Unknown Error';
-        let code = 424;
+        let code = 1000;
 
         if (axios.isAxiosError(error)) {
             const axiosError = error;
+
             if (!axiosError.response) {
                 message = 'No Server Response';
             } else if (axiosError.code === 'ERR_NETWORK') {
                 message = 'Network Error';
             } else if (axiosError.response.status) {
-                message = 'An error occurred';
+                message = axiosError.response.data.error ?? axiosError.response.data.message ?? axiosError.response.statusText;
                 code = axiosError.response.status;
             } else if (axiosError.code) {
-                code = parseInt(axiosError.code, 10) ?? 424;
+                code = parseInt(axiosError.code, 10) ?? code;
             }
+        }
+        if (code === 401) {
+            localStorage.removeItem('auth');
+            localStorage.setItem('showLoginPopup', 'true');
+            window.dispatchEvent(new Event('storage'));
+            message = 'Login Required';
         }
         throw new CustomError(code, message);
     }
