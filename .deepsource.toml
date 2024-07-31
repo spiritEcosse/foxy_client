@@ -1,7 +1,13 @@
 version = 1
 
 [[analyzers]]
-name = "cxx"
+name = "javascript"
+
+  [analyzers.meta]
+  plugins = [
+    "react",
+    "vue"
+  ]
 
 [[transformers]]
-name = "clang-format"
+name = "prettier"
