@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
 export const CurrencyContext = React.createContext({
-    currency: 'EUR',
-    setCurrency: (currency: string) => {},
+  currency: "EUR",
+  setCurrency: (currency: string) => {},
 });
