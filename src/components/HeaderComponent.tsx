@@ -104,7 +104,7 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
             ))}
             <GoogleLogin
               onSuccess={(credentialResponse) => {
-                console.log(credentialResponse);
+                
                 if (credentialResponse.credential) {
                   fetchData("", "auth/google_login", "POST", {
                     credentials: credentialResponse.credential,
@@ -115,15 +115,15 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                     .catch(({ code, message }) => {
                       console.log(code, message);
                     });
-                  console.log(credentialResponse.credential);
+                  
                   const decoded = jwtDecode(credentialResponse.credential);
-                  console.log(decoded);
+                  
                 } else {
-                  console.log("Credential is undefined");
+                  
                 }
               }}
               onError={() => {
-                console.log("Login Failed");
+                
               }}
             />
           </Box>

@@ -69,7 +69,7 @@ const ItemComponent = () => {
           dynamicEl={media}
           closable={false}
           showMaximizeIcon
-          thumbnail={true}
+          thumbnail
           download={false}
           onInit={onInit}
           container={container}

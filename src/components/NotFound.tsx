@@ -16,7 +16,7 @@ export default function NotFound() {
       >
         <Container maxWidth="md">
           <Grid container spacing={2}>
-            <Grid xs={6} item={true}>
+            <Grid xs={6} item>
               <Typography variant="h1">404</Typography>
               <Typography variant="h6">
                 The page you’re looking for doesn’t exist.
@@ -25,7 +25,7 @@ export default function NotFound() {
                 Back Home
               </Button>
             </Grid>
-            <Grid xs={6} item={true}>
+            <Grid xs={6} item>
               <img
                 src="https://cdn.pixabay.com/photo/2017/03/09/12/31/error-2129569__340.jpg"
                 alt=""

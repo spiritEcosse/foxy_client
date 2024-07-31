@@ -10,11 +10,11 @@ export default function HomeComponent() {
 
   if (!response.loading) {
     if (response.code === 404) {
-      console.log("404");
+      
     } else if (response.code === 500) {
-      console.log("500");
+      
     } else if (response.code !== 200) {
-      console.log(response.message);
+      
     }
   }
 
