@@ -104,7 +104,6 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
             ))}
             <GoogleLogin
               onSuccess={(credentialResponse) => {
-                
                 if (credentialResponse.credential) {
                   fetchData("", "auth/google_login", "POST", {
                     credentials: credentialResponse.credential,
@@ -115,16 +114,12 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                     .catch(({ code, message }) => {
                       console.log(code, message);
                     });
-                  
+
                   const decoded = jwtDecode(credentialResponse.credential);
-                  
                 } else {
-                  
                 }
               }}
-              onError={() => {
-                
-              }}
+              onError={() => {}}
             />
           </Box>
         </Toolbar>
