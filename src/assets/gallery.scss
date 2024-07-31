@@ -42,7 +42,6 @@ html {
   }
 }
 
-
 .galleryItem {
   @include aspect-ratio(16, 9);
   background-color: white;
@@ -103,7 +102,9 @@ html {
     opacity: 0;
     transform: scale(1);
     will-change: opacity, transform;
-    transition: opacity 1s linear, transform .75s ease-out;
+    transition:
+      opacity 1s linear,
+      transform 0.75s ease-out;
 
     &.twic-done {
       opacity: 1;
@@ -138,28 +139,22 @@ html {
     }
   }
 }
-.carousel .thumb.selected, .carousel .thumb:hover {
+.carousel .thumb.selected,
+.carousel .thumb:hover {
   border: 1px solid #333;
 }
 
 .carousel.carousel-slider .control-arrow {
-    border-radius: 50%;
-    right: 2px;
-    background: #78C59B;
-    z-index: 999999;
-    height: 50px;
-    width: 50px;
-    top: 47%;
-    opacity: 0.4;
+  border-radius: 50%;
+  right: 2px;
+  background: #78c59b;
+  z-index: 999999;
+  height: 50px;
+  width: 50px;
+  top: 47%;
+  opacity: 0.4;
 }
 .carousel.carousel-slider .control-arrow:hover {
-    background: #78C59B;
-    opacity: 1;
+  background: #78c59b;
+  opacity: 1;
 }
-
-
-
-
-
-
-
