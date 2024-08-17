@@ -5,7 +5,16 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
 import {Link, useNavigate} from 'react-router-dom';
 import '../assets/basket.scss';
-import {Accordion, AccordionDetails, AccordionSummary, ButtonGroup, Checkbox, Grid, Typography} from '@mui/material';
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Alert,
+    ButtonGroup,
+    Checkbox,
+    Grid,
+    Typography
+} from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddressForm from './AddressForm';
 import {AddressContext} from './AddressContext';
@@ -90,7 +99,7 @@ const CheckoutComponent = () => {
             totalPriceLabel: 'Total',
             totalPrice: `${roundedTotal}`,
             currencyCode: 'EUR',
-            countryCode: address?.country.code || 'US',
+            countryCode: address?.country.code || 'ES',
         },
     };
 
@@ -217,6 +226,9 @@ const CheckoutComponent = () => {
 
     return (
         <div style={{padding: '20px'}}>
+            <Alert severity="info">
+                Please be advised that this action is currently in the testing phase, which will entail placing a test
+                order.</Alert>
             <h1>Checkout</h1>
             <Accordion expanded={expanded === 'basketItemsPanel'} onChange={handleChange('basketItemsPanel')}>
                 <AccordionSummary
@@ -359,7 +371,6 @@ const CheckoutComponent = () => {
                         <GooglePayButton
                             paymentRequest={googlePayConfig}
                             onLoadPaymentData={onLoadPaymentData}
-                            buttonColor="white"
                             buttonRadius="4"
                             buttonType="buy"
                         />
