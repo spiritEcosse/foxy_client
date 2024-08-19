@@ -1,5 +1,5 @@
-import {useContext} from 'react';
-import {OrderContext} from '../components/OrderContext';
+import { useContext } from 'react';
+import { OrderContext } from '../components/OrderContext';
 
 export const useOrderContext = () => {
     const context = useContext(OrderContext);

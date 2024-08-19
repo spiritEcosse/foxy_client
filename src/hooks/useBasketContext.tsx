@@ -1,5 +1,5 @@
-import {useContext} from 'react';
-import {BasketContext} from '../components/BasketContext';
+import { useContext } from 'react';
+import { BasketContext } from '../components/BasketContext';
 
 export const useBasketContext = () => {
     const context = useContext(BasketContext);

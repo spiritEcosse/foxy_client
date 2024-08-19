@@ -1,6 +1,6 @@
-import React, {createContext, useCallback, useState} from 'react';
-import {googleLogout} from '@react-oauth/google';
-import {useLogoutListener} from '../hooks/useLogoutListener';
+import React, { createContext, useCallback, useState } from 'react';
+import { googleLogout } from '@react-oauth/google';
+import { useLogoutListener } from '../hooks/useLogoutListener';
 
 interface AuthContextType {
     auth: string | null;
@@ -9,10 +9,16 @@ interface AuthContextType {
     setAuthAndStore: (auth: string | null) => void;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+    undefined
+);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
-    const [auth, setAuth] = useState<string | null>(localStorage.getItem('auth'));
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+    children,
+}) => {
+    const [auth, setAuth] = useState<string | null>(
+        localStorage.getItem('auth')
+    );
 
     const logout = () => {
         googleLogout();
@@ -31,7 +37,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
     useLogoutListener(() => setAuthAndStore(null));
 
     return (
-        <AuthContext.Provider value={{auth, setAuth, logout, setAuthAndStore}}>
+        <AuthContext.Provider
+            value={{ auth, setAuth, logout, setAuthAndStore }}
+        >
             {children}
         </AuthContext.Provider>
     );

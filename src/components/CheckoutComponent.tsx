@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
-import {Link, useNavigate} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../assets/basket.scss';
 import {
     Accordion,
@@ -12,51 +12,67 @@ import {
     ButtonGroup,
     Checkbox,
     Grid,
-    Typography
+    Typography,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddressForm from './AddressForm';
-import {fetchData} from '../utils';
-import {FinancialDetailsType} from '../types';
+import { fetchData } from '../utils';
+import { FinancialDetailsType } from '../types';
 import GooglePayButton from '@google-pay/button-react';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Loading from './Loading';
-import {useUserContext} from '../hooks/useUserContext';
-import {useOrderContext} from '../hooks/useOrderContext';
-import {useBasketItemContext} from '../hooks/useBasketItemContext';
-import {useBasketContext} from '../hooks/useBasketContext';
-import {useAddressContext} from '../hooks/useAddressContext';
-import {useErrorContext} from '../hooks/useErrorContext';
+import { useUserContext } from '../hooks/useUserContext';
+import { useOrderContext } from '../hooks/useOrderContext';
+import { useBasketItemContext } from '../hooks/useBasketItemContext';
+import { useBasketContext } from '../hooks/useBasketContext';
+import { useAddressContext } from '../hooks/useAddressContext';
+import { useErrorContext } from '../hooks/useErrorContext';
 
 const CheckoutComponent = () => {
-    const {basketItems, setBasketItemsAndStore, removeFromBasket} = useBasketItemContext();
+    const { basketItems, setBasketItemsAndStore, removeFromBasket } =
+        useBasketItemContext();
     const [checked, setChecked] = React.useState<number[]>([]);
     const navigate = useNavigate();
-    const totalExTaxes = basketItems.reduce((total, item) => total + item.item.price * item.quantity, 0);
-    const [financialDetails, setFinancialDetails] = useState<FinancialDetailsType>({} as FinancialDetailsType);
-    const taxes = Math.round(totalExTaxes * (financialDetails.tax_rate || 0) * 100) / 100;
+    const totalExTaxes = basketItems.reduce(
+        (total, item) => total + item.item.price * item.quantity,
+        0
+    );
+    const [financialDetails, setFinancialDetails] =
+        useState<FinancialDetailsType>({} as FinancialDetailsType);
+    const taxes =
+        Math.round(totalExTaxes * (financialDetails.tax_rate || 0) * 100) / 100;
     const total = totalExTaxes + taxes;
     const roundedTotal = Math.round(total * 100) / 100;
     const [expanded, setExpanded] = React.useState<string | false>(false);
-    const {address, setAddressAndStore} = useAddressContext();
-    const {user} = useUserContext();
-    const {setOrder} = useOrderContext();
-    const {basket, setBasketAndStore} = useBasketContext();
+    const { address, setAddressAndStore } = useAddressContext();
+    const { user } = useUserContext();
+    const { setOrder } = useOrderContext();
+    const { basket, setBasketAndStore } = useBasketContext();
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-    const {setErrorMessage} = useErrorContext();
+    const { setErrorMessage } = useErrorContext();
     const [previousAddress] = useState(address);
     const [paying, setPaying] = useState(false);
-    const googlePayEnvironment = import.meta.env.VITE_APP_GOOGLE_PAY_ENV as 'TEST' | 'PRODUCTION';
+    const googlePayEnvironment = import.meta.env.VITE_APP_GOOGLE_PAY_ENV as
+        | 'TEST'
+        | 'PRODUCTION';
 
     useEffect(() => {
         const fetchFinancialDetails = async () => {
             try {
-                const response = await fetchData('', 'financialdetails', 'GET', {}, true);
+                const response = await fetchData(
+                    '',
+                    'financialdetails',
+                    'GET',
+                    {},
+                    true
+                );
                 if (response.data.length) {
                     setFinancialDetails(response.data[0]);
                 } else {
-                    setErrorMessage('No financial details found. You cannot proceed with the order.');
+                    setErrorMessage(
+                        'No financial details found. You cannot proceed with the order.'
+                    );
                 }
             } catch (error) {
                 setErrorMessage(`Failed to fetch financial details: ${error}`);
@@ -67,7 +83,11 @@ const CheckoutComponent = () => {
     }, [setErrorMessage]);
 
     useEffect(() => {
-        const isDisabled = !address || !address.country_id || !address.city || !address.address || !address.zipcode;
+        const isDisabled =
+            !address?.country_id ||
+            !address?.city ||
+            !address?.address ||
+            !address?.zipcode;
         setIsButtonDisabled(isDisabled);
     }, [address]);
 
@@ -80,20 +100,25 @@ const CheckoutComponent = () => {
                 type: 'CARD',
                 parameters: {
                     allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
-                    allowedCardNetworks: ['AMEX', 'DISCOVER', 'MASTERCARD', 'VISA'],
+                    allowedCardNetworks: [
+                        'AMEX',
+                        'DISCOVER',
+                        'MASTERCARD',
+                        'VISA',
+                    ],
                 },
                 tokenizationSpecification: {
                     type: 'PAYMENT_GATEWAY',
                     parameters: {
                         gateway: financialDetails.gateway,
-                        gatewayMerchantId: financialDetails.gateway_merchant_id
+                        gatewayMerchantId: financialDetails.gateway_merchant_id,
                     },
                 },
             },
         ],
         merchantInfo: {
             merchantId: financialDetails.merchant_id,
-            merchantName: financialDetails.merchant_name
+            merchantName: financialDetails.merchant_name,
         },
         transactionInfo: {
             totalPriceStatus: 'FINAL',
@@ -104,13 +129,16 @@ const CheckoutComponent = () => {
         },
     };
 
-    const onLoadPaymentData = (paymentData: google.payments.api.PaymentData) => {
+    const onLoadPaymentData = (
+        paymentData: google.payments.api.PaymentData
+    ) => {
         console.log(paymentData);
         createOrder();
     };
 
     const handleChange =
-        (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+        (panel: string) =>
+        (event: React.SyntheticEvent, isExpanded: boolean) => {
             setExpanded(isExpanded ? panel : false);
         };
 
@@ -142,15 +170,21 @@ const CheckoutComponent = () => {
 
     if (basketItems.length === 0) {
         return (
-            <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '470px'
-            }}>
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '470px',
+                }}
+            >
                 <p>Your cart is empty.</p>
-                <Button variant="contained" color="primary" onClick={() => navigate('/')}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => navigate('/')}
+                >
                     Continue Shopping
                 </Button>
             </div>
@@ -158,11 +192,13 @@ const CheckoutComponent = () => {
     }
 
     const hasAddressChanged = () => {
-        return address && previousAddress && (
-            address.country_id !== previousAddress.country_id ||
-            address.city !== previousAddress.city ||
-            address.address !== previousAddress.address ||
-            address.zipcode !== previousAddress.zipcode
+        return (
+            address &&
+            previousAddress &&
+            (address.country_id !== previousAddress.country_id ||
+                address.city !== previousAddress.city ||
+                address.address !== previousAddress.address ||
+                address.zipcode !== previousAddress.zipcode)
         );
     };
 
@@ -178,13 +214,19 @@ const CheckoutComponent = () => {
         try {
             // How to detect if fields in address has changed and then create a new address?
             if (hasAddressChanged() || !address.id) {
-                const _address = await fetchData('', 'address', 'POST', {
-                    address: address.address,
-                    country_id: address.country_id,
-                    city: address.city,
-                    zipcode: address.zipcode,
-                    user_id: user.id
-                }, true);
+                const _address = await fetchData(
+                    '',
+                    'address',
+                    'POST',
+                    {
+                        address: address.address,
+                        country_id: address.country_id,
+                        city: address.city,
+                        zipcode: address.zipcode,
+                        user_id: user.id,
+                    },
+                    true
+                );
                 setAddressAndStore(_address);
                 currentAddressId = _address.id;
             }
@@ -193,12 +235,18 @@ const CheckoutComponent = () => {
                 id: basketItem.id,
                 item_id: basketItem.item.id,
                 price: basketItem.item.price,
-                basket_id: basket.id
+                basket_id: basket.id,
             }));
 
-            await fetchData('', 'basketitem/items', 'PUT', {
-                items: items
-            }, true);
+            await fetchData(
+                '',
+                'basketitem/items',
+                'PUT',
+                {
+                    items: items,
+                },
+                true
+            );
 
             const createdOrder = await fetchData('', 'order', 'POST', {
                 basket_id: basket.id,
@@ -207,15 +255,21 @@ const CheckoutComponent = () => {
                 tax_rate: financialDetails.tax_rate,
                 taxes: taxes,
                 user_id: user.id,
-                address_id: currentAddressId
+                address_id: currentAddressId,
             });
             setOrder(createdOrder);
 
             await fetchData('', `basket/${basket.id}`, 'PUT', {
                 user_id: user.id,
-                in_use: false
+                in_use: false,
             });
-            const _basket = await fetchData('', 'basket', 'POST', {user_id: user.id}, true);
+            const _basket = await fetchData(
+                '',
+                'basket',
+                'POST',
+                { user_id: user.id },
+                true
+            );
             setBasketAndStore(_basket);
             setBasketItemsAndStore([]);
             navigate('/success_order');
@@ -227,47 +281,83 @@ const CheckoutComponent = () => {
     };
 
     return (
-        <div style={{padding: '20px'}}>
+        <div style={{ padding: '20px' }}>
             <Alert severity="info">
-                Please be advised that this action is currently in the testing phase, which will entail placing a test
-                order.</Alert>
+                Please be advised that this action is currently in the testing
+                phase, which will entail placing a test order.
+            </Alert>
             <h1>Checkout</h1>
-            <Accordion expanded={expanded === 'basketItemsPanel'} onChange={handleChange('basketItemsPanel')}>
+            <Accordion
+                expanded={expanded === 'basketItemsPanel'}
+                onChange={handleChange('basketItemsPanel')}
+            >
                 <AccordionSummary
-                    expandIcon={<ExpandMoreIcon/>}
+                    expandIcon={<ExpandMoreIcon />}
                     aria-controls="basketItemsPanel-content"
                     id="basketItemsPanel-header"
                 >
-                    <Typography sx={{width: '33%', flexShrink: 0}}>
+                    <Typography sx={{ width: '33%', flexShrink: 0 }}>
                         Cart
                     </Typography>
-                    <Typography sx={{color: 'text.secondary'}}>You have count of items: {basketItems.length}. Total
-                        price is {roundedTotal.toLocaleString(undefined, {
-                        style: 'currency',
-                        currency: 'EUR'
-                    })}.</Typography>
+                    <Typography sx={{ color: 'text.secondary' }}>
+                        You have count of items: {basketItems.length}. Total
+                        price is{' '}
+                        {roundedTotal.toLocaleString(undefined, {
+                            style: 'currency',
+                            currency: 'EUR',
+                        })}
+                        .
+                    </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <ButtonGroup variant="contained" aria-label="Basic button group">
-                        <Button variant="contained" color="secondary" onClick={deleteCheckedItems}>
+                    <ButtonGroup
+                        variant="contained"
+                        aria-label="Basic button group"
+                    >
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={deleteCheckedItems}
+                        >
                             Delete Checked Items
                         </Button>
-                        <Button variant="contained" color="secondary" onClick={deleteAllItems}>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={deleteAllItems}
+                        >
                             Delete All Items
                         </Button>
                     </ButtonGroup>
-                    <Grid container spacing={2} alignItems="center" sx={{mt: 2, mb: 2}}>
+                    <Grid
+                        container
+                        spacing={2}
+                        alignItems="center"
+                        sx={{ mt: 2, mb: 2 }}
+                    >
                         <Grid item xs={12}>
                             <Grid container spacing={2} alignItems="center">
                                 <Grid item xs={1}></Grid>
-                                <Grid item xs={1}>Delete</Grid>
-                                <Grid item xs={2}>Image</Grid>
-                                <Grid item xs={2}>Title</Grid>
-                                <Grid item xs={2}>Price</Grid>
-                                <Grid item xs={2}>Quantity</Grid>
-                                <Grid item xs={2}>Total</Grid>
+                                <Grid item xs={1}>
+                                    Delete
+                                </Grid>
+                                <Grid item xs={2}>
+                                    Image
+                                </Grid>
+                                <Grid item xs={2}>
+                                    Title
+                                </Grid>
+                                <Grid item xs={2}>
+                                    Price
+                                </Grid>
+                                <Grid item xs={2}>
+                                    Quantity
+                                </Grid>
+                                <Grid item xs={2}>
+                                    Total
+                                </Grid>
                             </Grid>
-                            <Divider/>
+                            <Divider />
                         </Grid>
 
                         {basketItems.map((basketItem, index) => (
@@ -275,68 +365,107 @@ const CheckoutComponent = () => {
                                 <Grid container spacing={2} alignItems="center">
                                     <Grid item xs={1}>
                                         <Checkbox
-                                            checked={checked.indexOf(index) !== -1}
+                                            checked={
+                                                checked.indexOf(index) !== -1
+                                            }
                                             onChange={handleCheck(index)}
                                         />
                                     </Grid>
                                     <Grid item xs={1}>
-                                        <IconButton edge="end" aria-label="delete"
-                                            onClick={() => removeFromBasket(basketItem.item)}>
-                                            <DeleteIcon/>
+                                        <IconButton
+                                            edge="end"
+                                            aria-label="delete"
+                                            onClick={() =>
+                                                removeFromBasket(
+                                                    basketItem.item
+                                                )
+                                            }
+                                        >
+                                            <DeleteIcon />
                                         </IconButton>
                                     </Grid>
                                     <Grid item xs={2}>
-                                        <div className="basketItem" key={basketItem.item.id}
-                                            style={{backgroundImage: `url(${basketItem.item.src}?twic=v1/output=preview)`}}>
-                                            <Link to={`/item/${basketItem.item.slug}`}>
+                                        <div
+                                            className="basketItem"
+                                            key={basketItem.item.id}
+                                            style={{
+                                                backgroundImage: `url(${basketItem.item.src}?twic=v1/output=preview)`,
+                                            }}
+                                        >
+                                            <Link
+                                                to={`/item/${basketItem.item.slug}`}
+                                            >
                                                 <img
                                                     data-twic-src={`image:${new URL(basketItem.item.src).pathname}?twic=v1/cover=100x100`}
-                                                    alt={basketItem.item.title}/>
+                                                    alt={basketItem.item.title}
+                                                />
                                             </Link>
                                         </div>
                                     </Grid>
-                                    <Grid item xs={2}>{basketItem.item.title}</Grid>
                                     <Grid item xs={2}>
-                                        {`${basketItem.item.price.toLocaleString(undefined, {
-                                            style: 'currency',
-                                            currency: 'EUR'
-                                        })}`}
+                                        {basketItem.item.title}
                                     </Grid>
-                                    <Grid item xs={2}>{basketItem.quantity}</Grid>
                                     <Grid item xs={2}>
-                                        {`${(basketItem.item.price * basketItem.quantity).toLocaleString(undefined, {
+                                        {`${basketItem.item.price.toLocaleString(
+                                            undefined,
+                                            {
+                                                style: 'currency',
+                                                currency: 'EUR',
+                                            }
+                                        )}`}
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        {basketItem.quantity}
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        {`${(
+                                            basketItem.item.price *
+                                            basketItem.quantity
+                                        ).toLocaleString(undefined, {
                                             style: 'currency',
-                                            currency: 'EUR'
+                                            currency: 'EUR',
                                         })}`}
                                     </Grid>
                                 </Grid>
-                                <Divider/>
+                                <Divider />
                             </Grid>
                         ))}
 
                         <Grid item xs={12}>
                             <Grid container spacing={2} alignItems="center">
-                                <Grid item xs={10}>Total Excluding Taxes</Grid>
+                                <Grid item xs={10}>
+                                    Total Excluding Taxes
+                                </Grid>
                                 <Grid item xs={2}>
-                                    {`${totalExTaxes.toLocaleString(undefined, {style: 'currency', currency: 'EUR'})}`}
+                                    {`${totalExTaxes.toLocaleString(undefined, {
+                                        style: 'currency',
+                                        currency: 'EUR',
+                                    })}`}
                                 </Grid>
                             </Grid>
-                            <Divider/>
+                            <Divider />
                         </Grid>
                         <Grid item xs={12}>
                             <Grid container spacing={2} alignItems="center">
-                                <Grid item xs={10}>Taxes {financialDetails.tax_rate * 100}%</Grid>
+                                <Grid item xs={10}>
+                                    Taxes {financialDetails.tax_rate * 100}%
+                                </Grid>
                                 <Grid item xs={2}>
-                                    {`${taxes.toLocaleString(undefined, {style: 'currency', currency: 'EUR'})}`}
+                                    {`${taxes.toLocaleString(undefined, { style: 'currency', currency: 'EUR' })}`}
                                 </Grid>
                             </Grid>
-                            <Divider/>
+                            <Divider />
                         </Grid>
                         <Grid item xs={12}>
                             <Grid container spacing={2} alignItems="center">
-                                <Grid item xs={10}>Total</Grid>
+                                <Grid item xs={10}>
+                                    Total
+                                </Grid>
                                 <Grid item xs={2}>
-                                    {`${roundedTotal.toLocaleString(undefined, {style: 'currency', currency: 'EUR'})}`}
+                                    {`${roundedTotal.toLocaleString(undefined, {
+                                        style: 'currency',
+                                        currency: 'EUR',
+                                    })}`}
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -344,41 +473,47 @@ const CheckoutComponent = () => {
                 </AccordionDetails>
             </Accordion>
 
-            <Accordion expanded={expanded === 'addressPanel'} onChange={handleChange('addressPanel')}>
+            <Accordion
+                expanded={expanded === 'addressPanel'}
+                onChange={handleChange('addressPanel')}
+            >
                 <AccordionSummary
-                    expandIcon={<ExpandMoreIcon/>}
+                    expandIcon={<ExpandMoreIcon />}
                     aria-controls="addressPanel-content"
                     id="addressPanel-header"
                 >
-                    <Typography sx={{width: '33%', flexShrink: 0}}>
+                    <Typography sx={{ width: '33%', flexShrink: 0 }}>
                         Address
                     </Typography>
-                    <Typography
-                        sx={{color: 'text.secondary'}}>{address ? `Your country: ${address.country.title}, city: ${address.city}, address: ${address.address}, zipcode: ${address.zipcode}` : 'Point your address, please'}.</Typography>
+                    <Typography sx={{ color: 'text.secondary' }}>
+                        {address
+                            ? `Your country: ${address.country.title}, city: ${address.city}, address: ${address.address}, zipcode: ${address.zipcode}`
+                            : 'Point your address, please'}
+                        .
+                    </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <AddressForm/>
+                    <AddressForm />
                 </AccordionDetails>
             </Accordion>
             <Box
-                sx={{mt: 2, mb: 2}}
+                sx={{ mt: 2, mb: 2 }}
                 style={{
                     pointerEvents: isButtonDisabled ? 'none' : 'auto',
-                    opacity: isButtonDisabled ? 0.5 : 1
-                }}>
-                {
-                    paying ? (
-                        <Loading/>
-                    ) : (
-                        <GooglePayButton
-                            environment={googlePayEnvironment}
-                            paymentRequest={googlePayConfig}
-                            onLoadPaymentData={onLoadPaymentData}
-                            buttonRadius={4}
-                            buttonType="buy"
-                        />
-                    )
-                }
+                    opacity: isButtonDisabled ? 0.5 : 1,
+                }}
+            >
+                {paying ? (
+                    <Loading />
+                ) : (
+                    <GooglePayButton
+                        environment={googlePayEnvironment}
+                        paymentRequest={googlePayConfig}
+                        onLoadPaymentData={onLoadPaymentData}
+                        buttonRadius={4}
+                        buttonType="buy"
+                    />
+                )}
             </Box>
         </div>
     );

@@ -2,10 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
-import {GoogleOAuthProvider} from '@react-oauth/google';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import * as Sentry from '@sentry/react';
-import {createRoutesFromChildren, matchRoutes, useLocation, useNavigationType} from 'react-router-dom';
-import {ErrorProvider} from './components/ErrorContext';
+import {
+    createRoutesFromChildren,
+    matchRoutes,
+    useLocation,
+    useNavigationType,
+} from 'react-router-dom';
+import { ErrorProvider } from './components/ErrorContext';
 
 Sentry.init({
     dsn: import.meta.env.VITE_APP_SENTRY_DSN,
@@ -17,9 +22,9 @@ Sentry.init({
             useLocation,
             useNavigationType,
             createRoutesFromChildren,
-            matchRoutes
+            matchRoutes,
         }),
-        Sentry.replayIntegration()
+        Sentry.replayIntegration(),
     ],
 
     // Set tracesSampleRate to 1.0 to capture 100%
@@ -27,24 +32,28 @@ Sentry.init({
     tracesSampleRate: 1.0,
 
     // Set `tracePropagationTargets` to control for which URLs distributed tracing should be enabled
-    tracePropagationTargets: ['localhost', /^https:\/\/api\.dev\.faithfishart\.comi/],
+    tracePropagationTargets: [
+        'localhost',
+        /^https:\/\/api\.dev\.faithfishart\.comi/,
+    ],
 
     // Capture Replay for 100% of all sessions,
     // plus for 100% of sessions with an error
     replaysSessionSampleRate: 1.0,
     replaysOnErrorSampleRate: 1.0,
-    environment: import.meta.env.VITE_APP_ENVIRONMENT || 'development'
+    environment: import.meta.env.VITE_APP_ENVIRONMENT || 'development',
 });
-
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <Sentry.ErrorBoundary fallback={<div>An error has occurred</div>}>
-            <GoogleOAuthProvider clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}>
+            <GoogleOAuthProvider
+                clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}
+            >
                 <ErrorProvider>
-                    <App/>
+                    <App />
                 </ErrorProvider>
             </GoogleOAuthProvider>
         </Sentry.ErrorBoundary>
-    </React.StrictMode>,
+    </React.StrictMode>
 );

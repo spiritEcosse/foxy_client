@@ -1,20 +1,20 @@
-import React, {useEffect, useState} from 'react';
-import {CircularProgress, Paper} from '@mui/material';
-import {Link, useNavigate} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { CircularProgress, Paper } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
-import {fetchData} from '../utils';
+import { fetchData } from '../utils';
 import Loading from './Loading';
-import {useUserContext} from '../hooks/useUserContext';
-import {useErrorContext} from '../hooks/useErrorContext';
-import {useAuthContext} from '../hooks/useAuthContext';
+import { useUserContext } from '../hooks/useUserContext';
+import { useErrorContext } from '../hooks/useErrorContext';
+import { useAuthContext } from '../hooks/useAuthContext';
 
 const AccountComponent = () => {
-    const {setErrorMessage} = useErrorContext();
+    const { setErrorMessage } = useErrorContext();
     const navigate = useNavigate();
-    const {user} = useUserContext();
+    const { user } = useUserContext();
     const [isDeleting, setIsDeleting] = useState(false); // State to track deletion process
     const [loading, setLoading] = useState(true);
-    const {logout} = useAuthContext();
+    const { logout } = useAuthContext();
 
     useEffect(() => {
         if (!user) {
@@ -24,7 +24,7 @@ const AccountComponent = () => {
     }, [user, navigate]);
 
     if (loading) {
-        return <Loading/>;
+        return <Loading />;
     }
 
     const deleteAccount = async () => {
@@ -41,22 +41,36 @@ const AccountComponent = () => {
             setErrorMessage('Account deleted');
             navigate('/');
         } catch (error) {
-            setErrorMessage('Couldn\'t delete account');
+            setErrorMessage("Couldn't delete account");
         } finally {
             setIsDeleting(false); // End deletion process
         }
     };
 
     return (
-        <div style={{padding: '20px', maxWidth: '100%'}}>
+        <div style={{ padding: '20px', maxWidth: '100%' }}>
             <h1>Account</h1>
-            <Paper style={{padding: '20px'}}>
-                <Button variant="contained" color="primary" component={Link} to="/account/order">
+            <Paper style={{ padding: '20px' }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    component={Link}
+                    to="/account/order"
+                >
                     Orders
                 </Button>
-                <div style={{minHeight: '40vh'}}></div>
-                <Button variant={'contained'} color={'warning'} onClick={() => deleteAccount()} disabled={isDeleting}>
-                    {isDeleting ? <CircularProgress size={24}/> : 'Delete Account'}
+                <div style={{ minHeight: '40vh' }}></div>
+                <Button
+                    variant={'contained'}
+                    color={'warning'}
+                    onClick={() => deleteAccount()}
+                    disabled={isDeleting}
+                >
+                    {isDeleting ? (
+                        <CircularProgress size={24} />
+                    ) : (
+                        'Delete Account'
+                    )}
                 </Button>
             </Paper>
         </div>

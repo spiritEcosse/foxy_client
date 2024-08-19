@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {setupCache} from 'axios-cache-interceptor';
+import { setupCache } from 'axios-cache-interceptor';
 import * as Sentry from '@sentry/react';
 
 const instance = axios.create();
@@ -16,23 +16,33 @@ export class CustomError extends Error {
 }
 
 export const fetchCurrencyRate = async (currency: string) => {
-    const response = await fetch('https://api.exchangerate-api.com/v4/latest/EUR');
+    const response = await fetch(
+        'https://api.exchangerate-api.com/v4/latest/EUR'
+    );
     const data = await response.json();
     return data.rates[currency];
 };
 
-export const fetchData = async (url: string, path: string, method: 'GET' | 'POST' | 'DELETE' | 'PUT' = 'GET', body?: Record<string, unknown>, disableCache = false) => {
+export const fetchData = async (
+    url: string,
+    path: string,
+    method: 'GET' | 'POST' | 'DELETE' | 'PUT' = 'GET',
+    body?: Record<string, unknown>,
+    disableCache = false
+) => {
     try {
         const response = await axiosCached({
             method,
             url: url || `${import.meta.env.VITE_APP_SERVER_URL}/api/v1/${path}`,
             data: body,
-            cache: disableCache ? false : {interpretHeader: false},
+            cache: disableCache ? false : { interpretHeader: false },
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('auth')}`
-            }
+                Authorization: `Bearer ${localStorage.getItem('auth')}`,
+            },
         });
-        const isJson = response.headers['content-type']?.includes('application/json') ?? false;
+        const isJson =
+            response.headers['content-type']?.includes('application/json') ??
+            false;
         if (!isJson) {
             throw new Error('Response is not JSON.');
         }
@@ -50,7 +60,10 @@ export const fetchData = async (url: string, path: string, method: 'GET' | 'POST
             } else if (axiosError.code === 'ERR_NETWORK') {
                 message = 'Network Error';
             } else if (axiosError.response.status) {
-                message = axiosError.response.data.error ?? axiosError.response.data.message ?? axiosError.response.statusText;
+                message =
+                    axiosError.response.data.error ??
+                    axiosError.response.data.message ??
+                    axiosError.response.statusText;
                 code = axiosError.response.status;
             } else if (axiosError.code) {
                 code = parseInt(axiosError.code, 10) ?? code;

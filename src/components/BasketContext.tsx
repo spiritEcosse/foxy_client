@@ -1,22 +1,22 @@
-import React, {Dispatch, SetStateAction, useCallback, useState} from 'react';
-import {BasketType} from '../types';
-import {useLogoutListener} from '../hooks/useLogoutListener';
+import React, { Dispatch, SetStateAction, useCallback, useState } from 'react';
+import { BasketType } from '../types';
+import { useLogoutListener } from '../hooks/useLogoutListener';
 
 export const BasketContext = React.createContext<{
     basket: BasketType | null;
     setBasket: Dispatch<SetStateAction<BasketType | null>>;
     setBasketAndStore: (value: BasketType | null) => void;
-        }>({
-            basket: null,
-            setBasket: () => {
-            },
-            setBasketAndStore: () => {
-            },
-        });
+}>({
+    basket: null,
+    setBasket: () => {},
+    setBasketAndStore: () => {},
+});
 
-export const BasketProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
+export const BasketProvider: React.FC<{ children: React.ReactNode }> = ({
+    children,
+}) => {
     const [basket, setBasket] = useState<BasketType | null>(
-        JSON.parse(localStorage.getItem('basket') || 'null')
+        JSON.parse(localStorage.getItem('basket') ?? 'null')
     );
 
     const setBasketAndStore = useCallback((value: BasketType | null) => {
@@ -31,7 +31,9 @@ export const BasketProvider: React.FC<{ children: React.ReactNode }> = ({childre
     useLogoutListener(() => setBasketAndStore(null));
 
     return (
-        <BasketContext.Provider value={{basket, setBasket, setBasketAndStore}}>
+        <BasketContext.Provider
+            value={{ basket, setBasket, setBasketAndStore }}
+        >
             {children}
         </BasketContext.Provider>
     );

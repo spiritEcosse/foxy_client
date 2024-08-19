@@ -1,6 +1,6 @@
-import React, {useCallback, useState} from 'react';
-import {UserType} from '../types';
-import {useLogoutListener} from '../hooks/useLogoutListener';
+import React, { useCallback, useState } from 'react';
+import { UserType } from '../types';
+import { useLogoutListener } from '../hooks/useLogoutListener';
 
 interface UserContextProps {
     user: UserType | null;
@@ -16,10 +16,15 @@ const defaultUserContext: UserContextProps = {
     },
 };
 
-export const UserContext = React.createContext<UserContextProps>(defaultUserContext);
+export const UserContext =
+    React.createContext<UserContextProps>(defaultUserContext);
 
-export const UserProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
-    const [user, setUser] = useState<UserType | null>(JSON.parse(localStorage.getItem('user') || 'null'));
+export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
+    children,
+}) => {
+    const [user, setUser] = useState<UserType | null>(
+        JSON.parse(localStorage.getItem('user') ?? 'null'),
+    );
 
     const setUserAndStore = useCallback((value: UserType | null) => {
         setUser(value);
@@ -33,7 +38,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({children}
     useLogoutListener(() => setUserAndStore(null));
 
     return (
-        <UserContext.Provider value={{user, setUser, setUserAndStore}}>
+        <UserContext.Provider value={{ user, setUser, setUserAndStore }}>
             {children}
         </UserContext.Provider>
     );

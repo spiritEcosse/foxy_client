@@ -13,7 +13,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import GoogleLoginComponent from './GoogleLoginComponent';
 import Badge from '@mui/material/Badge';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -21,42 +21,45 @@ import EuroIcon from '@mui/icons-material/Euro';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
-import {useCurrencyContext} from '../hooks/useCurrencyContext';
-import {useBasketItemContext} from '../hooks/useBasketItemContext';
-import {useUserContext} from '../hooks/useUserContext';
-import {useAuthContext} from '../hooks/useAuthContext';
+import { useCurrencyContext } from '../hooks/useCurrencyContext';
+import { useBasketItemContext } from '../hooks/useBasketItemContext';
+import { useUserContext } from '../hooks/useUserContext';
+import { useAuthContext } from '../hooks/useAuthContext';
 
 interface HeaderComponentProps {
     windowProps?: () => Window;
 }
 
-
 export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
-    const {windowProps} = props;
+    const { windowProps } = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const navItems = [
-        {id: 1, title: 'About', link: '/page/about'},
-        {id: 2, title: 'Contact', link: '/page/contact'}
+        { id: 1, title: 'About', link: '/page/about' },
+        { id: 2, title: 'Contact', link: '/page/contact' },
     ];
-    const {basketItems} = useBasketItemContext();
-    const {setCurrency} = useCurrencyContext();
-    const {user} = useUserContext();
+    const { basketItems } = useBasketItemContext();
+    const { setCurrency } = useCurrencyContext();
+    const { user } = useUserContext();
     const handleDrawerToggle = () => {
         setMobileOpen((prevState) => !prevState);
     };
-    const {logout} = useAuthContext();
+    const { logout } = useAuthContext();
 
     const drawer = (
-        <Box onClick={handleDrawerToggle} sx={{textAlign: 'center'}}>
-            <Typography variant="h6" sx={{my: 2}}>
+        <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
+            <Typography variant="h6" sx={{ my: 2 }}>
                 {import.meta.env.PROJECT_NAME}
             </Typography>
-            <Divider/>
+            <Divider />
             <List>
                 {navItems.map((item) => (
                     <ListItem key={item.id} disablePadding>
-                        <ListItemButton sx={{textAlign: 'center'}} component={Link} to={item.link}>
-                            <ListItemText primary={item.title}/>
+                        <ListItemButton
+                            sx={{ textAlign: 'center' }}
+                            component={Link}
+                            to={item.link}
+                        >
+                            <ListItemText primary={item.title} />
                         </ListItemButton>
                     </ListItem>
                 ))}
@@ -64,7 +67,10 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
         </Box>
     );
 
-    const container = windowProps !== undefined ? () => windowProps().document.body : undefined;
+    const container =
+        windowProps !== undefined
+            ? () => windowProps().document.body
+            : undefined;
 
     const handleLogoutClick = () => {
         localStorage.setItem('showLoginPopup', 'false');
@@ -72,8 +78,8 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
     };
 
     return (
-        <Box sx={{display: 'flex'}}>
-            <CssBaseline/>
+        <Box sx={{ display: 'flex' }}>
+            <CssBaseline />
             <AppBar component="nav" position="static">
                 <Toolbar>
                     <IconButton
@@ -81,24 +87,39 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                         aria-label="open drawer"
                         edge="start"
                         onClick={handleDrawerToggle}
-                        sx={{mr: 2, display: {sm: 'none'}}}
+                        sx={{ mr: 2, display: { sm: 'none' } }}
                     >
-                        <MenuIcon/>
+                        <MenuIcon />
                     </IconButton>
-                    <Link to="/" style={{textDecoration: 'none', color: 'inherit'}}>
+                    <Link
+                        to="/"
+                        style={{ textDecoration: 'none', color: 'inherit' }}
+                    >
                         <Typography
                             variant="h6"
                             component="div"
-                            sx={{flexGrow: 1, display: {sm: 'block'}}}
+                            sx={{ flexGrow: 1, display: { sm: 'block' } }}
                         >
                             {import.meta.env.PROJECT_NAME}
                         </Typography>
                     </Link>
-                    <Box sx={{display: {sm: 'flex', marginLeft: 'auto'}}}>
-                        <Box sx={{display: {xs: 'none', sm: 'flex', marginLeft: 'auto'}}}>
-                            {navItems.map(item => (
-                                <Button component={Link} key={item.id} sx={{color: '#fff'}}
-                                    to={item.link}>
+                    <Box sx={{ display: { sm: 'flex', marginLeft: 'auto' } }}>
+                        <Box
+                            sx={{
+                                display: {
+                                    xs: 'none',
+                                    sm: 'flex',
+                                    marginLeft: 'auto',
+                                },
+                            }}
+                        >
+                            {navItems.map((item) => (
+                                <Button
+                                    component={Link}
+                                    key={item.id}
+                                    sx={{ color: '#fff' }}
+                                    to={item.link}
+                                >
                                     {item.title}
                                 </Button>
                             ))}
@@ -112,7 +133,7 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                             onClick={() => setCurrency('USD')}
                             color="inherit"
                         >
-                            <AttachMoneyIcon/>
+                            <AttachMoneyIcon />
                         </IconButton>
                         <IconButton
                             size="small"
@@ -123,17 +144,20 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                             onClick={() => setCurrency('EUR')}
                             color="inherit"
                         >
-                            <EuroIcon/>
+                            <EuroIcon />
                         </IconButton>
                         <Link to="checkout">
-                            <IconButton aria-label="cart" sx={{color: 'white'}}>
+                            <IconButton
+                                aria-label="cart"
+                                sx={{ color: 'white' }}
+                            >
                                 <Badge badgeContent={basketItems.length}>
-                                    <ShoppingCartIcon/>
+                                    <ShoppingCartIcon />
                                 </Badge>
                             </IconButton>
                         </Link>
-                        {(!user) ? (
-                            <GoogleLoginComponent/>
+                        {!user ? (
+                            <GoogleLoginComponent />
                         ) : (
                             <>
                                 <Link to="account">
@@ -142,9 +166,9 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                                         edge="end"
                                         aria-label="account"
                                         aria-haspopup="true"
-                                        sx={{color: 'white'}}
+                                        sx={{ color: 'white' }}
                                     >
-                                        <PersonIcon/>
+                                        <PersonIcon />
                                     </IconButton>
                                 </Link>
                                 <IconButton
@@ -155,7 +179,7 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                                     onClick={handleLogoutClick}
                                     color="inherit"
                                 >
-                                    <LogoutIcon/>
+                                    <LogoutIcon />
                                 </IconButton>
                             </>
                         )}
@@ -169,11 +193,14 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                     open={mobileOpen}
                     onClose={handleDrawerToggle}
                     ModalProps={{
-                        keepMounted: true // Better open performance on mobile.
+                        keepMounted: true, // Better open performance on mobile.
                     }}
                     sx={{
-                        display: {xs: 'block', sm: 'none'},
-                        '& .MuiDrawer-paper': {boxSizing: 'border-box', width: 240}
+                        display: { xs: 'block', sm: 'none' },
+                        '& .MuiDrawer-paper': {
+                            boxSizing: 'border-box',
+                            width: 240,
+                        },
                     }}
                 >
                     {drawer}
