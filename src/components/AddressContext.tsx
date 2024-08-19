@@ -11,27 +11,27 @@ export const AddressContext = React.createContext<{
         newValue: AddressType[K] extends CountryType
             ? CountryType | null
             : AddressType[K] extends number
-              ? AddressType[K] | undefined
-              : AddressType[K]
+                ? AddressType[K] | undefined
+                : AddressType[K],
     ) => void;
-}>({
-    address: null,
-    setAddress: () => {
-        // No-op placeholder function
-    },
-    setAddressAndStore: () => {
-        // No-op placeholder function
-    },
-    updateAddressField: () => {
-        // No-op placeholder function
-    },
-});
+        }>({
+            address: null,
+            setAddress: () => {
+                // No-op placeholder function
+            },
+            setAddressAndStore: () => {
+                // No-op placeholder function
+            },
+            updateAddressField: () => {
+                // No-op placeholder function
+            },
+        });
 
 export const AddressProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
     const [address, setAddress] = useState<AddressType | null>(
-        JSON.parse(localStorage.getItem('address') ?? 'null')
+        JSON.parse(localStorage.getItem('address') ?? 'null'),
     );
 
     const setAddressAndStore = (value: AddressType | null) => {
@@ -48,8 +48,8 @@ export const AddressProvider: React.FC<{ children: React.ReactNode }> = ({
         newValue: AddressType[K] extends CountryType
             ? CountryType | null
             : AddressType[K] extends number
-              ? AddressType[K] | undefined
-              : AddressType[K]
+                ? AddressType[K] | undefined
+                : AddressType[K],
     ) => {
         setAddress((prevAddress) => {
             if (prevAddress) {
@@ -77,15 +77,12 @@ export const AddressProvider: React.FC<{ children: React.ReactNode }> = ({
 
     useLogoutListener(() => setAddressAndStore(null));
 
-    const contextValue = useMemo(
-        () => ({
-            address,
-            setAddress,
-            setAddressAndStore,
-            updateAddressField,
-        }),
-        [address]
-    );
+    const contextValue = useMemo(() => ({
+        address,
+        setAddress,
+        setAddressAndStore,
+        updateAddressField,
+    }), [address, setAddress, setAddressAndStore, updateAddressField]);
 
     return (
         <AddressContext.Provider value={contextValue}>
