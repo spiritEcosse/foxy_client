@@ -296,7 +296,12 @@ const CheckoutComponent = () => {
                     aria-controls="basketItemsPanel-content"
                     id="basketItemsPanel-header"
                 >
-                    <Typography sx={{ width: '33%', flexShrink: 0 }}>
+                    <Typography
+                        sx={{
+                            width: '33%',
+                            flexShrink: 0,
+                        }}
+                    >
                         Cart
                     </Typography>
                     <Typography sx={{ color: 'text.secondary' }}>
@@ -482,7 +487,12 @@ const CheckoutComponent = () => {
                     aria-controls="addressPanel-content"
                     id="addressPanel-header"
                 >
-                    <Typography sx={{ width: '33%', flexShrink: 0 }}>
+                    <Typography
+                        sx={{
+                            width: '33%',
+                            flexShrink: 0,
+                        }}
+                    >
                         Address
                     </Typography>
                     <Typography sx={{ color: 'text.secondary' }}>

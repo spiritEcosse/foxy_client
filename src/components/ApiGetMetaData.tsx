@@ -26,13 +26,21 @@ const ApiGetMetaData = ({
                 setPage(data);
                 handleFetchedPage({
                     page: data,
-                    response: { code: 200, message: 'OK', loading: false },
+                    response: {
+                        code: 200,
+                        message: 'OK',
+                        loading: false,
+                    },
                 });
             })
             .catch(({ code, message }) => {
                 handleFetchedPage({
                     page: page,
-                    response: { code, message, loading: false },
+                    response: {
+                        code,
+                        message,
+                        loading: false,
+                    },
                 });
             });
     }, [slug, handleFetchedPage, page]);

@@ -7,7 +7,9 @@ import PageDetails from './PageDetails';
 export default function PageComponent() {
     const { slug = '' } = useParams();
     const [page, setPage] = useState({} as PageType);
-    const [response, setResponse] = useState({ loading: true } as ResponseType);
+    const [response, setResponse] = useState({
+        loading: true,
+    } as ResponseType);
 
     const handleFetchedPage = useCallback(
         ({ page, response }: { page: PageType; response: ResponseType }) => {

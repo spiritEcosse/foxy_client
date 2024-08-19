@@ -32,7 +32,10 @@ const PageDetails = ({
             </Typography>
             <Paper
                 elevation={3}
-                style={{ padding: '20px', marginBottom: '20px' }}
+                style={{
+                    padding: '20px',
+                    marginBottom: '20px',
+                }}
             >
                 <div
                     dangerouslySetInnerHTML={{

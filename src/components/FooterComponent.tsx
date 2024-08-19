@@ -15,10 +15,26 @@ export default function FooterComponent() {
             url: 'https://www.facebook.com',
             icon: <FacebookRoundedIcon />,
         },
-        { id: 2, url: 'https://www.pinterest.com', icon: <PinterestIcon /> },
-        { id: 3, url: 'https://www.twitter.com', icon: <TwitterIcon /> },
-        { id: 4, url: 'https://www.instagram.com', icon: <InstagramIcon /> },
-        { id: 5, url: 'https://www.linkedin.com', icon: <LinkedInIcon /> },
+        {
+            id: 2,
+            url: 'https://www.pinterest.com',
+            icon: <PinterestIcon />,
+        },
+        {
+            id: 3,
+            url: 'https://www.twitter.com',
+            icon: <TwitterIcon />,
+        },
+        {
+            id: 4,
+            url: 'https://www.instagram.com',
+            icon: <InstagramIcon />,
+        },
+        {
+            id: 5,
+            url: 'https://www.linkedin.com',
+            icon: <LinkedInIcon />,
+        },
     ];
 
     return (

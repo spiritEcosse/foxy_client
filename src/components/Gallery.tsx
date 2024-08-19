@@ -18,7 +18,9 @@ const Gallery = ({ page }: { page: PageType }) => {
     const [pageNumber, setPageNumber] = useState(1);
     const [countPages, setCountPages] = useState(1);
     const limit = 27;
-    const [response, setResponse] = useState({ loading: true } as ResponseType);
+    const [response, setResponse] = useState({
+        loading: true,
+    } as ResponseType);
     const [data, setData] = useState<ItemType[]>([]);
     const { setErrorMessage } = useErrorContext();
 
@@ -29,7 +31,11 @@ const Gallery = ({ page }: { page: PageType }) => {
                 setData(data.data);
                 setCountPages(data ? Math.ceil(data.total / limit) : 1);
                 setPageNumber(data ? data._page : 1);
-                setResponse({ code: 200, message: 'OK', loading: false });
+                setResponse({
+                    code: 200,
+                    message: 'OK',
+                    loading: false,
+                });
             })
             .catch(({ code, message }) => {
                 setErrorMessage(`Error fetching data: ${message}`);

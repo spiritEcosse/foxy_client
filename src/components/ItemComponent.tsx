@@ -23,7 +23,9 @@ import { useErrorContext } from '../hooks/useErrorContext';
 
 const ItemComponent = () => {
     const [item, setItem] = useState<ItemType>({} as ItemType);
-    const [response, setResponse] = useState({ loading: true } as ResponseType);
+    const [response, setResponse] = useState({
+        loading: true,
+    } as ResponseType);
     const { slug } = useParams();
     const [container, setContainer] = useState<HTMLElement | null>(null);
     const [conversionRate, setConversionRate] = useState(1);
@@ -114,11 +116,19 @@ const ItemComponent = () => {
                     setItem(data._item);
                     setMedia(data._media);
 
-                    setResponse({ code: 200, message: 'OK', loading: false });
+                    setResponse({
+                        code: 200,
+                        message: 'OK',
+                        loading: false,
+                    });
                 })
                 .catch(({ code, message }) => {
                     setErrorMessage(`Error fetching data: ${message}`);
-                    setResponse({ code, message, loading: false });
+                    setResponse({
+                        code,
+                        message,
+                        loading: false,
+                    });
                 });
 
             fetchData('', `shippingrate/item/${slug}`, 'GET')
@@ -127,7 +137,11 @@ const ItemComponent = () => {
                 })
                 .catch(({ code, message }) => {
                     setErrorMessage(`Error fetching data: ${message}`);
-                    setResponse({ code, message, loading: false });
+                    setResponse({
+                        code,
+                        message,
+                        loading: false,
+                    });
                 });
         }
     }, [setErrorMessage, slug]);
@@ -167,9 +181,17 @@ const ItemComponent = () => {
             <Paper elevation={3} style={{ padding: '20px' }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
-                        <Paper elevation={3} style={{ padding: '20px' }}>
+                        <Paper
+                            elevation={3}
+                            style={{
+                                padding: '20px',
+                            }}
+                        >
                             <div
-                                style={{ width: '100%', paddingBottom: '100%' }}
+                                style={{
+                                    width: '100%',
+                                    paddingBottom: '100%',
+                                }}
                                 ref={setContainerRef}
                             ></div>
                             {getLgComponent}

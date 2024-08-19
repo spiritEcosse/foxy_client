@@ -55,7 +55,9 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                 {navItems.map((item) => (
                     <ListItem key={item.id} disablePadding>
                         <ListItemButton
-                            sx={{ textAlign: 'center' }}
+                            sx={{
+                                textAlign: 'center',
+                            }}
                             component={Link}
                             to={item.link}
                         >
@@ -87,23 +89,41 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                         aria-label="open drawer"
                         edge="start"
                         onClick={handleDrawerToggle}
-                        sx={{ mr: 2, display: { sm: 'none' } }}
+                        sx={{
+                            mr: 2,
+                            display: { sm: 'none' },
+                        }}
                     >
                         <MenuIcon />
                     </IconButton>
                     <Link
                         to="/"
-                        style={{ textDecoration: 'none', color: 'inherit' }}
+                        style={{
+                            textDecoration: 'none',
+                            color: 'inherit',
+                        }}
                     >
                         <Typography
                             variant="h6"
                             component="div"
-                            sx={{ flexGrow: 1, display: { sm: 'block' } }}
+                            sx={{
+                                flexGrow: 1,
+                                display: {
+                                    sm: 'block',
+                                },
+                            }}
                         >
                             {import.meta.env.PROJECT_NAME}
                         </Typography>
                     </Link>
-                    <Box sx={{ display: { sm: 'flex', marginLeft: 'auto' } }}>
+                    <Box
+                        sx={{
+                            display: {
+                                sm: 'flex',
+                                marginLeft: 'auto',
+                            },
+                        }}
+                    >
                         <Box
                             sx={{
                                 display: {
@@ -117,7 +137,9 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                                 <Button
                                     component={Link}
                                     key={item.id}
-                                    sx={{ color: '#fff' }}
+                                    sx={{
+                                        color: '#fff',
+                                    }}
                                     to={item.link}
                                 >
                                     {item.title}
@@ -149,7 +171,9 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                         <Link to="checkout">
                             <IconButton
                                 aria-label="cart"
-                                sx={{ color: 'white' }}
+                                sx={{
+                                    color: 'white',
+                                }}
                             >
                                 <Badge badgeContent={basketItems.length}>
                                     <ShoppingCartIcon />
@@ -166,7 +190,9 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                                         edge="end"
                                         aria-label="account"
                                         aria-haspopup="true"
-                                        sx={{ color: 'white' }}
+                                        sx={{
+                                            color: 'white',
+                                        }}
                                     >
                                         <PersonIcon />
                                     </IconButton>
@@ -196,7 +222,10 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                         keepMounted: true, // Better open performance on mobile.
                     }}
                     sx={{
-                        display: { xs: 'block', sm: 'none' },
+                        display: {
+                            xs: 'block',
+                            sm: 'none',
+                        },
                         '& .MuiDrawer-paper': {
                             boxSizing: 'border-box',
                             width: 240,

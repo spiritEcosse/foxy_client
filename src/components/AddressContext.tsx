@@ -53,7 +53,10 @@ export const AddressProvider: React.FC<{ children: React.ReactNode }> = ({
     ) => {
         setAddress((prevAddress) => {
             if (prevAddress) {
-                return { ...prevAddress, [fieldName]: newValue };
+                return {
+                    ...prevAddress,
+                    [fieldName]: newValue,
+                };
             }
             return {
                 id: 0,

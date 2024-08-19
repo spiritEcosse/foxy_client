@@ -41,7 +41,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
             setUser,
             setUserAndStore,
         }),
-        [user]
+        [setUserAndStore, user]
     );
 
     return (

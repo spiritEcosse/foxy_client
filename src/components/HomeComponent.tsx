@@ -6,7 +6,9 @@ import * as React from 'react';
 
 export default function HomeComponent() {
     const [page, setPage] = useState({} as PageType);
-    const [response, setResponse] = useState({ loading: true } as ResponseType);
+    const [response, setResponse] = useState({
+        loading: true,
+    } as ResponseType);
 
     if (!response.loading) {
         if (response.code === 404) {
