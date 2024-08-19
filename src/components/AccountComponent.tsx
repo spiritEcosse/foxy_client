@@ -1,20 +1,21 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {CircularProgress, Paper} from '@mui/material';
 import {Link, useNavigate} from 'react-router-dom';
 import Button from '@mui/material/Button';
 import {fetchData} from '../utils';
-import {useError} from './ErrorContext';
-import {UserContext} from './UserContext';
 import Loading from './Loading';
+import {useUserContext} from '../hooks/useUserContext';
+import {useErrorContext} from '../hooks/useErrorContext';
+import {useAuthContext} from '../hooks/useAuthContext';
 
 const AccountComponent = () => {
-    const {setErrorMessage} = useError();
+    const {setErrorMessage} = useErrorContext();
     const navigate = useNavigate();
-    const {user, setUserAndStore} = useContext(UserContext);
+    const {user} = useUserContext();
     const [isDeleting, setIsDeleting] = useState(false); // State to track deletion process
     const [loading, setLoading] = useState(true);
+    const {logout} = useAuthContext();
 
-    
     useEffect(() => {
         if (!user) {
             navigate('/');
@@ -35,9 +36,8 @@ const AccountComponent = () => {
         setIsDeleting(true); // Start deletion process
         try {
             await fetchData('', `user/${user.id}`, 'DELETE');
-            localStorage.removeItem('auth');
             localStorage.setItem('showLoginPopup', 'false');
-            window.dispatchEvent(new Event('storage'));
+            logout();
             setErrorMessage('Account deleted');
             navigate('/');
         } catch (error) {

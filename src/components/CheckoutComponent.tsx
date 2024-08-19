@@ -1,5 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {BasketItemContext} from './BasketItemContext';
+import React, {useEffect, useState} from 'react';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
@@ -17,20 +16,21 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddressForm from './AddressForm';
-import {AddressContext} from './AddressContext';
 import {fetchData} from '../utils';
 import {FinancialDetailsType} from '../types';
-import {UserContext} from './UserContext';
-import {BasketContext} from './BasketContext';
-import {OrderContext} from './OrderContext';
 import GooglePayButton from '@google-pay/button-react';
 import Box from '@mui/material/Box';
-import {useError} from './ErrorContext';
 import Divider from '@mui/material/Divider';
 import Loading from './Loading';
+import {useUserContext} from '../hooks/useUserContext';
+import {useOrderContext} from '../hooks/useOrderContext';
+import {useBasketItemContext} from '../hooks/useBasketItemContext';
+import {useBasketContext} from '../hooks/useBasketContext';
+import {useAddressContext} from '../hooks/useAddressContext';
+import {useErrorContext} from '../hooks/useErrorContext';
 
 const CheckoutComponent = () => {
-    const {basketItems, setBasketItemsAndStore, removeFromBasket} = useContext(BasketItemContext);
+    const {basketItems, setBasketItemsAndStore, removeFromBasket} = useBasketItemContext();
     const [checked, setChecked] = React.useState<number[]>([]);
     const navigate = useNavigate();
     const totalExTaxes = basketItems.reduce((total, item) => total + item.item.price * item.quantity, 0);
@@ -39,14 +39,15 @@ const CheckoutComponent = () => {
     const total = totalExTaxes + taxes;
     const roundedTotal = Math.round(total * 100) / 100;
     const [expanded, setExpanded] = React.useState<string | false>(false);
-    const {address, setAddressAndStore} = useContext(AddressContext);
-    const {user, setUserAndStore} = useContext(UserContext);
-    const {order, setOrder} = useContext(OrderContext);
-    const {basket, setBasket, setBasketAndStore} = useContext(BasketContext);
+    const {address, setAddressAndStore} = useAddressContext();
+    const {user} = useUserContext();
+    const {setOrder} = useOrderContext();
+    const {basket, setBasketAndStore} = useBasketContext();
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-    const {setErrorMessage} = useError();
-    const [previousAddress, setPreviousAddress] = useState(address);
+    const {setErrorMessage} = useErrorContext();
+    const [previousAddress] = useState(address);
     const [paying, setPaying] = useState(false);
+    const googlePayEnvironment = import.meta.env.VITE_APP_GOOGLE_PAY_ENV as 'TEST' | 'PRODUCTION';
 
     useEffect(() => {
         const fetchFinancialDetails = async () => {
@@ -63,7 +64,7 @@ const CheckoutComponent = () => {
         };
 
         fetchFinancialDetails();
-    }, []);
+    }, [setErrorMessage]);
 
     useEffect(() => {
         const isDisabled = !address || !address.country_id || !address.city || !address.address || !address.zipcode;
@@ -103,7 +104,8 @@ const CheckoutComponent = () => {
         },
     };
 
-    const onLoadPaymentData = (paymentData: any) => {
+    const onLoadPaymentData = (paymentData: google.payments.api.PaymentData) => {
+        console.log(paymentData);
         createOrder();
     };
 
@@ -369,9 +371,10 @@ const CheckoutComponent = () => {
                         <Loading/>
                     ) : (
                         <GooglePayButton
+                            environment={googlePayEnvironment}
                             paymentRequest={googlePayConfig}
                             onLoadPaymentData={onLoadPaymentData}
-                            buttonRadius="4"
+                            buttonRadius={4}
                             buttonType="buy"
                         />
                     )

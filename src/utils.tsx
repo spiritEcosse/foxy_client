@@ -57,9 +57,8 @@ export const fetchData = async (url: string, path: string, method: 'GET' | 'POST
             }
         }
         if (code === 401) {
-            localStorage.removeItem('auth');
             localStorage.setItem('showLoginPopup', 'true');
-            window.dispatchEvent(new Event('storage'));
+            window.dispatchEvent(new Event('logout'));
             message = 'Login Required';
         }
         throw new CustomError(code, message);

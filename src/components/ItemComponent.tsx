@@ -1,11 +1,10 @@
-import React, {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Grid, Paper, Typography} from '@mui/material';
 import {useParams} from 'react-router-dom';
 import NotFound from './NotFound';
 import InternalServerError from './InternalServerError';
 import Loading from './Loading';
 import lgThumbnail from 'lightgallery/plugins/thumbnail';
-import LightGallery from 'lightgallery/react';
 import lgVideo from 'lightgallery/plugins/video';
 import '../assets/lightgallery.css';
 import 'lightgallery/css/lg-thumbnail.css';
@@ -15,20 +14,20 @@ import {ItemType, MediaType, ResponseType, ShippingRateType} from '../types';
 import MetaDataComponent from './MetaDataComponent';
 import {fetchCurrencyRate, fetchData} from '../utils';
 import DOMPurify from 'dompurify';
-import {CurrencyContext} from './CurrencyContext';
 import Button from '@mui/material/Button';
-import {BasketItemContext} from './BasketItemContext';
-import {useError} from './ErrorContext';
-
+import {useCurrencyContext} from '../hooks/useCurrencyContext';
+import {useBasketItemContext} from '../hooks/useBasketItemContext';
+import LightGallery from 'lightgallery/react';
+import {LightGallery as LightGalleryCore} from 'lightgallery/lightgallery';
+import {useErrorContext} from '../hooks/useErrorContext';
 
 const ItemComponent = () => {
     const [item, setItem] = useState<ItemType>({} as ItemType);
     const [response, setResponse] = useState({loading: true} as ResponseType);
     const {slug} = useParams();
-    const lightGallery = useRef<any>(null);
     const [container, setContainer] = useState<HTMLElement | null>(null);
     const [conversionRate, setConversionRate] = useState(1);
-    const {currency} = useContext(CurrencyContext);
+    const {currency} = useCurrencyContext();
     const [media, setMedia] = useState<MediaType[]>([]);
     const [shippingRate, setShippingRate] = useState<ShippingRateType>({} as ShippingRateType);
     const currentDate = new Date();
@@ -39,10 +38,9 @@ const ItemComponent = () => {
         maxDeliveryDate.setDate(currentDate.getDate() + shippingRate.delivery_days_max);
     }
     const options: Intl.DateTimeFormatOptions = {day: '2-digit', month: 'long'};
-    const onInit = useCallback((detail: any) => {
+    const onInit = useCallback((detail: { instance: LightGalleryCore }) => {
         if (detail) {
-            lightGallery.current = detail.instance;
-            lightGallery.current.openGallery();
+            detail.instance.openGallery();
         }
     }, []);
     const setContainerRef = useCallback((node: HTMLElement | null) => {
@@ -50,8 +48,8 @@ const ItemComponent = () => {
             setContainer(node);
         }
     }, []);
-    const {addToBasket, removeFromBasket, isInBasket} = useContext(BasketItemContext);
-    const {setErrorMessage} = useError();
+    const {addToBasket, removeFromBasket, isInBasket} = useBasketItemContext();
+    const {setErrorMessage} = useErrorContext();
 
     const getLgComponent = useMemo(() => {
         if (container !== null && media) {
@@ -123,7 +121,7 @@ const ItemComponent = () => {
                     setResponse({code, message, loading: false});
                 });
         }
-    }, [slug]);
+    }, [setErrorMessage, slug]);
 
     if (response.loading) {
         return <Loading/>;

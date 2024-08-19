@@ -1,5 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {UserContext} from './UserContext';
+import React, {useEffect, useState} from 'react';
 import {Link, useLocation, useNavigate} from 'react-router-dom';
 import {fetchData} from '../utils';
 import Pagination from '@mui/material/Pagination';
@@ -8,10 +7,11 @@ import {BasketItemType, OrderType} from '../types';
 import Box from '@mui/material/Box';
 import PopupState, {bindPopover, bindTrigger} from 'material-ui-popup-state';
 import '../assets/basket.scss';
-import {BasketItemContext} from './BasketItemContext';
-import {useError} from './ErrorContext';
 import Loading from './Loading';
 import {StyledLink} from './CustomTheme';
+import {useBasketItemContext} from '../hooks/useBasketItemContext';
+import {useErrorContext} from '../hooks/useErrorContext';
+import {useUserContext} from '../hooks/useUserContext';
 
 const OrderCard = styled(Box)(({theme}) => ({
     backgroundColor: theme.palette.background.paper,
@@ -47,7 +47,7 @@ interface BasketItemCardProps {
 }
 
 const BasketItemCard: React.FC<BasketItemCardProps> = ({basketItem}) => {
-    const {addToBasket, removeFromBasket, isInBasket} = useContext(BasketItemContext);
+    const {addToBasket, isInBasket} = useBasketItemContext();
 
     return (
         <Grid container alignItems="center" sx={{pb: 2}}>
@@ -81,7 +81,7 @@ const BasketItemCard: React.FC<BasketItemCardProps> = ({basketItem}) => {
 };
 
 const OrderComponent = () => {
-    const {user, setUserAndStore} = useContext(UserContext);
+    const {user} = useUserContext();
     const navigate = useNavigate();
     const location = useLocation();
     const query = new URLSearchParams(location.search);
@@ -90,7 +90,7 @@ const OrderComponent = () => {
     const [pageNumber, setPageNumber] = useState(1);
     const [countPages, setCountPages] = useState(1);
     const [orders, setOrders] = useState<OrderType[]>([]);
-    const {setErrorMessage} = useError();
+    const {setErrorMessage} = useErrorContext();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -109,7 +109,7 @@ const OrderComponent = () => {
                     setLoading(false);
                 });
         }
-    }, [user, navigate, pageFromUrl, limit]);
+    }, [user, navigate, pageFromUrl, limit, setErrorMessage]);
 
     if (loading) {
         return <Loading/>;

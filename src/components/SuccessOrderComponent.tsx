@@ -1,10 +1,10 @@
-import React, {useContext, useEffect} from 'react';
-import {OrderContext} from './OrderContext';
+import React, {useEffect} from 'react';
 import {Button} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
+import {useOrderContext} from '../hooks/useOrderContext';
 
 const SuccessOrderComponent: React.FC = () => {
-    const {order} = useContext(OrderContext);
+    const {order} = useOrderContext();
     const navigate = useNavigate();
 
     useEffect(() => {

@@ -9,7 +9,7 @@ import {ItemType, PageType, ResponseType} from '../types';
 import '@twicpics/components/style.css';
 import '../assets/gallery.scss';
 import {fetchData} from '../utils';
-import {useError} from './ErrorContext';
+import {useErrorContext} from '../hooks/useErrorContext';
 
 
 const Gallery = ({page}: { page: PageType }) => {
@@ -21,7 +21,7 @@ const Gallery = ({page}: { page: PageType }) => {
     const limit = 27;
     const [response, setResponse] = useState({loading: true} as ResponseType);
     const [data, setData] = useState<ItemType[]>([]);
-    const {setErrorMessage} = useError();
+    const {setErrorMessage} = useErrorContext();
 
     useEffect(() => {
         const path = `item?page=${pageFromUrl}&limit=${limit}`;
@@ -36,7 +36,7 @@ const Gallery = ({page}: { page: PageType }) => {
                 setErrorMessage(`Error fetching data: ${message}`);
                 setResponse({code, message, loading: false});
             });
-    }, [pageFromUrl, limit]);
+    }, [pageFromUrl, limit, setErrorMessage]);
 
     if (response.loading) {
         return <Loading/>;

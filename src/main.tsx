@@ -10,7 +10,7 @@ import {ErrorProvider} from './components/ErrorContext';
 Sentry.init({
     dsn: import.meta.env.VITE_APP_SENTRY_DSN,
     integrations: [
-        // See docs for support of different versions of variation of react router
+        // See docs for support of different versions of variation of React router
         // https://docs.sentry.io/platforms/javascript/guides/react/configuration/integrations/react-router/
         Sentry.reactRouterV6BrowserTracingIntegration({
             useEffect: React.useEffect,

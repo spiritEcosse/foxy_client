@@ -14,10 +14,11 @@ module.exports = {
             'warn',
             {allowConstantExport: true},
         ],
-        "indent": ["error", 4],
-        "quotes": ["error", "single"],
-        "no-unused-vars": ["warn"],
-        "semi": ["error", "always"],
-        "prefer-arrow-callback": ["error"]
+        'indent': ['error', 4],
+        'quotes': ['error', 'single'],
+        'semi': ['error', 'always'],
+        'prefer-arrow-callback': ['error'],
+        'no-unused-vars': 'off',
+        '@typescript-eslint/no-unused-vars': ['error', {'argsIgnorePattern': '^_'}]
     },
-}
+};

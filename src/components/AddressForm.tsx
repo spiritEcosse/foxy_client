@@ -1,36 +1,36 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Autocomplete, TextField} from '@mui/material';
 import {AddressType, CountryType} from '../types';
 import {fetchData} from '../utils';
-import {AddressContext} from './AddressContext';
-import {UserContext} from './UserContext';
-import {useError} from './ErrorContext';
+import {useAddressContext} from '../hooks/useAddressContext';
+import {useErrorContext} from '../hooks/useErrorContext';
+import {useUserContext} from '../hooks/useUserContext';
 
 const AddressForm = () => {
-    const {address, setAddress, setAddressAndStore, updateAddressField} = useContext(AddressContext);
-    const {user, setUserAndStore} = useContext(UserContext);
+    const {address, setAddressAndStore, updateAddressField} = useAddressContext();
+    const {user} = useUserContext();
     const [countries, setCountries] = useState<CountryType[]>([]);
-    const {setErrorMessage} = useError();
-
-    const fetchDataAndUpdateState = async () => {
-        try {
-            const countriesData = await fetchData('', 'country?limit=100', 'GET');
-            setCountries(countriesData.data);
-
-            if (user && !address) {
-                const addressData = await fetchData('', `address?user_id=${user.id}`, 'GET', {}, true);
-                if (addressData.data.length) {
-                    setAddressAndStore(addressData.data[0]);
-                }
-            }
-        } catch (error) {
-            setErrorMessage(`Error fetching data: ${error}`);
-        }
-    };
+    const {setErrorMessage} = useErrorContext();
 
     useEffect(() => {
+        const fetchDataAndUpdateState = async () => {
+            try {
+                const countriesData = await fetchData('', 'country?limit=100', 'GET');
+                setCountries(countriesData.data);
+
+                if (user && !address) {
+                    const addressData = await fetchData('', `address?user_id=${user.id}`, 'GET', {}, true);
+                    if (addressData.data.length) {
+                        setAddressAndStore(addressData.data[0]);
+                    }
+                }
+            } catch (error) {
+                setErrorMessage(`Error fetching data: ${error}`);
+            }
+        };
+
         fetchDataAndUpdateState();
-    }, [fetchDataAndUpdateState]);
+    }, [address, setAddressAndStore, setErrorMessage, user]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         updateAddressField(event.target.name as keyof AddressType, event.target.value);

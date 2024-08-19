@@ -1,5 +1,4 @@
 import * as React from 'react';
-import {useContext} from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -15,20 +14,17 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import {Link} from 'react-router-dom';
-import {CurrencyContext} from './CurrencyContext';
-import {UserContext} from './UserContext';
 import GoogleLoginComponent from './GoogleLoginComponent';
 import Badge from '@mui/material/Badge';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import {BasketItemContext} from './BasketItemContext';
-import {BasketContext} from './BasketContext';
-import {AddressContext} from './AddressContext';
-import {OrderContext} from './OrderContext';
 import EuroIcon from '@mui/icons-material/Euro';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import LogoutIcon from '@mui/icons-material/Logout';
-import {googleLogout} from '@react-oauth/google';
 import PersonIcon from '@mui/icons-material/Person';
+import {useCurrencyContext} from '../hooks/useCurrencyContext';
+import {useBasketItemContext} from '../hooks/useBasketItemContext';
+import {useUserContext} from '../hooks/useUserContext';
+import {useAuthContext} from '../hooks/useAuthContext';
 
 interface HeaderComponentProps {
     windowProps?: () => Window;
@@ -42,15 +38,13 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
         {id: 1, title: 'About', link: '/page/about'},
         {id: 2, title: 'Contact', link: '/page/contact'}
     ];
-    const {basketItems, removeFromBasket, setBasketItemsAndStore} = useContext(BasketItemContext);
-    const {setCurrency} = useContext(CurrencyContext);
-    const {user, setUserAndStore} = useContext(UserContext);
+    const {basketItems} = useBasketItemContext();
+    const {setCurrency} = useCurrencyContext();
+    const {user} = useUserContext();
     const handleDrawerToggle = () => {
         setMobileOpen((prevState) => !prevState);
     };
-    const {basket, setBasketAndStore} = useContext(BasketContext);
-    const {address, setAddressAndStore} = useContext(AddressContext);
-    const {order, setOrder} = useContext(OrderContext);
+    const {logout} = useAuthContext();
 
     const drawer = (
         <Box onClick={handleDrawerToggle} sx={{textAlign: 'center'}}>
@@ -73,10 +67,8 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
     const container = windowProps !== undefined ? () => windowProps().document.body : undefined;
 
     const handleLogoutClick = () => {
-        googleLogout();
-        localStorage.removeItem('auth');
         localStorage.setItem('showLoginPopup', 'false');
-        window.dispatchEvent(new Event('storage'));
+        logout();
     };
 
     return (

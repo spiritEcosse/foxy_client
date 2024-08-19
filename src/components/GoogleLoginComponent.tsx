@@ -1,17 +1,18 @@
 // GoogleLoginComponent.tsx
-import React, {useContext} from 'react';
-import {UserContext} from './UserContext';
-import {LoginPopupContext} from './LoginPopupContext';
-import {BasketContext} from './BasketContext';
-import {BasketItemContext} from './BasketItemContext';
+import React from 'react';
 import LoginIcon from '@mui/icons-material/Login';
 import IconButton from '@mui/material/IconButton';
 import {Modal, Typography} from '@mui/material';
-import {GoogleLogin} from '@react-oauth/google';
+import {CredentialResponse, GoogleLogin} from '@react-oauth/google';
 import {UserType} from '../types';
 import {fetchData} from '../utils';
 import Box from '@mui/material/Box';
-import {useError} from './ErrorContext';
+import {useBasketContext} from '../hooks/useBasketContext';
+import {useBasketItemContext} from '../hooks/useBasketItemContext';
+import {useErrorContext} from '../hooks/useErrorContext';
+import {useUserContext} from '../hooks/useUserContext';
+import {useLoginPopupContext} from '../hooks/useLoginPopupContext';
+import {useAuthContext} from '../hooks/useAuthContext';
 
 const style = {
     position: 'absolute',
@@ -30,11 +31,12 @@ const style = {
 };
 
 const GoogleLoginComponent: React.FC = () => {
-    const {setUserAndStore} = useContext(UserContext);
-    const {showLoginPopup, setShowLoginPopupAndStore} = useContext(LoginPopupContext);
-    const {basket, setBasket, setBasketAndStore} = useContext(BasketContext);
-    const {basketItems, setBasketItemsAndStore} = useContext(BasketItemContext);
-    const {setErrorMessage} = useError();
+    const {setUserAndStore} = useUserContext();
+    const {showLoginPopup, setShowLoginPopupAndStore} = useLoginPopupContext();
+    const {setBasketAndStore} = useBasketContext();
+    const {setBasketItemsAndStore} = useBasketItemContext();
+    const {setErrorMessage} = useErrorContext();
+    const {setAuthAndStore} = useAuthContext();
 
     const login = () => {
         setShowLoginPopupAndStore(true);
@@ -42,7 +44,7 @@ const GoogleLoginComponent: React.FC = () => {
 
     const googleLoginButton = (
         <GoogleLogin
-            onSuccess={async (credentialResponse: any) => {
+            onSuccess={async (credentialResponse: CredentialResponse) => {
                 if (!credentialResponse.credential) {
                     setErrorMessage('Login Failed');
                     return;
@@ -51,7 +53,7 @@ const GoogleLoginComponent: React.FC = () => {
                     const credential = credentialResponse.credential as string;
                     const _user: UserType = await fetchData('', 'auth/google_login', 'POST', {credentials: credential}, true);
                     setUserAndStore(_user);
-                    localStorage.setItem('auth', credential);
+                    setAuthAndStore(credential);
 
                     const responseBasketGet = await fetchData('', `basket?user_id=${_user.id}&in_use=true`, 'GET', {}, true);
                     let _basket;

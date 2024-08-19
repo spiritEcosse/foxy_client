@@ -1,11 +1,11 @@
-import React, {createContext, useContext, useState} from 'react';
+import React, {createContext, useState} from 'react';
 
 interface ErrorContextType {
     errorMessage: string;
     setErrorMessage: (message: string) => void;
 }
 
-const ErrorContext = createContext<ErrorContextType | undefined>(undefined);
+export const ErrorContext = createContext<ErrorContextType | undefined>(undefined);
 
 export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
     const [errorMessage, setErrorMessage] = useState('');
@@ -15,12 +15,4 @@ export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({children
             {children}
         </ErrorContext.Provider>
     );
-};
-
-export const useError = () => {
-    const context = useContext(ErrorContext);
-    if (context === undefined) {
-        throw new Error('useError must be used within an ErrorProvider');
-    }
-    return context;
 };
