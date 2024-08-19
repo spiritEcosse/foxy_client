@@ -1,30 +1,23 @@
 import React from 'react';
-import {Button} from '@mui/material';
-
-const styles = {
-    container: {
-        textAlign: 'center' as const,
-        marginTop: '50px'
-    },
-    image: {
-        width: '300px' // Adjust the size based on your image dimensions
-    },
-    heading: {
-        fontSize: '24px',
-        marginTop: '20px'
-    },
-    message: {
-        fontSize: '16px',
-        marginTop: '10px'
-    }
-};
+import { Button } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const InternalServerError = () => {
     return (
-        <div style={styles.container}>
-            <h1 style={styles.heading}>Internal Server Error</h1>
-            <p style={styles.message}>Sorry, something went wrong. Please try again later.</p>
-            <Button variant="contained" component="a" href="/">Back Home</Button>
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '70vh',
+            }}
+        >
+            <h1>Internal Server Error</h1>
+            <p>Sorry, something went wrong. Please try again later.</p>
+            <Button variant="contained" component={Link} to="/">
+                Continue Shopping
+            </Button>
         </div>
     );
 };
