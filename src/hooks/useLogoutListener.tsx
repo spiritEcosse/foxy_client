@@ -1,15 +1,15 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 export const useLogoutListener = (callback: () => void) => {
-  useEffect(() => {
-    const handleLogout = () => {
-      callback();
-    };
+    useEffect(() => {
+        const handleLogout = () => {
+            callback();
+        };
 
-    window.addEventListener("logout", handleLogout);
+        window.addEventListener('logout', handleLogout);
 
-    return () => {
-      window.removeEventListener("logout", handleLogout);
-    };
-  }, [callback]);
+        return () => {
+            window.removeEventListener('logout', handleLogout);
+        };
+    }, [callback]);
 };

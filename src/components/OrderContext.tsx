@@ -1,25 +1,25 @@
-import React, { useState } from "react";
-import { OrderType } from "../types";
-import { useLogoutListener } from "../hooks/useLogoutListener";
+import React, { useState } from 'react';
+import { OrderType } from '../types';
+import { useLogoutListener } from '../hooks/useLogoutListener';
 
 export const OrderContext = React.createContext<{
-  order: OrderType | null;
-  setOrder: (value: OrderType | null) => void;
+    order: OrderType | null;
+    setOrder: (value: OrderType | null) => void;
 }>({
-  order: null,
-  setOrder: () => {},
+    order: null,
+    setOrder: () => {},
 });
 
 export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
+    children,
 }) => {
-  const [order, setOrder] = useState<OrderType | null>(null);
+    const [order, setOrder] = useState<OrderType | null>(null);
 
-  useLogoutListener(() => setOrder(null));
+    useLogoutListener(() => setOrder(null));
 
-  return (
-    <OrderContext.Provider value={{ order, setOrder }}>
-      {children}
-    </OrderContext.Provider>
-  );
+    return (
+        <OrderContext.Provider value={{ order, setOrder }}>
+            {children}
+        </OrderContext.Provider>
+    );
 };
