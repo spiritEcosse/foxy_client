@@ -6,7 +6,7 @@ interface ErrorContextType {
 }
 
 export const ErrorContext = createContext<ErrorContextType | undefined>(
-    undefined,
+    undefined
 );
 
 export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -14,10 +14,13 @@ export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
     const [errorMessage, setErrorMessage] = useState('');
 
-    const contextValue = useMemo(() => ({
-        errorMessage,
-        setErrorMessage,
-    }), [errorMessage]);
+    const contextValue = useMemo(
+        () => ({
+            errorMessage,
+            setErrorMessage,
+        }),
+        [errorMessage]
+    );
 
     return (
         <ErrorContext.Provider value={contextValue}>

@@ -10,14 +10,14 @@ interface AuthContextType {
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
-    undefined,
+    undefined
 );
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
     const [auth, setAuth] = useState<string | null>(
-        localStorage.getItem('auth'),
+        localStorage.getItem('auth')
     );
 
     const logout = () => {
@@ -36,12 +36,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     useLogoutListener(() => setAuthAndStore(null));
 
-    const contextValue = useMemo(() => ({
-        auth,
-        setAuth,
-        logout,
-        setAuthAndStore,
-    }), [auth, setAuth, logout, setAuthAndStore]);
+    const contextValue = useMemo(
+        () => ({
+            auth,
+            setAuth,
+            logout,
+            setAuthAndStore,
+        }),
+        [auth, setAuth, logout, setAuthAndStore]
+    );
 
     return (
         <AuthContext.Provider value={contextValue}>

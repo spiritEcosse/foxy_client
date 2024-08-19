@@ -6,21 +6,21 @@ export const LoginPopupContext = React.createContext<{
     showLoginPopup: boolean;
     setShowLoginPopup: Dispatch<SetStateAction<boolean>>;
     setShowLoginPopupAndStore: (popup: boolean) => void;
-        }>({
-            showLoginPopup: false,
-            setShowLoginPopup: () => {
-                // No-op placeholder function
-            },
-            setShowLoginPopupAndStore: () => {
-                // No-op placeholder function
-            },
-        });
+}>({
+    showLoginPopup: false,
+    setShowLoginPopup: () => {
+        // No-op placeholder function
+    },
+    setShowLoginPopupAndStore: () => {
+        // No-op placeholder function
+    },
+});
 
 export const LoginPopupProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
     const [showLoginPopup, setShowLoginPopup] = useState<boolean>(
-        JSON.parse(localStorage.getItem('showLoginPopup') ?? 'false'),
+        JSON.parse(localStorage.getItem('showLoginPopup') ?? 'false')
     );
 
     // Function to set the state and store in localStorage
@@ -31,15 +31,18 @@ export const LoginPopupProvider: React.FC<{ children: React.ReactNode }> = ({
 
     useLogoutListener(() =>
         setShowLoginPopupAndStore(
-            JSON.parse(localStorage.getItem('showLoginPopup') ?? 'true'),
-        ),
+            JSON.parse(localStorage.getItem('showLoginPopup') ?? 'true')
+        )
     );
 
-    const contextValue = useMemo(() => ({
-        showLoginPopup,
-        setShowLoginPopup,
-        setShowLoginPopupAndStore,
-    }), [showLoginPopup]);
+    const contextValue = useMemo(
+        () => ({
+            showLoginPopup,
+            setShowLoginPopup,
+            setShowLoginPopupAndStore,
+        }),
+        [showLoginPopup]
+    );
 
     return (
         <LoginPopupContext.Provider value={contextValue}>
