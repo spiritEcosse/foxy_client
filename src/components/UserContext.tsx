@@ -10,10 +10,8 @@ interface UserContextProps {
 
 const defaultUserContext: UserContextProps = {
     user: null,
-    setUser: () => {
-    },
-    setUserAndStore: () => {
-    },
+    setUser: () => {},
+    setUserAndStore: () => {},
 };
 
 export const UserContext =
@@ -23,7 +21,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
     const [user, setUser] = useState<UserType | null>(
-        JSON.parse(localStorage.getItem('user') ?? 'null'),
+        JSON.parse(localStorage.getItem('user') ?? 'null')
     );
 
     const setUserAndStore = useCallback((value: UserType | null) => {
