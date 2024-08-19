@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useMemo, useState } from 'react';
 
 interface ErrorContextType {
     errorMessage: string;
@@ -6,7 +6,7 @@ interface ErrorContextType {
 }
 
 export const ErrorContext = createContext<ErrorContextType | undefined>(
-    undefined
+    undefined,
 );
 
 export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -14,8 +14,13 @@ export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
     const [errorMessage, setErrorMessage] = useState('');
 
+    const contextValue = useMemo(() => ({
+        errorMessage,
+        setErrorMessage,
+    }), [errorMessage]);
+
     return (
-        <ErrorContext.Provider value={{ errorMessage, setErrorMessage }}>
+        <ErrorContext.Provider value={contextValue}>
             {children}
         </ErrorContext.Provider>
     );

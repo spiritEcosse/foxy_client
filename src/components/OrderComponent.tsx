@@ -2,15 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { fetchData } from '../utils';
 import Pagination from '@mui/material/Pagination';
-import {
-    Button,
-    Grid,
-    PaginationItem,
-    Paper,
-    Popover,
-    styled,
-    Typography,
-} from '@mui/material';
+import { Button, Grid, PaginationItem, Paper, Popover, styled, Typography } from '@mui/material';
 import { BasketItemType, OrderType } from '../types';
 import Box from '@mui/material/Box';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
@@ -128,7 +120,7 @@ const OrderComponent = () => {
                 })
                 .catch(({ code, message }) => {
                     setErrorMessage(
-                        `Error fetching data: ${message}, code: ${code}`
+                        `Error fetching data: ${message}, code: ${code}`,
                     );
                 })
                 .finally(() => {
@@ -183,7 +175,7 @@ const OrderComponent = () => {
                         renderItem={(item) => (
                             <PaginationItem
                                 component={Link}
-                                to={`${item.page === 1 ? '' : `?page=${item.page}`}`}
+                                to={item.page === 1 ? '' : '?page=' + item.page}
                                 {...item}
                             />
                         )}
@@ -201,7 +193,7 @@ const OrderComponent = () => {
                                             </BoldText>
                                             <Typography variant="body2">
                                                 {new Date(
-                                                    order.created_at
+                                                    order.created_at,
                                                 ).toLocaleDateString()}
                                             </Typography>
                                         </Grid>
@@ -213,7 +205,7 @@ const OrderComponent = () => {
                                                     {
                                                         style: 'currency',
                                                         currency: 'EUR',
-                                                    }
+                                                    },
                                                 )}
                                             </Typography>
                                         </Grid>
@@ -230,7 +222,7 @@ const OrderComponent = () => {
                                                         <Button
                                                             variant="outlined"
                                                             {...bindTrigger(
-                                                                popupState
+                                                                popupState,
                                                             )}
                                                         >
                                                             {
@@ -247,18 +239,18 @@ const OrderComponent = () => {
                                                                 '.MuiPaper-root':
                                                                     {
                                                                         borderRadius:
-                                                                            theme
-                                                                                .shape
-                                                                                .borderRadius, // Use theme's borderRadius
+                                                                        theme
+                                                                            .shape
+                                                                            .borderRadius, // Use theme's borderRadius
                                                                         border: '1px solid', // Use a solid border
                                                                         borderColor:
-                                                                            theme
-                                                                                .palette
-                                                                                .divider, // Use theme's borderColor for the Popover's border
+                                                                        theme
+                                                                            .palette
+                                                                            .divider, // Use theme's borderColor for the Popover's border
                                                                     },
                                                             })}
                                                             {...bindPopover(
-                                                                popupState
+                                                                popupState,
                                                             )}
                                                             anchorOrigin={{
                                                                 vertical:
@@ -337,7 +329,7 @@ const OrderComponent = () => {
                                                 key={basketItem.id}
                                                 basketItem={basketItem}
                                             />
-                                        )
+                                        ),
                                     )}
                                 </Grid>
                             </Grid>
@@ -359,7 +351,7 @@ const OrderComponent = () => {
                         renderItem={(item) => (
                             <PaginationItem
                                 component={Link}
-                                to={`${item.page === 1 ? '' : `?page=${item.page}`}`}
+                                to={item.page === 1 ? '' : '?page=' + item.page}
                                 {...item}
                             />
                         )}

@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useState } from 'react';
+import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { googleLogout } from '@react-oauth/google';
 import { useLogoutListener } from '../hooks/useLogoutListener';
 
@@ -10,14 +10,14 @@ interface AuthContextType {
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
-    undefined
+    undefined,
 );
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
     const [auth, setAuth] = useState<string | null>(
-        localStorage.getItem('auth')
+        localStorage.getItem('auth'),
     );
 
     const logout = () => {
@@ -36,10 +36,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     useLogoutListener(() => setAuthAndStore(null));
 
+    const contextValue = useMemo(() => ({
+        auth,
+        setAuth,
+        logout,
+        setAuthAndStore,
+    }), [auth, setAuth, logout, setAuthAndStore]);
+
     return (
-        <AuthContext.Provider
-            value={{ auth, setAuth, logout, setAuthAndStore }}
-        >
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );
