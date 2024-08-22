@@ -13,41 +13,55 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import {Link} from 'react-router-dom';
-import {CurrencyContext} from './CurrencyContext';
-import {useContext} from 'react';
-import {GoogleLogin} from '@react-oauth/google';
-import {jwtDecode} from 'jwt-decode';
-import {fetchData} from '../utils';
+import { Link } from 'react-router-dom';
+import GoogleLoginComponent from './GoogleLoginComponent';
+import Badge from '@mui/material/Badge';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import EuroIcon from '@mui/icons-material/Euro';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import LogoutIcon from '@mui/icons-material/Logout';
+import PersonIcon from '@mui/icons-material/Person';
+import { useCurrencyContext } from '../hooks/useCurrencyContext';
+import { useBasketItemContext } from '../hooks/useBasketItemContext';
+import { useUserContext } from '../hooks/useUserContext';
+import { useAuthContext } from '../hooks/useAuthContext';
 
 interface HeaderComponentProps {
-        window?: () => Window;
+    windowProps?: () => Window;
 }
 
 export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
-    const {window} = props;
+    const { windowProps } = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const navItems = [
-        {id: 1, title: 'About', link: '/page/about'},
-        {id: 2, title: 'Contact', link: '/page/contact'}
+        { id: 1, title: 'About', link: '/page/about' },
+        { id: 2, title: 'Contact', link: '/page/contact' },
     ];
-    const { setCurrency } = useContext(CurrencyContext);
-
+    const { basketItems } = useBasketItemContext();
+    const { setCurrency } = useCurrencyContext();
+    const { user } = useUserContext();
     const handleDrawerToggle = () => {
         setMobileOpen((prevState) => !prevState);
     };
+    const { logout } = useAuthContext();
 
     const drawer = (
-        <Box onClick={handleDrawerToggle} sx={{textAlign: 'center'}}>
-            <Typography variant="h6" sx={{my: 2}}>
+        <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
+            <Typography variant="h6" sx={{ my: 2 }}>
                 {import.meta.env.PROJECT_NAME}
             </Typography>
-            <Divider/>
+            <Divider />
             <List>
                 {navItems.map((item) => (
                     <ListItem key={item.id} disablePadding>
-                        <ListItemButton sx={{textAlign: 'center'}} component={Link} to={item.link}>
-                            <ListItemText primary={item.title}/>
+                        <ListItemButton
+                            sx={{
+                                textAlign: 'center',
+                            }}
+                            component={Link}
+                            to={item.link}
+                        >
+                            <ListItemText primary={item.title} />
                         </ListItemButton>
                     </ListItem>
                 ))}
@@ -55,11 +69,19 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
         </Box>
     );
 
-    const container = window !== undefined ? () => window().document.body : undefined;
+    const container =
+        windowProps !== undefined
+            ? () => windowProps().document.body
+            : undefined;
+
+    const handleLogoutClick = () => {
+        localStorage.setItem('showLoginPopup', 'false');
+        logout();
+    };
 
     return (
-        <Box sx={{display: 'flex'}}>
-            <CssBaseline/>
+        <Box sx={{ display: 'flex' }}>
+            <CssBaseline />
             <AppBar component="nav" position="static">
                 <Toolbar>
                     <IconButton
@@ -67,50 +89,126 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                         aria-label="open drawer"
                         edge="start"
                         onClick={handleDrawerToggle}
-                        sx={{mr: 2, display: {sm: 'none'}}}
+                        sx={{
+                            mr: 2,
+                            display: { sm: 'none' },
+                        }}
                     >
-                        <MenuIcon/>
+                        <MenuIcon />
                     </IconButton>
-                    <Link to="/" style={{textDecoration: 'none', color: 'inherit'}}>
+                    <Link
+                        to="/"
+                        style={{
+                            textDecoration: 'none',
+                            color: 'inherit',
+                        }}
+                    >
                         <Typography
                             variant="h6"
                             component="div"
-                            sx={{flexGrow: 1, display: {sm: 'block'}}}
+                            sx={{
+                                flexGrow: 1,
+                                display: {
+                                    sm: 'block',
+                                },
+                            }}
                         >
                             {import.meta.env.PROJECT_NAME}
                         </Typography>
                     </Link>
-                    <Box sx={{display: {xs: 'none', sm: 'flex', marginLeft: 'auto'}}}>
-                        <Button variant="contained" onClick={() => setCurrency('USD')}>USD</Button>
-                        <Button variant="contained" onClick={() => setCurrency('EUR')}>EUR</Button>
-                        {navItems.map(item => (
-                            <Button component={Link} key={item.id} sx={{color: '#fff'}}
-                                to={item.link}>
-                                {item.title}
-                            </Button>
-                        ))}
-                        <GoogleLogin
-                            onSuccess={credentialResponse => {
-                                console.log(credentialResponse);
-                                if (credentialResponse.credential) {
-                                    fetchData('', 'auth/google_login', 'POST', {credentials: credentialResponse.credential})
-                                        .then(data => {
-                                            console.log(data);
-                                        })
-                                        .catch(({code, message}) => {
-                                            console.log(code, message);
-                                        });
-                                    console.log(credentialResponse.credential);
-                                    const decoded = jwtDecode(credentialResponse.credential);
-                                    console.log(decoded);
-                                } else {
-                                    console.log('Credential is undefined');
-                                }
+                    <Box
+                        sx={{
+                            display: {
+                                sm: 'flex',
+                                marginLeft: 'auto',
+                            },
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                display: {
+                                    xs: 'none',
+                                    sm: 'flex',
+                                    marginLeft: 'auto',
+                                },
                             }}
-                            onError={() => {
-                                console.log('Login Failed');
-                            }}
-                        />
+                        >
+                            {navItems.map((item) => (
+                                <Button
+                                    component={Link}
+                                    key={item.id}
+                                    sx={{
+                                        color: '#fff',
+                                    }}
+                                    to={item.link}
+                                >
+                                    {item.title}
+                                </Button>
+                            ))}
+                        </Box>
+                        <IconButton
+                            size="small"
+                            edge="end"
+                            aria-label="usd"
+                            // aria-controls={menuId}
+                            aria-haspopup="true"
+                            onClick={() => setCurrency('USD')}
+                            color="inherit"
+                        >
+                            <AttachMoneyIcon />
+                        </IconButton>
+                        <IconButton
+                            size="small"
+                            edge="end"
+                            aria-label="eur"
+                            // aria-controls={menuId}
+                            aria-haspopup="true"
+                            onClick={() => setCurrency('EUR')}
+                            color="inherit"
+                        >
+                            <EuroIcon />
+                        </IconButton>
+                        <Link to="checkout">
+                            <IconButton
+                                aria-label="cart"
+                                sx={{
+                                    color: 'white',
+                                }}
+                            >
+                                <Badge badgeContent={basketItems.length}>
+                                    <ShoppingCartIcon />
+                                </Badge>
+                            </IconButton>
+                        </Link>
+                        {!user ? (
+                            <GoogleLoginComponent />
+                        ) : (
+                            <>
+                                <Link to="account">
+                                    <IconButton
+                                        size="small"
+                                        edge="end"
+                                        aria-label="account"
+                                        aria-haspopup="true"
+                                        sx={{
+                                            color: 'white',
+                                        }}
+                                    >
+                                        <PersonIcon />
+                                    </IconButton>
+                                </Link>
+                                <IconButton
+                                    size="small"
+                                    edge="end"
+                                    aria-label="logout"
+                                    aria-haspopup="true"
+                                    onClick={handleLogoutClick}
+                                    color="inherit"
+                                >
+                                    <LogoutIcon />
+                                </IconButton>
+                            </>
+                        )}
                     </Box>
                 </Toolbar>
             </AppBar>
@@ -121,11 +219,17 @@ export default function HeaderComponent(props: Readonly<HeaderComponentProps>) {
                     open={mobileOpen}
                     onClose={handleDrawerToggle}
                     ModalProps={{
-                        keepMounted: true // Better open performance on mobile.
+                        keepMounted: true, // Better open performance on mobile.
                     }}
                     sx={{
-                        display: {xs: 'block', sm: 'none'},
-                        '& .MuiDrawer-paper': {boxSizing: 'border-box', width: 240}
+                        display: {
+                            xs: 'block',
+                            sm: 'none',
+                        },
+                        '& .MuiDrawer-paper': {
+                            boxSizing: 'border-box',
+                            width: 240,
+                        },
                     }}
                 >
                     {drawer}
