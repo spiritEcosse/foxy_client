@@ -125,7 +125,7 @@ const CheckoutComponent = () => {
             totalPriceLabel: 'Total',
             totalPrice: `${roundedTotal}`,
             currencyCode: 'EUR',
-            countryCode: address?.country.code || 'ES',
+            countryCode: 'ES',
         },
     };
 
@@ -138,9 +138,9 @@ const CheckoutComponent = () => {
 
     const handleChange =
         (panel: string) =>
-        (event: React.SyntheticEvent, isExpanded: boolean) => {
-            setExpanded(isExpanded ? panel : false);
-        };
+            (event: React.SyntheticEvent, isExpanded: boolean) => {
+                setExpanded(isExpanded ? panel : false);
+            };
 
     const handleCheck = (index: number) => () => {
         const currentIndex = checked.indexOf(index);
