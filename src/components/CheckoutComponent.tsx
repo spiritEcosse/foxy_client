@@ -125,7 +125,7 @@ const CheckoutComponent = () => {
             totalPriceLabel: 'Total',
             totalPrice: `${roundedTotal}`,
             currencyCode: 'EUR',
-            countryCode: 'ES',
+            countryCode: address?.country.code || 'ES',
         },
     };
 
