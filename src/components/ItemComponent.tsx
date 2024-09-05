@@ -113,7 +113,7 @@ const ItemComponent = () => {
         if (originalMedia.type === MediaTypeEnum.IMAGE) {
             originalMedia.src = `${originalMedia.src}?twic=v1/cover=900x900`;
         } else {
-            originalMedia.src = `https://${import.meta.env.VITE_APP_CLOUD_NAME}${originalMedia.src.replace(/https?:\/\/[^\/]+/, '')}`;
+            originalMedia.src = `https://${import.meta.env.VITE_APP_CLOUD_NAME}${originalMedia.src.replace(/https?:\/\/[^/]+/, '')}`;
         }
     };
 
