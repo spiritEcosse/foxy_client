@@ -10,7 +10,13 @@ import '../assets/lightgallery.css';
 import 'lightgallery/css/lg-thumbnail.css';
 import 'lightgallery/css/lg-video.css';
 import 'lightgallery/css/lightgallery.css';
-import { ItemType, MediaType, ResponseType, ShippingRateType } from '../types';
+import {
+    ItemType,
+    MediaType,
+    MediaTypeEnum,
+    ResponseType,
+    ShippingRateType,
+} from '../types';
 import MetaDataComponent from './MetaDataComponent';
 import { fetchCurrencyRate, fetchData } from '../utils';
 import DOMPurify from 'dompurify';
@@ -21,6 +27,22 @@ import LightGallery from 'lightgallery/react';
 import { LightGallery as LightGalleryCore } from 'lightgallery/lightgallery';
 import { useErrorContext } from '../hooks/useErrorContext';
 
+interface MediaLightGalleryType {
+    src?: string;
+    type?: string;
+    thumb: string;
+    video?: {
+        source: {
+            src: string;
+            type: string;
+        }[];
+        attributes: {
+            preload: boolean;
+            controls: boolean;
+        };
+    };
+}
+
 const ItemComponent = () => {
     const [item, setItem] = useState<ItemType>({} as ItemType);
     const [response, setResponse] = useState({
@@ -30,7 +52,7 @@ const ItemComponent = () => {
     const [container, setContainer] = useState<HTMLElement | null>(null);
     const [conversionRate, setConversionRate] = useState(1);
     const { currency } = useCurrencyContext();
-    const [media, setMedia] = useState<MediaType[]>([]);
+    const [media, setMedia] = useState<MediaLightGalleryType[]>([]);
     const [shippingRate, setShippingRate] = useState<ShippingRateType>(
         {} as ShippingRateType
     );
@@ -68,11 +90,11 @@ const ItemComponent = () => {
             return (
                 <LightGallery
                     plugins={[lgThumbnail, lgVideo]}
-                    dynamic
                     dynamicEl={media}
                     closable={false}
                     showMaximizeIcon
                     thumbnail={true}
+                    dynamic={true}
                     download={false}
                     onInit={onInit}
                     container={container}
@@ -82,14 +104,16 @@ const ItemComponent = () => {
         return null;
     }, [container, media, onInit]);
 
-    const processMedia = (media: MediaType) => {
-        if (media.thumb) {
+    const processMedia = (originalMedia: MediaType) => {
+        if (originalMedia.thumb) {
             return; // If thumb already exists, no further processing is needed
         }
-        media.thumb = `${media.src}?twic=v1/cover=96x76`;
+        originalMedia.thumb = `${originalMedia.src}?twic=v1/cover=96x76`;
 
-        if (!media.src?.includes('.mp4')) {
-            media.src = `${media.src}?twic=v1/cover=900x900`;
+        if (originalMedia.type === MediaTypeEnum.IMAGE) {
+            originalMedia.src = `${originalMedia.src}?twic=v1/cover=900x900`;
+        } else {
+            originalMedia.src = `https://${import.meta.env.VITE_APP_CLOUD_NAME}${originalMedia.src.replace(/https?:\/\/[^/]+/, '')}`;
         }
     };
 
@@ -109,12 +133,40 @@ const ItemComponent = () => {
                 .then((data) => {
                     data.image = data._media ? data._media[0].src : null;
                     if (data._media) {
-                        for (const media of data._media) {
-                            processMedia(media);
+                        const newMedia: MediaLightGalleryType[] = [];
+
+                        for (const originalMedia of data._media) {
+                            processMedia(originalMedia);
+
+                            if (originalMedia.type === MediaTypeEnum.IMAGE) {
+                                newMedia.push({
+                                    src: originalMedia.src,
+                                    thumb: originalMedia.thumb,
+                                    type: 'image/jpg',
+                                });
+                            } else if (
+                                originalMedia.type === MediaTypeEnum.VIDEO
+                            ) {
+                                newMedia.push({
+                                    thumb: 'https://cdn.pixabay.com/photo/2019/04/24/21/55/cinema-4153289_1280.jpg',
+                                    video: {
+                                        source: [
+                                            {
+                                                src: originalMedia.src,
+                                                type: 'video/mp4',
+                                            },
+                                        ],
+                                        attributes: {
+                                            preload: true,
+                                            controls: true,
+                                        },
+                                    },
+                                });
+                            }
                         }
+                        setMedia(newMedia);
                     }
                     setItem(data._item);
-                    setMedia(data._media);
 
                     setResponse({
                         code: 200,
@@ -168,7 +220,7 @@ const ItemComponent = () => {
                 page={{
                     id: item.id,
                     title: item.title,
-                    image: media[0].src,
+                    image: media.length > 0 ? media[0].src : '',
                     slug: item.slug,
                     description: item.description,
                     meta_description: item.meta_description,

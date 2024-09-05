@@ -4,11 +4,17 @@ export interface ResponseType {
     loading: boolean;
 }
 
+export enum MediaTypeEnum {
+    IMAGE = 'image',
+    VIDEO = 'video',
+}
+
 export interface MediaType {
     id: number;
     item_id: number;
     src: string;
     sort: number;
+    type: MediaTypeEnum;
     thumb?: string;
 }
 
