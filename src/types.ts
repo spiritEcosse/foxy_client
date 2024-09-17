@@ -104,6 +104,7 @@ export interface ItemType {
     id: number;
     title: string;
     src: string;
+    src_video?: string;
     slug: string;
     media: MediaType[];
     description: string;

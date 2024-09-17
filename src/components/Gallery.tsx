@@ -23,6 +23,16 @@ const Gallery = ({ page }: { page: PageType }) => {
     } as ResponseType);
     const [data, setData] = useState<ItemType[]>([]);
     const { setErrorMessage } = useErrorContext();
+    const [hoveredItemId, setHoveredItemId] = useState<number | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    const handleCanPlay = () => {
+        setLoading(false);
+    };
+
+    const handleWaiting = () => {
+        setLoading(true);
+    };
 
     useEffect(() => {
         const path = `item?page=${pageFromUrl}&limit=${limit}`;
@@ -91,14 +101,51 @@ const Gallery = ({ page }: { page: PageType }) => {
                             className="galleryItem"
                             key={item.id}
                             style={{
-                                backgroundImage: `url(${item.src}?twic=v1/output=preview`,
+                                backgroundImage:
+                                    hoveredItemId === item.id && item.src_video
+                                        ? 'none'
+                                        : `url(${item.src}?twic=v1/output=preview)`,
                             }}
+                            onMouseEnter={() => setHoveredItemId(item.id)}
+                            onMouseLeave={() => setHoveredItemId(null)}
                         >
                             <Link to={`/item/${item.slug}`}>
-                                <img
-                                    data-twic-src={`image:${new URL(item.src).pathname}`}
-                                    alt={item.title}
-                                />
+                                {hoveredItemId === item.id && item.src_video ? (
+                                    <>
+                                        {loading && (
+                                            <div className="spinner">
+                                                <div className="loading-spinner"></div>
+                                            </div>
+                                        )}
+                                        <video
+                                            className="visible"
+                                            muted
+                                            autoPlay
+                                            loop
+                                            playsInline
+                                            onCanPlay={handleCanPlay} // Video is ready to play
+                                            onWaiting={handleWaiting} // Video is buffering/loading
+                                        >
+                                            <source
+                                                src={item.src_video}
+                                                type="video/mp4"
+                                            />
+                                            Your browser does not support the
+                                            video tag.
+                                        </video>
+                                    </>
+                                ) : (
+                                    <img
+                                        src={item.src}
+                                        alt={item.title}
+                                        style={{
+                                            opacity:
+                                                hoveredItemId === item.id
+                                                    ? 0
+                                                    : 1,
+                                        }}
+                                    />
+                                )}
                                 <figcaption className="galleryCapt">
                                     {item.title}
                                 </figcaption>
