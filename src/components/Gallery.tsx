@@ -108,9 +108,9 @@ const Gallery = ({ page }: { page: PageType }) => {
                             }}
                             {...(item.src_video
                                 ? {
-                                    onMouseEnter: () =>
-                                        setHoveredItemId(item.id),
-                                }
+                                      onMouseEnter: () =>
+                                          setHoveredItemId(item.id),
+                                  }
                                 : {})}
                             {...(item.src_video
                                 ? { onMouseLeave: () => setHoveredItemId(null) }
