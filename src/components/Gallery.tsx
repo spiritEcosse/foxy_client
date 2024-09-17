@@ -104,13 +104,13 @@ const Gallery = ({ page }: { page: PageType }) => {
                                 backgroundImage:
                                     hoveredItemId === item.id && item.src_video
                                         ? 'none'
-                                        : `url(${item.src}?twic=v1/output=preview)`,
+                                        : `url(${item.src}?twic=v1/output=preview/cover=500x500)`,
                             }}
                             {...(item.src_video
                                 ? {
-                                      onMouseEnter: () =>
-                                          setHoveredItemId(item.id),
-                                  }
+                                    onMouseEnter: () =>
+                                        setHoveredItemId(item.id),
+                                }
                                 : {})}
                             {...(item.src_video
                                 ? { onMouseLeave: () => setHoveredItemId(null) }
@@ -143,7 +143,7 @@ const Gallery = ({ page }: { page: PageType }) => {
                                     </>
                                 ) : (
                                     <img
-                                        src={item.src}
+                                        src={`${item.src}?twic=v1/cover=1400x1000`}
                                         alt={item.title}
                                         style={{
                                             opacity:
