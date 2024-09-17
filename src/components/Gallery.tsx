@@ -106,8 +106,8 @@ const Gallery = ({ page }: { page: PageType }) => {
                                         ? 'none'
                                         : `url(${item.src}?twic=v1/output=preview)`,
                             }}
-                            onMouseEnter={() => setHoveredItemId(item.id)}
-                            onMouseLeave={() => setHoveredItemId(null)}
+                            {...(item.src_video ? { onMouseEnter: () => setHoveredItemId(item.id) } : {})}
+                            {...(item.src_video ? { onMouseLeave: () => setHoveredItemId(null) } : {})}
                         >
                             <Link to={`/item/${item.slug}`}>
                                 {hoveredItemId === item.id && item.src_video ? (
@@ -123,8 +123,8 @@ const Gallery = ({ page }: { page: PageType }) => {
                                             autoPlay
                                             loop
                                             playsInline
-                                            onCanPlay={handleCanPlay} // Video is ready to play
-                                            onWaiting={handleWaiting} // Video is buffering/loading
+                                            onCanPlay={handleCanPlay}
+                                            onWaiting={handleWaiting}
                                         >
                                             <source
                                                 src={item.src_video}
