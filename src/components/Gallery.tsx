@@ -108,6 +108,8 @@ const Gallery = ({ page }: { page: PageType }) => {
                             }}
                             onMouseEnter={() => setHoveredItemId(item.id)}
                             onMouseLeave={() => setHoveredItemId(null)}
+                            tabIndex={0}
+                            role="button"
                         >
                             <Link to={`/item/${item.slug}`}>
                                 {hoveredItemId === item.id && item.src_video ? (
