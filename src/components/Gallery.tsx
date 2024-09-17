@@ -106,8 +106,15 @@ const Gallery = ({ page }: { page: PageType }) => {
                                         ? 'none'
                                         : `url(${item.src}?twic=v1/output=preview)`,
                             }}
-                            {...(item.src_video ? { onMouseEnter: () => setHoveredItemId(item.id) } : {})}
-                            {...(item.src_video ? { onMouseLeave: () => setHoveredItemId(null) } : {})}
+                            {...(item.src_video
+                                ? {
+                                      onMouseEnter: () =>
+                                          setHoveredItemId(item.id),
+                                  }
+                                : {})}
+                            {...(item.src_video
+                                ? { onMouseLeave: () => setHoveredItemId(null) }
+                                : {})}
                         >
                             <Link to={`/item/${item.slug}`}>
                                 {hoveredItemId === item.id && item.src_video ? (
