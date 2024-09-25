@@ -94,21 +94,21 @@ html {
     @media #{$breakpoint-from-tablet} {
         @include aspect-ratio(1, 1);
         flex: 0 1 auto;
-        width: 50%;
+        width: 49%;
     }
 
     @media #{$breakpoint-from-desktop-sml} {
-        width: 33%;
+        width: 32%;
     }
 
     @media #{$breakpoint-from-desktop-mid} {
         @include aspect-ratio(4, 3);
-        width: 33%;
+        width: 32%;
     }
 
     @media #{$breakpoint-from-desktop-lrg} {
         @include aspect-ratio(4, 3);
-        width: 25%;
+        width: 24%;
     }
 
     img {
