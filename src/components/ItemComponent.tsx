@@ -166,7 +166,7 @@ const ItemComponent = () => {
                         }
                         setMedia(newMedia);
                     }
-                    setItem(data._item);
+                    setItem(data);
 
                     setResponse({
                         code: 200,
