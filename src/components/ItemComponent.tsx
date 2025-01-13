@@ -135,14 +135,14 @@ const ItemComponent = () => {
                     if (data._media) {
                         const newMedia: MediaLightGalleryType[] = [];
 
-                        for (const originalMedia of data._media) {
+                        for (const originalMedia of data.media) {
                             processMedia(originalMedia);
 
                             if (originalMedia.type === MediaTypeEnum.IMAGE) {
                                 newMedia.push({
                                     src: originalMedia.src,
                                     thumb: originalMedia.thumb,
-                                    type: 'image/jpg',
+                                    type: originalMedia.content_type,
                                 });
                             } else if (
                                 originalMedia.type === MediaTypeEnum.VIDEO
@@ -153,7 +153,7 @@ const ItemComponent = () => {
                                         source: [
                                             {
                                                 src: originalMedia.src,
-                                                type: 'video/mp4',
+                                                type: originalMedia.content_type,
                                             },
                                         ],
                                         attributes: {
