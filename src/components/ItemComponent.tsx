@@ -131,8 +131,8 @@ const ItemComponent = () => {
         if (slug !== undefined) {
             fetchData('', `item/${slug}`, 'GET')
                 .then((data) => {
-                    data.image = data._media ? data._media[0].src : null;
-                    if (data._media) {
+                    data.image = data.media ? data.media[0].src : null;
+                    if (data.media) {
                         const newMedia: MediaLightGalleryType[] = [];
 
                         for (const originalMedia of data.media) {
