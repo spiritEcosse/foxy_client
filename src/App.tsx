@@ -21,6 +21,7 @@ import CheckoutComponent from './components/CheckoutComponent';
 import { AddressProvider } from './components/AddressContext';
 import { OrderProvider } from './components/OrderContext';
 import SuccessOrderComponent from './components/SuccessOrderComponent';
+import PrivacyPolicyComponent from './components/PrivacyPolicyComponent';
 import { Slide, Snackbar, SnackbarCloseReason } from '@mui/material';
 import { UserProvider } from './components/UserContext';
 import { useErrorContext } from './hooks/useErrorContext';
@@ -100,6 +101,12 @@ function App() {
                                                                 path="/account/order/:id"
                                                                 element={
                                                                     <OrderDetailsComponent />
+                                                                }
+                                                            />
+                                                            <Route
+                                                                path="/page/privacy-policy"
+                                                                element={
+                                                                    <PrivacyPolicyComponent />
                                                                 }
                                                             />
                                                             <Route
