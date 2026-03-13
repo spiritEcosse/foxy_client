@@ -131,18 +131,18 @@ const ItemComponent = () => {
         if (slug !== undefined) {
             fetchData('', `item/${slug}`, 'GET')
                 .then((data) => {
-                    data.image = data._media ? data._media[0].src : null;
-                    if (data._media) {
+                    data.image = data.media ? data.media[0].src : null;
+                    if (data.media) {
                         const newMedia: MediaLightGalleryType[] = [];
 
-                        for (const originalMedia of data._media) {
+                        for (const originalMedia of data.media) {
                             processMedia(originalMedia);
 
                             if (originalMedia.type === MediaTypeEnum.IMAGE) {
                                 newMedia.push({
                                     src: originalMedia.src,
                                     thumb: originalMedia.thumb,
-                                    type: 'image/jpg',
+                                    type: originalMedia.content_type,
                                 });
                             } else if (
                                 originalMedia.type === MediaTypeEnum.VIDEO
@@ -153,7 +153,7 @@ const ItemComponent = () => {
                                         source: [
                                             {
                                                 src: originalMedia.src,
-                                                type: 'video/mp4',
+                                                type: originalMedia.content_type,
                                             },
                                         ],
                                         attributes: {
@@ -166,7 +166,7 @@ const ItemComponent = () => {
                         }
                         setMedia(newMedia);
                     }
-                    setItem(data._item);
+                    setItem(data);
 
                     setResponse({
                         code: 200,

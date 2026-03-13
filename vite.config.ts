@@ -20,6 +20,10 @@ export default defineConfig({
         port: 5174
     },
 
+    preview: {
+        historyApiFallback: true,
+    },
+
     base: '/',
 
     build: {

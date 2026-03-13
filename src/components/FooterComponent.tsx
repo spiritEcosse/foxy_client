@@ -7,6 +7,7 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import { Box, Container, Divider, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
+import { Link } from 'react-router-dom';
 
 export default function FooterComponent() {
     const socialMediaLinks = [
@@ -72,6 +73,23 @@ export default function FooterComponent() {
                                         <Divider orientation="vertical" />
                                     </React.Fragment>
                                 ))}
+                            </Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    gap: 2,
+                                    mb: 1,
+                                }}
+                            >
+                                <Typography
+                                    variant="body2"
+                                    component={Link}
+                                    to="/page/privacy-policy"
+                                    sx={{ color: 'white', textDecoration: 'underline' }}
+                                >
+                                    Privacy Policy
+                                </Typography>
                             </Box>
                             <Box
                                 sx={{
