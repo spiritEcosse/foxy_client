@@ -28,12 +28,14 @@ import { useErrorContext } from './hooks/useErrorContext';
 import { AuthProvider } from './components/AuthProvider';
 
 const helmetContext = {};
-const domain = `https://${import.meta.env.VITE_APP_TWIC_PICS_NAME}.twic.pics`;
+const twicPicsName = import.meta.env.VITE_APP_TWIC_PICS_NAME;
 
-installTwicPics({
-    // domain is mandatory
-    domain,
-});
+if (twicPicsName) {
+    installTwicPics({
+        // domain is mandatory
+        domain: `https://${twicPicsName}.twic.pics`,
+    });
+}
 
 function App() {
     const { errorMessage, setErrorMessage } = useErrorContext();

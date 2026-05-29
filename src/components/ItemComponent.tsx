@@ -112,8 +112,6 @@ const ItemComponent = () => {
 
         if (originalMedia.type === MediaTypeEnum.IMAGE) {
             originalMedia.src = `${originalMedia.src}?twic=v1/cover=900x900`;
-        } else {
-            originalMedia.src = `https://${import.meta.env.VITE_APP_CLOUD_NAME}${originalMedia.src.replace(/https?:\/\/[^/]+/, '')}`;
         }
     };
 
@@ -129,6 +127,21 @@ const ItemComponent = () => {
 
     useEffect(() => {
         if (slug !== undefined) {
+            const handleFetchError = ({
+                code,
+                message,
+            }: {
+                code: number;
+                message: string;
+            }) => {
+                setErrorMessage(`Error fetching data: ${message}`);
+                setResponse({
+                    code,
+                    message,
+                    loading: false,
+                });
+            };
+
             fetchData('', `item/${slug}`, 'GET')
                 .then((data) => {
                     data.image = data.media ? data.media[0].src : null;
@@ -174,27 +187,13 @@ const ItemComponent = () => {
                         loading: false,
                     });
                 })
-                .catch(({ code, message }) => {
-                    setErrorMessage(`Error fetching data: ${message}`);
-                    setResponse({
-                        code,
-                        message,
-                        loading: false,
-                    });
-                });
+                .catch(handleFetchError);
 
             fetchData('', `shippingrate/item/${slug}`, 'GET')
                 .then((data) => {
                     setShippingRate(data.shipping);
                 })
-                .catch(({ code, message }) => {
-                    setErrorMessage(`Error fetching data: ${message}`);
-                    setResponse({
-                        code,
-                        message,
-                        loading: false,
-                    });
-                });
+                .catch(handleFetchError);
         }
     }, [setErrorMessage, slug]);
 

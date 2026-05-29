@@ -294,11 +294,11 @@ export default function PrivacyPolicyComponent() {
                             practices, please contact us at:
                         </Typography>
                         <Typography variant="body1">
-                            <strong>{import.meta.env.VITE_APP_PROJECT_NAME || 'Foxy'}</strong>
+                            <strong>faithfishart</strong>
                             <br />
                             Email:{' '}
-                            <a href={`mailto:${import.meta.env.VITE_APP_CONTACT_EMAIL || 'ofilenkova22@gmail.com'}`}>
-                                {import.meta.env.VITE_APP_CONTACT_EMAIL || 'ofilenkova22@gmail.com'}
+                            <a href={`mailto:${import.meta.env.VITE_APP_CONTACT_EMAIL}`}>
+                                {import.meta.env.VITE_APP_CONTACT_EMAIL}
                             </a>
                         </Typography>
                     </Box>

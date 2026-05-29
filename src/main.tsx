@@ -34,14 +34,14 @@ Sentry.init({
     // Set `tracePropagationTargets` to control for which URLs distributed tracing should be enabled
     tracePropagationTargets: [
         'localhost',
-        /^https:\/\/api\.dev\.faithfishart\.comi/,
+        /^https:\/\/api(\.dev)?\.faithfishart\.com/,
     ],
 
     // Capture Replay for 100% of all sessions,
     // plus for 100% of sessions with an error
     replaysSessionSampleRate: 1.0,
     replaysOnErrorSampleRate: 1.0,
-    environment: import.meta.env.VITE_APP_ENVIRONMENT || 'development',
+    environment: import.meta.env.MODE,
 });
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
